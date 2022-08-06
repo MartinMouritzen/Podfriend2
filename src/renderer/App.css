@@ -1,0 +1,31 @@
+/*
+ * @NOTE: Prepend a `~` to css file paths that are in your node_modules
+ *        See https://github.com/webpack-contrib/sass-loader#imports
+ */
+html, body {
+	/*background-color: #FFFFFF;*/
+}
+:root {
+	--ion-toolbar-background: #ffffff;
+}
+ion-menu {
+	--background: #0161cf;
+	--ion-background-color: #0161cf;
+	--ion-color-base: #0161cf !important;
+  
+	left: 0px;
+  
+	ion-toolbar {
+	  --background: transparent;
+	}
+  
+	ion-list {
+	  background: white;
+	}
+  
+  }
+  ion-title {
+	--background: #0161cf;
+	--ion-background-color: #0161cf;
+	--ion-color-base: #0161cf !important;
+  }

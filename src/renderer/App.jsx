@@ -1,5 +1,5 @@
 import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
-import './App.css';
+import './App.scss';
 
 import { IonApp, IonRouterOutlet, IonSplitPane, setupIonicReact, IonMenu } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
@@ -23,6 +23,7 @@ import '@ionic/react/css/text-alignment.css';
 import '@ionic/react/css/text-transformation.css';
 import '@ionic/react/css/flex-utils.css';
 import '@ionic/react/css/display.css';
+import MainMenu from 'components/MainMenu/MainMenu';
 
 setupIonicReact();
 
@@ -30,10 +31,8 @@ export default function App({ platform }) {
 	return (
 		<IonApp>
 			<WindowFrame>
-				<IonSplitPane contentId="main" when="(min-width: 475px)">
-					<IonMenu contentId="main" side="start" type="push">
-						test
-					</IonMenu>
+				<IonSplitPane contentId="main" when="(min-width: 850px)">
+					<MainMenu />
 					<IonReactRouter>
 						
 							<IonRouterOutlet id="main">

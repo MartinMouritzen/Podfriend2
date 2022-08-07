@@ -1,0 +1,46 @@
+/*
+ * @NOTE: Prepend a `~` to css file paths that are in your node_modules
+ *        See https://github.com/webpack-contrib/sass-loader#imports
+ */
+:root {
+	--ion-toolbar-background: #ffffff;
+	--primary-color: rgb(0,101,197);
+	--primary-input-color: #00519e;
+	--primary-input-text-color: #99b9d8;
+}
+html, body {
+	/*background-color: #FFFFFF;*/
+}
+* {
+	box-sizing: border-box;
+	touch-action: manipulation;
+}
+ion-split-pane {
+	--side-min-width: 250px !important;
+}
+ion-menu {
+	--background: var(--primary-color);
+	--ion-background-color: var(--primary-color);
+	--ion-color-base: var(--primary-color) !important;
+  
+	left: 0px;
+  
+	ion-toolbar {
+		--background: transparent;
+	}
+  
+	ion-list {
+		background: white;
+	}
+}
+ion-title {
+	--background: #0161cf;
+	--ion-background-color: #0161cf;
+	--ion-color-base: #0161cf !important;
+
+	-webkit-app-region: drag;
+	-webkit-user-select: none;
+}
+ion-menu {
+    max-width: 200px !important;
+}

@@ -9,7 +9,7 @@
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
 import path from 'path';
-import { app, BrowserWindow, shell, ipcMain } from 'electron';
+import { app, BrowserWindow, shell, ipcMain, screen } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import MenuBuilder from './menu';
@@ -25,11 +25,49 @@ class AppUpdater {
 
 let mainWindow: BrowserWindow | null = null;
 
+let windowBounds: any = null;
+
 ipcMain.on('ipc-example', async (event, arg) => {
 	const msgTemplate = (pingPong: string) => `IPC test: ${pingPong}`;
 	console.log(msgTemplate(arg));
 	event.reply('ipc-example', msgTemplate('pong'));
 });
+ipcMain.on('windowMaximizeRequested', (e) => {
+	if (mainWindow?.isMaximized()) {
+		mainWindow?.unmaximize();
+	}
+	else {
+		mainWindow?.maximize();
+	}
+});
+
+
+ipcMain.on('windowMoveStarted', (e) => {
+	if (mainWindow !== null) {
+		windowBounds = mainWindow.getBounds();
+	}
+});
+ipcMain.on('windowMoving', (e, {mouseX, mouseY}) => {
+	const { x, y } = screen.getCursorScreenPoint();
+
+	if (mainWindow !== null) {
+		// On Windows there's a bug that makes the app larger, everytime we call setBounds, because of an error internally in chromium apparently.
+		// This has to do with pixel density, so we might be able to loop through the displays and see if we need to adjust
+		// https://www.electronjs.org/docs/latest/api/screen
+		// screen.getDisplayNearestPoint(point)
+		// https://www.electronjs.org/docs/latest/api/structures/display
+
+		mainWindow.setBounds({
+			width: windowBounds.width,
+			height: windowBounds.height,
+			x: x - mouseX,
+			y: y - mouseY
+		});
+
+		// mainWindow.setPosition(x - mouseX, y - mouseY);
+	}
+});
+
 
 if (process.env.NODE_ENV === 'production') {
 	const sourceMapSupport = require('source-map-support');

@@ -1,36 +1,72 @@
 import './MainMenu.scss';
 
-import { IonMenu, IonSearchbar, IonHeader, IonContent, IonIcon } from '@ionic/react';
+import { IonMenu, IonSearchbar, IonHeader, IonContent, IonIcon, IonLabel, IonList, IonItem, IonToolbar, IonButtons, IonButton, IonMenuToggle } from '@ionic/react';
 
-import { searchSharp } from 'ionicons/icons'
+import { menuController } from "@ionic/core/components";
+
+import { closeSharp as closeIcon, searchOutline as searchIcon, mailOutline as mailIcon, bulbOutline as bulbIcon, walletOutline as walletIcon } from 'ionicons/icons'
 
 const MainMenu = () => {
+	const toggleMenu = () => {
+ 	    menuController.toggle('first');
+	};
+
 	return (
-		<IonMenu contentId="main" side="start" type="push" className="mainMenu">
+		<IonMenu menuId="first" contentId="main" side="start" className="mainMenu" maxEdgeStart={100} swipe-gesture={true}>
 			<IonHeader>
-				&nbsp;
+				<IonToolbar>
+					<IonMenuToggle slot="end">
+						<IonIcon icon={closeIcon}></IonIcon>
+					</IonMenuToggle>
+				</IonToolbar>
 			</IonHeader>
-			<IonContent>
+			<IonContent className="menuContent">
 				<IonSearchbar type="search" placeholder="Search"></IonSearchbar>
 
-				<ion-header className="subHeader">
-					<ion-title>My content</ion-title>
-				</ion-header>
+				<div className="subHeader">
+					My content
+				</div>
+				<IonList>
+					<IonItem lines="none" button>
+						<IonIcon icon={searchIcon} slot="start"></IonIcon>
+						<IonLabel>Home</IonLabel>
+					</IonItem>
+					<IonItem lines="none" button>
+						<IonIcon icon={bulbIcon} slot="start"></IonIcon>
+						<IonLabel>Explore random</IonLabel>
+					</IonItem>
+					<IonItem lines="none" button>
+						<IonIcon icon={walletIcon} slot="start"></IonIcon>
+						<IonLabel>Wallet</IonLabel>
+					</IonItem>
+					<IonItem lines="none" button>
+						<IonIcon icon={mailIcon} slot="start"></IonIcon>
+						<IonLabel>Contact us</IonLabel>
+					</IonItem>
+				</IonList>
+				{/*
+				<div className="subHeader">
+					My podcasts
+				</div>
 				<ion-list>
-					<ion-item lines="none">Home</ion-item>
-					<ion-item lines="none">Random podcast</ion-item>
-					<ion-item lines="none">Wallet</ion-item>
+					<IonItem lines="none">
+						<IonIcon icon={searchSharp} slot="start"></IonIcon>
+						<IonLabel>Home</IonLabel>
+					</IonItem>
+					<IonItem lines="none">
+						<IonIcon icon={bulbSharp} slot="start"></IonIcon>
+						<IonLabel>Explore random</IonLabel>
+					</IonItem>
+					<IonItem lines="none">
+						<IonIcon icon={walletSharp} slot="start"></IonIcon>
+						<IonLabel>Wallet</IonLabel>
+					</IonItem>
+					<IonItem lines="none">
+						<IonIcon icon={mailSharp} slot="start"></IonIcon>
+						<IonLabel>Contact us</IonLabel>
+					</IonItem>
 				</ion-list>
-
-				<ion-header className="subHeader">
-					<ion-title>Discover</ion-title>
-				</ion-header>
-				<ion-list>
-					<ion-item lines="none">Menu Item</ion-item>
-					<ion-item lines="none">Menu Item</ion-item>
-					<ion-item lines="none">Menu Item</ion-item>
-					<ion-item lines="none">Menu Item</ion-item>
-				</ion-list>
+				*/ }
 			</IonContent>
 		</IonMenu>
 	);

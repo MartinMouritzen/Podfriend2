@@ -22,7 +22,7 @@ const configuration: webpack.Configuration = {
 	devtool: 'source-map',
 	mode: 'production',
 	target: ['web', 'electron-renderer'],
-	entry: [path.join(webpackPaths.srcRendererPath, 'index.electron.tsx')],
+	entry: [path.join(webpackPaths.srcRendererPath, 'index.electron.jsx')],
 	output: {
 		path: webpackPaths.distRendererPath,
 		publicPath: './',

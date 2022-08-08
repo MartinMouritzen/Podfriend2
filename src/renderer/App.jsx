@@ -1,3 +1,5 @@
+import { useRef } from 'react';
+
 import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.scss';
 
@@ -27,20 +29,21 @@ import MainMenu from 'components/MainMenu/MainMenu';
 
 setupIonicReact();
 
-export default function App({ platform }) {
+export default function App({ platform, triggerWindowDrag }) {
+
+
 	return (
 		<IonApp>
 			<WindowFrame>
+			<IonReactRouter>
 				<IonSplitPane contentId="main" when="(min-width: 850px)">
-					<MainMenu />
-					<IonReactRouter>
-						
-							<IonRouterOutlet id="main">
-								<Route path="/" component={Home} />
-							</IonRouterOutlet>
-						
-					</IonReactRouter>
+					<MainMenu triggerWindowDrag={triggerWindowDrag} />
+					<IonRouterOutlet id="main">
+						<Route path="/" render={(props) => <Home {...props} />} triggerWindowDrag={triggerWindowDrag} />
+					</IonRouterOutlet>
+			
 				</IonSplitPane>
+				</IonReactRouter>
 			</WindowFrame>
 		</IonApp>
 	);

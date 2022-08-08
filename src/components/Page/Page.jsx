@@ -1,14 +1,17 @@
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent } from "@ionic/react";
+import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonButtons, IonMenuButton } from "@ionic/react";
 
-const Page = ({children}) => {
+const Page = ({ children, triggerWindowDrag }) => {
 	return (
 		<IonPage>
-			<IonHeader>
+			<IonHeader translucent="true" className="mainHeader">
 				<IonToolbar>
-					<IonTitle>Test title</IonTitle>
+					<IonButtons slot="start" className="ionButtons">
+						<IonMenuButton menu="first"></IonMenuButton>
+					</IonButtons>
+					<IonTitle OnMouseDown={triggerWindowDrag}>Top title</IonTitle>
 				</IonToolbar>
 			</IonHeader>
-			<IonContent>
+			<IonContent id="main">
 				<IonHeader collapse="condense">
 					<IonToolbar>
 						<IonTitle size="large">Test title</IonTitle>

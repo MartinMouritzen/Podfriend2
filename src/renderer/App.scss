@@ -7,6 +7,7 @@
 	--primary-color: rgb(0,101,197);
 	--primary-input-color: #00519e;
 	--primary-input-text-color: #99b9d8;
+	--ion-background-color: #f8f9fd;
 }
 html, body {
 	/*background-color: #FFFFFF;*/
@@ -14,6 +15,9 @@ html, body {
 * {
 	box-sizing: border-box;
 	touch-action: manipulation;
+
+	user-select: none;
+    -webkit-user-drag: none;
 }
 ion-split-pane {
 	--side-min-width: 250px !important;
@@ -24,6 +28,8 @@ ion-menu {
 	--ion-color-base: var(--primary-color) !important;
   
 	left: 0px;
+
+	width: 250px;
   
 	ion-toolbar {
 		--background: transparent;
@@ -33,14 +39,27 @@ ion-menu {
 		background: white;
 	}
 }
-ion-title {
-	--background: #0161cf;
-	--ion-background-color: #0161cf;
-	--ion-color-base: #0161cf !important;
-
-	-webkit-app-region: drag;
-	-webkit-user-select: none;
+.mainHeader {
+	ion-title {
+		--background: #0161cf;
+		--ion-background-color: #0161cf;
+		--ion-color-base: #0161cf !important;
+	}
+	/*
+	.toolbar-title {
+		-webkit-app-region: drag;
+		-webkit-user-select: none;
+		user-select: none;
+		background-color: #ffcc00;
+	}
+	*/
+}
+.ionButtons {
+	/*
+	-webkit-app-region: no-drag;
+	background-color: #ff23aa;
+	*/
 }
 ion-menu {
-    max-width: 200px !important;
+    max-width: 250px !important;
 }

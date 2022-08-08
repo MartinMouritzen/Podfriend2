@@ -24,7 +24,6 @@
 		"build:renderer": "cross-env NODE_ENV=production TS_NODE_TRANSPILE_ONLY=true webpack --config ./.erb/configs/webpack.config.renderer.prod.ts",
 		"postinstall": "ts-node .erb/scripts/check-native-dep.js && electron-builder install-app-deps && cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack --config ./.erb/configs/webpack.config.renderer.dev.dll.ts",
 		"package": "ts-node ./.erb/scripts/clean.js dist && yarn build && electron-builder build --publish never",
-		"prepare": "husky install",
 		"rebuild": "electron-rebuild --parallel --types prod,dev,optional --module-dir release/app",
 		"dev": "cross-env PORT=9122 ts-node ./.erb/scripts/check-port-in-use.js && yarn start:web",
 		"dev:desktop": "cross-env PORT=9123 ts-node ./.erb/scripts/check-port-in-use.js && yarn start:renderer",
@@ -40,10 +39,13 @@
 		"electron-debug": "^3.2.0",
 		"electron-log": "^4.4.7",
 		"electron-updater": "^5.0.3",
+		"html-entities": "^2.3.3",
+		"immer": "^9.0.15",
 		"react": "^18.2.0",
 		"react-dom": "^18.2.0",
 		"react-query": "^4.0.0",
-		"react-router-dom": "^5.3.3"
+		"react-router-dom": "^5.3.3",
+		"zustand": "^4.0.0"
 	},
 	"devDependencies": {
 		"@pmmmwh/react-refresh-webpack-plugin": "^0.5.6",
@@ -69,7 +71,6 @@
 		"electronmon": "^2.0.2",
 		"file-loader": "^6.2.0",
 		"html-webpack-plugin": "^5.5.0",
-		"husky": "^8.0.1",
 		"identity-obj-proxy": "^3.0.0",
 		"mini-css-extract-plugin": "^2.6.0",
 		"react-refresh": "^0.13.0",

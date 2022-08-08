@@ -15,9 +15,6 @@ html, body {
 * {
 	box-sizing: border-box;
 	touch-action: manipulation;
-
-	user-select: none;
-    -webkit-user-drag: none;
 }
 ion-split-pane {
 	--side-min-width: 250px !important;
@@ -44,6 +41,8 @@ ion-menu {
 		--background: #0161cf;
 		--ion-background-color: #0161cf;
 		--ion-color-base: #0161cf !important;
+
+		user-select: none;
 	}
 	/*
 	.toolbar-title {

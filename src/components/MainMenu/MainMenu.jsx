@@ -13,7 +13,7 @@ const MainMenu = () => {
 
 	return (
 		<IonMenu menuId="first" contentId="main" side="start" className="mainMenu" maxEdgeStart={100} swipe-gesture={true}>
-			<IonHeader>
+			<IonHeader class="ion-no-border">
 				<IonToolbar>
 					<IonMenuToggle slot="end">
 						<IonIcon icon={closeIcon}></IonIcon>

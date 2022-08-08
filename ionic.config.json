@@ -1,0 +1,7 @@
+{
+  "name": "podfriend",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "react"
+}

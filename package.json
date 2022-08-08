@@ -34,6 +34,7 @@
 	},
 	"browserslist": [],
 	"dependencies": {
+		"@capacitor/core": "^4.0.1",
 		"@ionic/react": "^6.2.1",
 		"@ionic/react-router": "^6.2.1",
 		"electron-debug": "^3.2.0",
@@ -48,6 +49,7 @@
 		"zustand": "^4.0.0"
 	},
 	"devDependencies": {
+		"@capacitor/cli": "^4.0.1",
 		"@pmmmwh/react-refresh-webpack-plugin": "^0.5.6",
 		"@teamsupercell/typings-for-css-modules-loader": "^2.5.1",
 		"@types/node": "17.0.33",

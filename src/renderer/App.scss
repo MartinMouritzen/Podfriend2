@@ -15,9 +15,28 @@ html, body {
 * {
 	box-sizing: border-box;
 	touch-action: manipulation;
+
+	-webkit-user-select: none;
+	user-select: none;
 }
 ion-split-pane {
 	--side-min-width: 250px !important;
+}
+/**
+* Hack to remove a weird ionic effect.
+*/
+.header-background {
+	display: none;
+}
+.bottomTabs {
+	padding-bottom: 10px;
+	padding-top: 10px;
+	/*
+	background-color: #ff23aa;
+	ion-tab-button {
+		background-color: #ff23aa;
+	}
+	*/
 }
 ion-menu {
 	--background: var(--primary-color);

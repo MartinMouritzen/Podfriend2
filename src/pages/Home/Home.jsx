@@ -1,8 +1,8 @@
 import Page from "components/Page/Page";
 
-const Home = ({ triggerWindowDrag }) => {
+const Home = ({  }) => {
 	return (
-		<Page triggerWindowDrag={triggerWindowDrag}>
+		<Page title="Home">
 			<div style={{ marginLeft: 20 }} >
 				<p>Hello World from the boilerplate app.</p><p>Hello World from the boilerplate app.</p><p>Hello World from the boilerplate app.</p><p>Hello World from the boilerplate app.</p><p>Hello World from the boilerplate app.</p>
 				<p>Hello World from the boilerplate app.</p><p>Hello World from the boilerplate app.</p><p>Hello World from the boilerplate app.</p><p>Hello World from the boilerplate app.</p><p>Hello World from the boilerplate app.</p>

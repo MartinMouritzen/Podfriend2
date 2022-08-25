@@ -34,7 +34,9 @@
 	},
 	"browserslist": [],
 	"dependencies": {
+		"@capacitor/android": "4.0.1",
 		"@capacitor/core": "^4.0.1",
+		"@capacitor/ios": "4.0.1",
 		"@ionic/react": "^6.2.1",
 		"@ionic/react-router": "^6.2.1",
 		"electron-debug": "^3.2.0",
@@ -46,6 +48,7 @@
 		"react-dom": "^18.2.0",
 		"react-query": "^4.0.0",
 		"react-router-dom": "^5.3.3",
+		"use-breakpoint": "^3.0.3",
 		"zustand": "^4.0.0"
 	},
 	"devDependencies": {

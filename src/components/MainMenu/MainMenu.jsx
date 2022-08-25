@@ -27,19 +27,23 @@ const MainMenu = () => {
 					My content
 				</div>
 				<IonList>
-					<IonItem lines="none" button>
+					<IonItem lines="none" button routerLink="/">
 						<IonIcon icon={searchIcon} slot="start"></IonIcon>
 						<IonLabel>Home</IonLabel>
 					</IonItem>
-					<IonItem lines="none" button>
+					<IonItem lines="none" button routerLink="/favorites/">
 						<IonIcon icon={bulbIcon} slot="start"></IonIcon>
-						<IonLabel>Explore random</IonLabel>
+						<IonLabel>Favorites</IonLabel>
 					</IonItem>
-					<IonItem lines="none" button>
+					<IonItem lines="none" button routerLink="/discover/">
+						<IonIcon icon={walletIcon} slot="start"></IonIcon>
+						<IonLabel>Discover</IonLabel>
+					</IonItem>
+					<IonItem lines="none" button routerLink="/podcasts/">
 						<IonIcon icon={walletIcon} slot="start"></IonIcon>
 						<IonLabel>Wallet</IonLabel>
 					</IonItem>
-					<IonItem lines="none" button>
+					<IonItem lines="none" button routerLink="/podcasts/">
 						<IonIcon icon={mailIcon} slot="start"></IonIcon>
 						<IonLabel>Contact us</IonLabel>
 					</IonItem>

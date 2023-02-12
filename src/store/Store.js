@@ -1,16 +1,33 @@
-import create from 'zustand'
+import create from 'zustand';
 import produce from 'immer';
 
-import defaultTileMap from './defaultTileMap';
+import { persist } from 'zustand/middleware';
 
-import SoundManager from 'renderer/Library/SoundManager';
+import { createPodcastSlice } from './PodcastSlice';
+import { createPlayerSlice } from './PlayerSlice';
+import { createUserSlice } from './UserSlice';
 
-const changeCurrentPodcast = (podcast) => {
-	useStore.setState({ currentPodcast: podcast })
-}
 
-const useStore = create((set,get) => ({
-	
+/*
+const useStore = create(persist((set,get) => ({
+
+})))
+*/
+const useStore = create(persist((...a) => ({
+	...createPodcastSlice(...a),
+	...createPlayerSlice(...a),
+	...createUserSlice(...a),
+}),{
+	// Define what parts we do not want persisted
+	partialize: (state) => {
+		let newState = {...state};
+		delete newState.audioController;
+		delete newState.shouldPlay;
+		delete newState.playerFullscreen;
+		delete newState.audioController;
+
+		return newState;
+	}
 }))
 
 

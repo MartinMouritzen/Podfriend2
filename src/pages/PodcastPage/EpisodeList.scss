@@ -1,0 +1,43 @@
+.episodeListActions {
+	display: flex;
+	justify-content: space-between;
+}
+.seasonSelect {
+	max-width: 160px;
+
+
+	&::part(text), &::part(placeholder) {
+		font-size: 22px;
+		font-weight: 500;
+		color: #000000;
+		opacity: 1;
+	}
+	&::part(icon) {
+		color: var(--primary-color);
+
+		opacity: 1;
+
+		scale: 1.5;
+	}
+}
+.sortOrderSelect {
+	&::part(text), &::part(placeholder) {
+		font-size: 16px;
+		font-weight: 500;
+		color: var(--primary-color);
+		opacity: 1;
+	}
+	&::part(icon) {
+		color: var(--primary-color);
+
+		opacity: 0;
+
+		scale: 1.5;
+	}
+}
+.episode {
+	&.selected {
+		--ion-item-background: var(--primary-color);
+		color: #FFFFFF;
+	}
+}

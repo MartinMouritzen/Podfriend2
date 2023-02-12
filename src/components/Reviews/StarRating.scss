@@ -1,0 +1,33 @@
+.starRating {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+}
+.reviewBasedOn {
+	color: #333333;
+	margin-left: 10px;
+	font-size: 14px;
+}
+.stars {
+	display: flex;
+	flex-direction: row;
+	
+	align-items: center;
+}
+.starNormal, .starFilled {
+	font-size: inherit;
+}
+.starNormal {
+	color: #75757e;
+	opacity: 0.8;
+} 
+.starFilled {
+	color: #ffcc48;
+}
+/*
+@media (min-width: 1200px) {
+	.starNormal, .starFilled {
+		
+	}
+}
+*/

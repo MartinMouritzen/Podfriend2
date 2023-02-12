@@ -1,0 +1,308 @@
+export const createPlayerSlice = (set,get) => ({
+	/**********************************************************************************
+	* Player UI
+	***********************************************************************************/
+	audioController: false,
+	setAudioController: (audioController) => {
+		set({ audioController: audioController })
+	},
+	playerFullscreen: false,
+	playerMaximize: () => {
+		set({ playerFullscreen: true })
+	},
+	playerMinimize: () => {
+		set({ playerFullscreen: false })
+	},
+	/**********************************************************************************
+	* Player states
+	***********************************************************************************/
+	shouldPlay: false,
+	isPlaying: false,
+	isLoading: false,
+	playbackSpeed: 1,
+	/**********************************************************************************
+	* Audio functions
+	***********************************************************************************/
+	updateProgress: () => {
+		var newProgress = get().audioController.getCurrentTime();
+		var newDuration = get().audioController.getDuration();
+
+		// Update activeEpisode as well as the cached object
+		// var newActivePodcast = structuredClone(get().activePodcast);
+
+		let listenedPercentage = (100 * newProgress) / newDuration;
+
+		var newActiveEpisode = structuredClone(get().activeEpisode);
+		newActiveEpisode.currentTime = newProgress;
+		newActiveEpisode.duration = newDuration;
+		newActiveEpisode.listenedPercentage = listenedPercentage;
+		// newActivePodcast.episodes[]
+		set({
+			activeEpisode: newActiveEpisode
+		});
+	},
+	playEpisode: (podcast,episode) => {
+		if (episode.listened) {
+			episode.listened = false;
+			episode.currentTime = 0;
+
+			// Todo, update online here too.
+		}
+		set({
+			activePodcast: podcast,
+			activeEpisode: episode,
+			shouldPlay: true,
+			loading: true
+		});
+	},
+	audioPause: () => {
+		set({
+			shouldPlay: false
+		});
+		get().audioController.pause();
+	},
+	audioPlay: () => {
+		set({
+			shouldPlay: true
+		});
+		var playPromise = get().audioController.play();
+
+		if (playPromise.then) {
+			Promise.resolve(playPromise)
+			.then(() => {
+				// Set loading = false
+			})
+			.catch((exception) => {
+				console.log('Error trying to play audio');
+			});
+		}
+	},
+	audioBackwardIncrement: 10,
+	audioForwardIncrement: 30,
+	audioBackward: () => {
+		var audioController = get().audioController;
+
+		if (audioController) {
+			var currentTime = audioController.getCurrentTime();
+
+			var backwardTime = currentTime - get().audioBackwardIncrement;
+			if (backwardTime < 0) {
+				backwardTime = 0;
+			}
+
+			audioController.pause()
+			.then(() => {
+				return audioController.setCurrentTime(backwardTime);
+			})
+			.then(() => {
+				if (get().shouldPlay) {
+					audioController.play();
+					get().resetAudioSegmentTime();
+				}
+			});
+		}
+	},
+	audioForward: () => {
+		var state = get();
+		var audioController = state.audioController;
+		const audioForwardIncrement = get().audioForwardIncrement;
+
+		if (audioController) {
+			var currentTime = audioController.getCurrentTime();
+
+			if (currentTime + audioForwardIncrement > audioController.getDuration()) {
+				state.goToNextEpisode();
+			}
+			else {
+				audioController.pause();
+				audioController.setCurrentTime(currentTime + audioForwardIncrement);
+				if (state.shouldPlay) {
+					audioController.play();
+					state.resetAudioSegmentTime();
+				}
+			}
+		}
+	},
+	audioSkipBackward: () => {
+		const audioController = get().audioController;
+		const activePodcast = get().activePodcast;
+		const activeEpisode = get().activeEpisode;
+
+		var foundNextEpisode = false;
+		var nextEpisodeIsAfterCurrent = false;
+
+		console.log(activePodcast);
+
+		if (activePodcast.configSelectedSortOrder === 'old') {
+			for(var i=0;i<activePodcast.episodes.length;i++) {
+				if (nextEpisodeIsAfterCurrent) {
+					if (activePodcast.episodes[i].episodeType !== 'trailer') {
+						console.log('found it!');
+						foundNextEpisode = true;
+						get().playEpisode(activePodcast,activePodcast.episodes[i]);
+						break;
+					}
+				}
+				if (activePodcast.episodes[i].guid === activeEpisode.guid) {
+					nextEpisodeIsAfterCurrent = true;
+				}
+			}
+		}
+		else {
+			for(var i=activePodcast.episodes.length - 1;i>0;i--) {
+				if (nextEpisodeIsAfterCurrent) {
+					if (activePodcast.episodes[i].episodeType !== 'trailer') {
+						foundNextEpisode = true;
+						get().playEpisode(activePodcast,activePodcast.episodes[i]);
+						break;
+					}
+				}
+				if (activePodcast.episodes[i].guid === activeEpisode.guid) {
+					nextEpisodeIsAfterCurrent = true;
+				}
+			}
+		}
+		if (!foundNextEpisode) {
+			console.log('Did not find previous episode.');
+		}
+	},
+	audioSkipForward: () => {
+		const audioController = get().audioController;
+		const activePodcast = get().activePodcast;
+		const activeEpisode = get().activeEpisode;
+
+		var percentage = (100 * audioController.getCurrentTime()) / audioController.getDuration();
+
+		if (percentage > 75) {
+			get().markEpisodeAsListened(activePodcast,activeEpisode);
+		}
+
+		var foundNextEpisode = false;
+		var nextEpisodeIsAfterCurrent = false;
+
+		console.log(activePodcast);
+
+		if (activePodcast.configSelectedSortOrder === 'old') {
+			for(var i=activePodcast.episodes.length - 1;i>0;i--) {
+				if (nextEpisodeIsAfterCurrent) {
+					if (activePodcast.episodes[i].episodeType !== 'trailer') {
+						console.log('found it!');
+						foundNextEpisode = true;
+						console.log(activePodcast);
+						console.log(activePodcast.episodes[i]);
+						get().playEpisode(activePodcast,activePodcast.episodes[i]);
+						break;
+					}
+				}
+				if (activePodcast.episodes[i].guid === activeEpisode.guid) {
+					nextEpisodeIsAfterCurrent = true;
+				}
+			}
+		}
+		else {
+			for(var i=0;i<activePodcast.episodes.length;i++) {
+				if (nextEpisodeIsAfterCurrent) {
+					if (activePodcast.episodes[i].episodeType !== 'trailer') {
+						foundNextEpisode = true;
+						get().playEpisode(activePodcast,activePodcast.episodes[i]);
+						break;
+					}
+				}
+				if (activePodcast.episodes[i].guid === activeEpisode.guid) {
+					nextEpisodeIsAfterCurrent = true;
+				}
+			}
+		}
+		if (!foundNextEpisode) {
+			console.log('Did not find next episode.');
+		}
+	},
+	setCurrentTime: (seconds) => {
+		get().audioController.setCurrentTime(seconds);
+	},
+	changeActiveEpisode: (podcast,episode) => {
+		var audioController = get().audioController;
+		
+		if (audioController) {
+			audioController.pause()
+			.then(() => {
+				audioController.setEpisode(podcast,episode)
+				.then(() => {
+					audioController.load()
+					.then(() => {
+						var currentTime = 0;
+
+						if (episode.currentTime) {
+							var percentageListened = (100 * episode.currentTime) / episode.duration;
+							
+							if (percentageListened < 95) {
+								currentTime = episode.currentTime;
+							}
+						}
+						// console.log('setting time: ' + currentTime);
+
+						audioController.setPlaybackRate(get().playbackSpeed);
+
+						audioController.setCurrentTime(currentTime)
+						.then(() => {
+							if (get().shouldPlay) {
+								get().audioPlay();
+							}
+						});
+					});
+				});
+			});
+		}
+		else {
+			setTimeout(() => {
+				get().changeActiveEpisode(podcast,episode);
+			},50);
+		}
+	},
+	streamDataLoading: true,
+	audioIsLoading: () => {
+		set({
+			streamDataLoading: true
+		});
+	},
+	audioIsReady: () => {
+		let newDuration = get().audioController.getDuration();
+		// console.log('OnloadedMetaData. duration: ' + newDuration + ', episodeid: ' + this.props.activeEpisode.id);
+
+		// alert(this.props.audioController.audioElement.current.currentTime);
+
+		// alert('set time: ' + this.props.activeEpisode.currentTime);
+		// this.setCurrentTime(get().activeEpisode.currentTime);
+
+		// alert(this.props.audioController.audioElement.current.currentTime);
+
+		// get().updateEpisodeDuration(newDuration);
+
+		/*
+		this.setState({
+			duration: newDuration
+		});
+		*/
+		// On IOS sometimes only this event is sent, not the onCanPlay - so we use this to signal that we can play too
+		set({
+			streamDataLoading: false
+		});
+	},
+	/**********************************************************************************
+	* Episode related
+	***********************************************************************************/
+	goToNextEpisode: () => {
+
+	},
+	/**********************************************************************************
+	* Value 4 Value related
+	***********************************************************************************/
+	resetAudioSegmentTime: () => {
+
+	},
+	/**********************************************************************************
+	* Active podcast states
+	***********************************************************************************/
+	activePodcast: false,
+	activeEpisode: false
+});

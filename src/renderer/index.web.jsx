@@ -1,7 +1,12 @@
-import { windowsStore } from 'process';
+// import { windowsStore } from 'process';
 import { createRoot } from 'react-dom/client';
 import App from './App';
 
+import WebAudioController from "library/AudioController/WebAudioController";
+
 const container = document.getElementById('root');
 const root = createRoot(container);
-root.render(<App platform="web" />);
+
+const audioController = new WebAudioController();
+
+root.render(<App platform="web" audioController={audioController} />);

@@ -5,6 +5,21 @@ const DiscoverPage = () => {
 		<Page title="Discover">
 			<div style={{ marginLeft: 20 }} >
 				<p>Discover</p>
+				<p>Hello World from the boilerplate app.</p><p>Hello World from the boilerplate app.</p><p>Hello World from the boilerplate app.</p><p>Hello World from the boilerplate app.</p><p>Hello World from the boilerplate app.</p>
+				<p>Hello World from the boilerplate app.</p><p>Hello World from the boilerplate app.</p><p>Hello World from the boilerplate app.</p><p>Hello World from the boilerplate app.</p><p>Hello World from the boilerplate app.</p>
+				<p>Hello World from the boilerplate app.</p><p>Hello World from the boilerplate app.</p><p>Hello World from the boilerplate app.</p><p>Hello World from the boilerplate app.</p><p>Hello World from the boilerplate app.</p>
+				<p>Hello World from the boilerplate app.</p><p>Hello World from the boilerplate app.</p><p>Hello World from the boilerplate app.</p><p>Hello World from the boilerplate app.</p><p>Hello World from the boilerplate app.</p>
+				<p>Hello World from the boilerplate app.</p><p>Hello World from the boilerplate app.</p><p>Hello World from the boilerplate app.</p><p>Hello World from the boilerplate app.</p><p>Hello World from the boilerplate app.</p>
+				<p>Hello World from the boilerplate app.</p><p>Hello World from the boilerplate app.</p><p>Hello World from the boilerplate app.</p><p>Hello World from the boilerplate app.</p><p>Hello World from the boilerplate app.</p>
+				<p>Hello World from the boilerplate app.</p><p>Hello World from the boilerplate app.</p><p>Hello World from the boilerplate app.</p><p>Hello World from the boilerplate app.</p><p>Hello World from the boilerplate app.</p>
+				<p>Hello World from the boilerplate app.</p><p>Hello World from the boilerplate app.</p><p>Hello World from the boilerplate app.</p><p>Hello World from the boilerplate app.</p><p>Hello World from the boilerplate app.</p>
+				<p>Hello World from the boilerplate app.</p><p>Hello World from the boilerplate app.</p><p>Hello World from the boilerplate app.</p><p>Hello World from the boilerplate app.</p><p>Hello World from the boilerplate app.</p>
+				<p>Hello World from the boilerplate app.</p><p>Hello World from the boilerplate app.</p><p>Hello World from the boilerplate app.</p><p>Hello World from the boilerplate app.</p><p>Hello World from the boilerplate app.</p>
+				<p>Hello World from the boilerplate app.</p><p>Hello World from the boilerplate app.</p><p>Hello World from the boilerplate app.</p><p>Hello World from the boilerplate app.</p><p>Hello World from the boilerplate app.</p>
+				<p>Hello World from the boilerplate app.</p><p>Hello World from the boilerplate app.</p><p>Hello World from the boilerplate app.</p><p>Hello World from the boilerplate app.</p><p>Hello World from the boilerplate app.</p>
+				<p>Hello World from the boilerplate app.</p><p>Hello World from the boilerplate app.</p><p>Hello World from the boilerplate app.</p><p>Hello World from the boilerplate app.</p><p>Hello World from the boilerplate app.</p>
+				<p>Hello World from the boilerplate app.</p><p>Hello World from the boilerplate app.</p><p>Hello World from the boilerplate app.</p><p>Hello World from the boilerplate app.</p><p>Hello World from the boilerplate app.</p>
+				<p>Hello World from the boilerplate app.</p><p>Hello World from the boilerplate app.</p><p>Hello World from the boilerplate app.</p><p>Hello World from the boilerplate app.</p><p>Hello World from the boilerplate app.</p>
 			</div>
 		</Page>
 	);

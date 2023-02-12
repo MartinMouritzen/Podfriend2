@@ -1,5 +1,6 @@
 
-import { IonRouterOutlet, IonTabs, IonTabBar, IonTabButton, IonIcon, IonLabel, IonBadge } from '@ionic/react';
+import { IonRouterOutlet, IonTabs, IonTabBar, IonTabButton, IonIcon, IonLabel, IonBadge, IonFooter } from '@ionic/react';
+import Player from 'components/Player/Player';
 import {
 	homeOutline as homeIcon,
 	homeOutline as homeIconSelected,
@@ -12,17 +13,20 @@ import {
 
 	listOutline as podcastIcon,
 	listSharp as podcastIconSelected,
+
+	listOutline as collectionsIcon,
+	listSharp as collectionsIconSelected,
 	
 	walletOutline as walletIcon,
-	walletSharp as walletIconSelected
+	walletSharp as walletIconSelected,
+
+	searchOutline as searchIcon,
+	searchSharp as searchIconSelected
 } from 'ionicons/icons';
 
 const BottomMenu = ({ routes }) => {
+	
 	return (
-		<IonTabs id="maintab">
-			<IonRouterOutlet id="main">
-				{routes}
-			</IonRouterOutlet>
 			<IonTabBar slot="bottom" className="bottomTabs">
 				<IonTabButton tab="home" href="/home/">
 					<IonIcon icon={homeIcon} />
@@ -34,17 +38,15 @@ const BottomMenu = ({ routes }) => {
 					<IonLabel>Favorites</IonLabel>
 				</IonTabButton>
 
-				<IonTabButton tab="discover" href="/discover/">
-					<IonIcon icon={discoverIcon} />
-					<IonLabel>Discover</IonLabel>
-				</IonTabButton>
-
 				<IonTabButton tab="about" href="/wallet/">
 					<IonIcon icon={walletIcon} />
 					<IonLabel>Wallet</IonLabel>
 				</IonTabButton>
+				<IonTabButton tab="search" href="/search/">
+					<IonIcon icon={searchIcon} />
+					<IonLabel>Find podcasts</IonLabel>
+				</IonTabButton>
 			</IonTabBar>
-		</IonTabs>
 	);
 };
 export default BottomMenu;

@@ -1,0 +1,562 @@
+ion-range::part(bar-active) {
+	background-color: #29bd73;
+}
+ion-range::part(bar) {
+	background-color: #102c50;
+}
+ion-range::part(knob) {
+	background-color: #FFFFFF;
+}
+ion-range::part(pin) {
+	background-color: var(--primary-color);
+	color: #FFFFFF;
+	width: 50px;
+	height: 24px;
+
+	display: flex;
+	justify-content: center;
+	align-items: center;
+
+	top: 0px;
+	left: 35px;
+
+	font-size: 14px;
+
+
+}
+ion-range {
+	--bar-height: 2px;
+	--knob-size: 0px;
+
+	--bar-border-radius: 5px;
+
+	padding-inline: 0px;
+
+	&.range-has-pin {
+		padding-top: 0px;
+	}
+}
+.openPlayerBackground {
+	position: fixed;
+	background-color: rgba(0, 0, 0, 0.6);
+	top: 0px;
+	left: 0;
+	height: 100%;
+	width: 100%;
+
+	transition: all 0.7s;
+	
+	animation: fadeIn ease 0.7s;
+
+	z-index: 1;
+}
+.player {
+	background-color: var(--miniplayer-background-color);
+	/*backdrop-filter: blur(20px);*/
+	border-top: 1px solid var(--miniplayer-border-color);
+	position: absolute;
+	bottom: 0px;
+	width: 100%;
+	height: 60px;
+	z-index: 10;
+	display: flex;
+
+	transition: background-color 1s, bottom 0.5s;
+
+	touch-action: auto;
+
+	color: #FFFFFF;
+
+	.playerCoverContainer {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+
+		margin-left: 5px;
+		
+		transition: all 0.2s;
+
+		img {
+			width: 30px;
+			height: 30px;
+
+			transition: all 0.4s;
+		}
+	}
+
+	.titleAndButtons {
+		display: flex;
+		align-items: center;
+		flex-grow: 1;
+		
+
+		.podcastInfo {
+			flex: 1;
+			.episodeTitle, .podcastName {
+				width: 190px;
+				transition: all 0.1s;
+
+				white-space: nowrap;
+				overflow: hidden;
+				text-overflow: ellipsis;
+
+				flex-grow: 3;
+			}
+			.episodeTitle {
+				color: var(--miniplayer-episode-title-color);
+				font-weight: 400;
+			}
+			.podcastName {
+				font-size: 12px;
+				color: var(--miniplayer-podcast-title-color);
+			}
+		}
+	}
+	.progressBar {
+		height: 2px;
+		display: flex;
+		position: absolute;
+
+		bottom: -3px;
+		left: 0px;
+		width: 100%;
+
+		ion-range {
+			pointer-events: none;
+		}
+
+		.progressText, .durationText {
+			display: none;
+			justify-content: center;
+			align-items: center;
+			color: rgba(255,255,255,0.9);
+			font-size: 14px;
+		}
+	}
+	.controls {
+		display: flex;
+		flex: 1;
+
+		.progressAndControls {
+			display: flex;
+			flex-direction: column;
+			flex: 1;
+			width: 50px;
+			max-width: 50px;
+			margin-right: 10px;
+			justify-content: center;
+			align-items: center;
+
+			.playerControls {
+				display: flex;
+
+				align-items: center;
+				justify-content: center;
+				flex: 1;
+
+				width: 50px;
+				max-width: 400px;
+
+				.button {
+					/* background-color: var(--primary-color); */
+			
+					border-radius: 50%;
+					display: flex;
+					justify-content: center;
+					align-items: center;
+			
+					transition: all 0.1s;
+
+					margin-right: 10px;
+			
+					&.buttonPlay, &.buttonPause, &.buttonLoad {
+						width: 50px;
+						height: 50px;
+						max-width: 50px;
+						min-width: 50px;
+
+						background-color:  var(--primary-color);
+
+						padding-left: 3px;
+
+						svg {
+							width: 30px;
+							fill: var(--miniplayer-playbutton-icon-color);
+						}
+					}
+					&.buttonLoad {
+						padding-left: 0px;
+					}
+					&.buttonPause {
+						svg {
+							width: 20px;
+							position: relative;
+							right: 1px;
+						}
+					}
+					&.buttonRewind, &.buttonForward {
+						height: 50px;
+			
+						svg {
+							width: 35px;
+							height: 35px !important;
+							fill: var(--miniplayer-button-color);
+						}
+					}
+					&.buttonSkipBackward, &.buttonSkipForward {
+						height: 40px;
+			
+						svg {
+							height: 25px;
+							fill: var(--miniplayer-button-color);
+						}
+					}
+				}
+			}
+		}
+	}
+
+	@media (min-width: 670px) {
+		.progressBar {
+			height: auto !important;
+			margin-left: auto;
+			margin-right: auto;
+
+			position: static;
+
+			.progressText, .durationText {
+				display: flex;
+			}
+
+			ion-range {
+				pointer-events: all;
+				--height: 8px;
+
+				--bar-height: 5px;
+				--knob-size: 15px;
+
+				padding-inline: 16px;
+
+				&.range-has-pin {
+					padding-top: 8px;
+				}
+			}
+		}
+		.controls {
+			.titleAndButtons {
+				flex: 1;
+
+				.episodeTitle, .podcastName {
+					
+				}
+				.progressAndControls {
+					width: auto;
+					flex: 1;
+					max-width: none;
+
+					.progressBar {
+						width: 55vw;
+						max-width: 700px;
+					}
+					.playerControls {
+						width: auto;
+						max-width: 600px;
+
+						.button {
+							&.buttonRewind, &.buttonForward {
+								width: 50px;
+
+								svg {
+									width: 35px;
+									height: 35px;
+								}
+							}
+							&.buttonSkipBackward, &.buttonSkipForward {
+								width: 30px;
+
+								svg {
+									width: 25px;
+									height: 25px;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	@media (min-width: 1024px) {
+		background-color: var(--miniplayer-background-color) !important;
+		border-top: 1px solid var(--miniplayer-border-color) !important;
+
+		.controls {
+			margin-right: 300px;
+			.titleAndButtons {
+				height: auto;
+
+				.episodeTitle, .podcastName {
+					width: 300px !important;
+					max-width: 300px;
+				}
+				.playerControls {
+					width: auto !important;
+					max-width: none !important;
+
+					.button {
+						&.buttonPlay, &.buttonLoad, &.buttonPause {
+							background-color: var(--primary-color) !important;
+						}
+						&.buttonSkipBackward, &.buttonSkipForward {
+							width: 30px;
+		
+							svg {
+								width: 30px;
+								height: 30px;
+							}
+						}
+						&.buttonRewind, &.buttonForward {
+							width: 50px;
+		
+							svg {
+								width: 35px;
+								height: 35px;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	&.mini {
+		bottom: 71px !important;
+
+		.playerCoverContainer {
+			min-width: 50px;
+			margin-right: 10px;
+		}
+	}
+	&.notPlaying {
+		.buttonRewind, .buttonForward {
+			width: 0px;
+			margin-right: 0px;
+
+			svg {
+				width: 0px;
+			}
+		}
+		.buttonSkipBackward, .buttonSkipForward {
+			width: 0px;
+
+			svg {
+				width: 0px;
+			}
+		}
+
+	}
+	&.playing {
+		.controls {
+			.titleAndButtons {
+				flex: 1;
+
+				.episodeTitle, .podcastName {
+					flex: none;
+					width: 0px;
+				}
+				.progressAndControls {
+					width: auto;
+					flex: 1;
+					max-width: none;
+
+
+					.playerControls {
+						width: calc(100vw - 70px);
+						max-width: 600px;
+
+						.button {
+							&.buttonRewind, &.buttonForward {
+								min-width: 30px;
+							}
+							&.buttonSkipBackward, &.buttonSkipForward {
+								min-width: 30px;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	&.fullscreen {
+		position: absolute;
+		bottom: 0px;
+		right: 0px;
+		max-width: 100%;
+		max-height: 100%;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		border-radius: 15px 15px 0px 0px;
+		/*background:  rgba(1,118,229,1);*/
+		z-Index: 9999;
+		overflow: auto;
+
+		.playerCoverContainer {
+			max-width: 400px;
+			margin-bottom: 20px;
+
+			border: 2px solid #FFFFFF;
+			border-radius: 5px;
+			box-shadow: 0px 3px 11px -1px rgb(0 0 0 / 33%);
+		}
+		.dragHandle {
+			display: block;
+		}
+
+		.episodeTitle, .podcastName {
+			max-height: 30px;
+			margin-bottom: 20px;
+
+			width: 300px !important;
+			max-width: 300px;
+		}
+		.controls {
+			margin-right: 0px;
+			.titleAndButtons {
+				flex-direction: column;
+				height: auto;
+
+				.episodeTitle, .podcastName {
+					text-align: center;
+				}
+				.progressAndControls {
+					width: 100%;
+					max-width: none;
+					margin-right: 0px;
+
+					.progressBar {
+						width: 700px;
+						max-width: calc(100vw - 40px) !important;
+
+						height: auto !important;
+						margin-left: 0px;
+						margin-right: 0px;
+					
+						position: static;
+					
+						.progressText, .durationText {
+							display: flex;
+						}
+					
+						ion-range {
+							--height: 8px;
+					
+							--bar-height: 5px;
+							--knob-size: 15px;
+					
+							padding-inline: 16px;
+					
+							&.range-has-pin {
+								padding-top: 8px;
+							}
+						}
+					}
+					.playerControls {
+						margin-left: auto;
+						margin-right: auto;
+						margin-top: 15px;
+
+						.button {
+							&.buttonRewind, &.buttonForward, &.buttonSkipBackward, &.buttonSkipForward {
+								min-width: 40px;
+								width: 40px;
+
+								svg {
+									width: 30px;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		.miniPlayerTitleAndButtons {
+			flex-direction: column;
+			flex: 1;
+		}
+		.playerCoverContainer {
+			margin-left: 20px;
+			margin-right: 20px;
+
+			img {
+				width: 100% !important;
+				height: auto !important;
+
+				max-width: 600px !important;
+				max-height: 600px !important;
+			}
+		}
+		.episodeContent {
+			background-color: #FFFFFF;
+			max-width: 100%;
+			margin-top: 20px;
+		}
+
+		&.playing {
+			.playerCoverContainer {
+				transform: scale(1.02);
+	
+				/*box-shadow: 0px 0px 39px -12px rgba(0,0,0,0.25);*/
+			}
+		}
+	}
+}
+@media (min-width: 390px) {
+
+	.playing {
+		.playerControls {
+			.button {
+				margin-right: 25px !important;
+			}
+			.buttonPlay, .buttonPause {
+				margin-right: 20px !important;
+			}
+		}
+	}
+}
+@media (min-width: 670px) {
+	.player {
+		.playerControls {
+			.progressBar {
+				max-width: 550px !important;
+			}
+			.button {
+				margin-right: 15px !important;
+			}
+			.buttonPlay, .buttonPause {
+				margin-right: 15px !important;
+			}
+		}
+		&.mini {
+			.playerCoverContainer {
+				padding-left: 3px;
+				min-width: 70px;
+
+				img {
+					width: 70px !important;
+					height: 70px !important;
+				}
+			}
+		}
+	}
+}
+@media (min-width: 1024px) {
+	.player {
+		&.fullscreen {
+			max-width: calc(100% - 270px) !important;
+		}
+		&.mini {
+			bottom: 0px !important;
+		}
+	}
+}

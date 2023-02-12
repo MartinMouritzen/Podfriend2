@@ -3,14 +3,45 @@
  *        See https://github.com/webpack-contrib/sass-loader#imports
  */
 :root {
+	--ion-color-primary: #0176E5;
 	--ion-toolbar-background: #ffffff;
-	--primary-color: rgb(0,101,197);
+	--primary-color: #0176e5;
+	--primary-color-text: #FFFFFF;
+	--primary-color-dark: #00366B;
+
+	--ion-color-success: #29bd73;
+
+	/*--miniplayer-background-color: rgba(23,78,161,0.9); */
+
+
+
+	/* grey player */
+/*
+	--miniplayer-background-color: #f4f4f4;
+	--miniplayer-border-color: #dddddd;
+	--miniplayer-button-color: #010101;
+	--miniplayer-playbutton-color: #FFFFFF;
+	--miniplayer-episode-title-color: rgba(0,0,0,0.8);
+	--miniplayer-podcast-title-color: rgba(0,0,0,0.8);
+*/
+	/* Blue player */
+
+	--miniplayer-background-color: rgba(23,78,161,1);
+	--miniplayer-border-color: #123e81;
+	--miniplayer-button-color: rgba(255,255,255,0.8);
+	--miniplayer-playbutton-icon-color: #FFFFFF;
+	--miniplayer-episode-title-color: rgba(255,255,255,0.9);
+	--miniplayer-podcast-title-color: rgba(255,255,255,0.6);
+
+
+	
+
+	--review-spot-background-color: #F5F7FB;
+
 	--primary-input-color: #00519e;
 	--primary-input-text-color: #99b9d8;
-	--ion-background-color: #f8f9fd;
-}
-html, body {
-	/*background-color: #FFFFFF;*/
+
+	--ion-color-medium: #E4E6EB;
 }
 * {
 	box-sizing: border-box;
@@ -18,9 +49,60 @@ html, body {
 
 	-webkit-user-select: none;
 	user-select: none;
+
+	font-family: Roboto, Helvetica, Arial, sans-serif;
+}
+p {
+	margin-bottom: 0px;
+}
+ion-nav-link {
+	ion-icon {
+		font-size: 24px;
+	}
+	ion-label {
+		position: relative;
+		bottom: 6px;
+	}
+}
+.playerPagePadding {
+	height: 60px;
+}
+@media (min-width: 670px) {
+	.playerPagePadding {
+		height: 90px !important;
+	}
+}
+.greyButton {
+	--background: #E4E6EB;
+	
+	ion-icon {
+		color: blue;
+	}
 }
 ion-split-pane {
 	--side-min-width: 250px !important;
+}
+.split-pane-main {
+	#main {
+
+		&::part(scroll) {
+			height: calc(100% - 60px);
+		}
+		display: block;
+
+		@media (min-width: 670px) {
+			&::part(scroll) {
+				height: calc(100% - 90px);
+			}
+		}
+
+		@media (min-width: 1024px) {
+			.section {
+				
+
+			}
+		}
+	}
 }
 /**
 * Hack to remove a weird ionic effect.
@@ -31,12 +113,9 @@ ion-split-pane {
 .bottomTabs {
 	padding-bottom: 10px;
 	padding-top: 10px;
-	/*
-	background-color: #ff23aa;
-	ion-tab-button {
-		background-color: #ff23aa;
-	}
-	*/
+}
+ion-split-pane {
+	--border: 0;
 }
 ion-menu {
 	--background: var(--primary-color);
@@ -54,30 +133,438 @@ ion-menu {
 	ion-list {
 		background: white;
 	}
+
+	ion-item-divider {
+		--background: var(--primary-color);
+	}
 }
 .mainHeader {
-	ion-title {
-		--background: #0161cf;
-		--ion-background-color: #0161cf;
-		--ion-color-base: #0161cf !important;
 
-		user-select: none;
-	}
-	/*
-	.toolbar-title {
-		-webkit-app-region: drag;
-		-webkit-user-select: none;
-		user-select: none;
-		background-color: #ffcc00;
-	}
-	*/
 }
 .ionButtons {
-	/*
-	-webkit-app-region: no-drag;
-	background-color: #ff23aa;
-	*/
+
 }
 ion-menu {
     max-width: 250px !important;
+}
+
+
+.cover {
+	border-radius: 5px;
+	/* box-shadow: 5px 5px 17px -2px rgba(0,0,0,0.14); */
+	box-shadow: 0px 0px 28px -6px rgb(0 0 0 / 29%);
+}
+.section {
+	position: relative;
+	background-color: #f0f0f0;
+
+	padding-bottom: 25px;
+
+	&:nth-of-type(odd){
+		background-color: var(--ion-background-color);
+	}
+
+	border-bottom: 1px solid #d5d5d5;
+
+	.sectionInner {
+		padding-top: 15px;
+		padding-left: 15px;
+
+		display: flex;
+
+		margin-bottom: 15px;
+	}
+	.sectionBody {
+		font-size: 16px;
+		color: #081b3b;
+		display: -webkit-box;
+		-webkit-line-clamp: 6;
+		-webkit-box-orient: vertical;
+
+		line-height: 24px;
+
+		overflow: hidden;
+		margin-bottom: 15px;
+		margin-top: 15px;
+
+		max-width: 500px;
+	}
+	.sectionSubTitle {
+		color: #0263e8;
+		font-size: 28px;
+
+		margin-right: 6px;
+	}
+	.sectionTitle {
+		color: #024699;
+
+		font-size: 28px;
+		text-transform: lowercase;
+	}
+}
+
+
+.podcastGrid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(195px, 1fr));
+
+	@media (max-width: 410px) {
+		grid-template-columns: repeat(auto-fill, minmax(145px, 1fr));
+	}
+	/*
+	@media (min-width: 900px) {
+		&.scroll {
+			padding-left: 20px;
+			padding-right: 20px;
+		}
+	}
+	*/
+	@media (any-hover: none) {
+		&.list {
+			grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+
+			.podcastItem {
+				display: flex;
+				flex-direction: row;
+				margin-left: 0px;
+				padding: 0px;
+				margin-bottom: 10px;
+				max-width: 300px;
+				width: 100%;
+
+				.cover {
+					width: 60px !important;
+					height: 60px !important;
+					max-width: 60px;
+					max-height: 60px;
+					margin-right: 10px;
+
+					font-size: 12px !important;
+					padding: 0px !important;
+					box-shadow: none;
+				}
+				.author {
+					max-width: 200px;
+					display: block;
+				}
+				.podcastInfo {
+					flex: 1;
+					border-bottom: 1px solid #bbbbbb;
+				}
+			}
+		}
+		&.scroll {
+			display: flex;
+
+			overflow-x: auto;
+			overflow-y: visible;
+
+			padding-left: 5px;
+			padding-right: 5px;
+
+			.podcastItem {
+				max-width: 200px;
+				min-width: 200px;
+
+				margin-right: 5px;
+
+				
+
+			}
+			.loading-podcast-item {
+				max-width: 180px;
+				min-width: 180px;
+				min-height: 180px;
+				max-height: 180px;
+			}
+		}
+	}
+	.podcastItem, .loading-podcast-item {
+		padding: 10px;
+
+		border-radius: 5px;
+
+		
+		text-decoration: none;
+	}
+	.loading-podcast-item {
+		margin: 10px;
+		height: 180px;
+	}
+	.podcastItem {
+		transition: all 0.5s;
+
+		flex-direction: column;
+
+		height: auto;
+		max-height: none;
+		margin-left: 5px;
+		margin-right: 5px;
+		margin-bottom: 5px;
+		padding: 5px;
+
+		.cover {
+			width: 100% !important;
+			height: auto !important;
+
+			display: block;
+			background-size: contain;
+			background-repeat: no-repeat;
+			border-radius: 5px;
+			/* box-shadow: 0px 0px 22px -11px rgba(0,0,0,0.45); */
+			box-shadow: 0px 3px 11px -1px rgb(0 0 0 / 33%);
+
+			margin-bottom: 10px;
+
+			&.fallBack {
+				height: 190px !important;
+			}
+		}
+		.content {
+			padding: 10px;
+			padding-left: 0px;
+			padding-right: 0px;
+		}
+		.title {
+			font-size: 16px;
+			
+			color: #1f335e;
+			margin-top: 5px;
+			margin-bottom: 5px;
+			-webkit-text-stroke: 0.25px;
+			
+			transition: color 0.2s;
+		
+			display: -webkit-box;
+			-webkit-line-clamp: 2;
+			-webkit-box-orient: vertical;  
+			overflow: hidden;
+		}
+		.author {
+			-webkit-line-clamp: 1;
+			color: #999999;
+			font-size: 14px;
+			overflow: hidden;
+			white-space: nowrap;
+			text-overflow: ellipsis;
+
+			
+			
+			transition: color 0.2s;
+		}
+		.date {
+			font-size: 13px;
+		}
+		.subscribe svg, .unsubscribe svg {
+			fill: #999999;
+			position: relative;
+			top: 2px;
+		}
+		.subscribe:hover svg, .unsubscribe:hover svg {
+			fill: #FF0000;
+		}
+		.subscribe, .unsubscribe {
+			float: right;
+			background-color: rgba(255,255,255,0.9);
+			border: 1px solid rgba(100,100,100,0.5);
+			padding: 5px;
+			padding-left: 7px;
+			padding-right: 7px;
+			margin: 10px;
+		}
+		.subscribeContainer {
+			display: none;
+			position: absolute;
+			top: 10px;
+			right: 15px;
+		}
+	}
+	@media (any-hover: hover) {
+		.podcastItem:hover {
+			transform: scale(1.1);
+			z-index: 10;
+			background-color: #0176e7;
+		}
+		.podcastItem:hover .title {
+			color: #FFFFFF;
+		}
+		.podcastItem:hover .author {
+			color: rgba(255,255,255,0.9);
+		}
+		.podcastItem:hover .date {
+			color: #FFFFFF;
+		}
+		.podcastItem:hover .subscribeContainer {
+			display: block;
+		}
+	}
+}
+/*******************************************************
+* Modals
+*******************************************************/
+ion-modal {
+	--backdrop-opacity: 0.6 !important;
+}
+.blueModalHeader {
+	ion-toolbar {
+		--background: var(--primary-color);
+		--color: white;
+
+		@media (min-width: 768px) {
+			display: none;
+		}
+
+		ion-back-button {
+			--color: white;
+		}
+	}
+}
+.modalPage {
+	display: flex;
+	height: 100%;
+
+	flex-direction: column;
+
+	@media (min-width: 768px) {
+		flex-direction: row;		
+	}
+	.teaser {
+		.teaserContent {
+			background-color: var(--primary-color);
+			padding: 20px;
+			padding-bottom: 20px;
+
+			color: #b5e6ff;
+
+			h2 {
+				color: var(--primary-color-text);
+				font-size: 40px;
+				font-weight: 600;
+			}
+			p {
+				font-size: 24px;
+				font-weight: 100;
+				color: #FFFFFF;
+			}
+
+			.backLink {
+				display: none;
+			}
+			@media (min-width: 768px) {
+				.backLink {
+					display: block;
+				}
+			}
+		}
+
+		@media (min-width: 768px) {
+			width: 300px;
+
+			.teaserContent {
+				height: 100%;
+			}
+			.wave {
+				display: none;
+			}
+		}
+	}
+	.content {
+		flex: 1;
+		padding: 0px;
+
+		
+		background-color: var(--primary-color-dark);
+
+		display: flex;
+		flex-direction: column;
+		justify-content: flex-end;
+
+		.secondTeaser {
+			flex: 1;
+			background-color: var(--primary-color);
+
+			font-size: 21px;
+			font-weight: 100;
+			color: #FFFFFF;
+
+			padding-left: 20px;
+			padding-right: 20px;
+			padding-bottom: 20px;
+
+			.teaserLine {
+				display: flex;
+				align-items: center;
+				ion-icon {
+					font-size: 30px;
+					margin-right: 10px;
+				}
+				margin-bottom: 10px;
+			}
+		}
+
+		.wave {
+			display: block;
+			width: 100%;
+			background-color: var(--primary-color);
+		}
+
+		.darkBlueContent {
+			padding: 20px;
+			padding-top: 0px;
+			color: #999999;
+
+			ion-button {
+				&.button-outline {
+					--background: #FFFFFF;
+				}
+			}
+			.forgotPasswordLink {
+				color: #FFFFFF;
+				text-align: right;
+				margin-top: 10px;
+			}
+		}
+		ion-spinner {
+			transform: scale(2);
+		}
+		ion-item {
+			@media (max-width: 767px) {
+				&::part(native) {
+					background-color: transparent;
+					color: #FFFFFF;
+				}
+			}
+			ion-label {
+				ion-icon {
+					position: relative;
+					top: 3px;
+				}
+			}
+		}
+		@media (min-width: 768px) {
+			background-color: #FFFFFF;
+
+			.darkBlueContent {
+				color: #000000;
+
+				.forgotPasswordLink {
+					color: var(--primary-color);
+				}
+			}
+			.secondTeaser {
+				background-color: #FFFFFF;
+				color: #000000;
+				justify-content: center;
+				display: flex;
+				flex-direction: column;
+				padding-bottom: 0px;
+			}
+			.bluePadding {
+				display: none;
+			}
+			.wave {
+				display: none;
+			}
+		}
+	}
 }

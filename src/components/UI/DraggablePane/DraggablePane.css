@@ -1,0 +1,8 @@
+.dragHandle {
+	width: 50px;
+	height: 3px;
+	background-color: rgba(0,0,0,0.6);
+	margin-top: 15px;
+	margin-bottom: 15px;
+	border-radius: 5px;
+}

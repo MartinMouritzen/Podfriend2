@@ -1,4 +1,4 @@
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonButtons, IonMenuButton, IonBackButton, IonButton, IonIcon, IonModal } from "@ionic/react";
+import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonButtons, IonMenuButton, IonBackButton, IonButton, IonIcon, IonModal, IonLabel } from "@ionic/react";
 
 import { useRef, useState, useEffect } from 'react';
 
@@ -14,6 +14,7 @@ import {useHistory,useLocation} from "react-router";
 
 import { personCircle } from 'ionicons/icons';
 
+import useStore from 'store/Store';
 
 const Page = ({ id = null, title = "Undefined", defaultHeader = true, showBackButton = true, children }) => {
 	const { breakpoint, maxWidth, minWidth } = useBreakpoint(BREAKPOINTS, 'desktop');
@@ -21,6 +22,9 @@ const Page = ({ id = null, title = "Undefined", defaultHeader = true, showBackBu
 	const history = useHistory();
 
 	const showBottomMenu = breakpoint !== 'desktop';
+
+	const loggedIn = useStore((state) => state.loggedIn);
+	const userData = useStore((state) => state.userData);
 
 	return (
 		<IonPage id={id}>
@@ -34,6 +38,9 @@ const Page = ({ id = null, title = "Undefined", defaultHeader = true, showBackBu
 					<IonTitle>{title}</IonTitle>
 					<IonButtons slot="end" className="ionButtons">
 						<IonButton id="open-modal">
+							{ loggedIn &&
+								<IonLabel style={{ maxWidth: 90 }}>{userData.username}</IonLabel>
+							}
 							<IonIcon slot="icon-only" icon={personCircle} expand="block"></IonIcon>
 						</IonButton>
 					</IonButtons>

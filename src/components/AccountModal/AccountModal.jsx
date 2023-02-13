@@ -3,7 +3,10 @@ import { useRef, useState, useEffect } from "react";
 import { IonModal, IonContent, IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonNav } from "@ionic/react";
 import LoginIndex from "./LoginIndex";
 
+import useStore from 'store/Store';
+
 import './AccountModal.scss'
+import AccountPage from "./AccountPage";
 
 const AccountModal = ({ trigger, canDismiss = true }) => {
 
@@ -11,7 +14,7 @@ const AccountModal = ({ trigger, canDismiss = true }) => {
 	const modal = useRef(null);
 	const [presentingElement, setPresentingElement] = useState(null);
 
-	const isLoggedIn = false;
+	const loggedIn = useStore((state) => state.loggedIn);
 	
 	useEffect(() => {
 		setPresentingElement(page.current);
@@ -21,9 +24,28 @@ const AccountModal = ({ trigger, canDismiss = true }) => {
 		modal.current?.dismiss();
 	}
 
+	const [creatingUser,setCreatingUser] = useState(false);
+
+	useEffect(() => {
+		console.log('abc0');
+		if (!loggedIn) {
+			console.log('abc1');
+			setCreatingUser(true);
+		}
+	},[loggedIn]);
+
+	const onDismiss = () => {
+		if (loggedIn) {
+			console.log('setCreating false');
+			setCreatingUser(false);
+		}
+	};
+
+	console.log(loggedIn + ':' + creatingUser);
+
 	return (
-		<IonModal ref={modal} trigger={trigger} presentingElement={presentingElement} canDismiss={canDismiss}>
-			{ isLoggedIn &&
+		<IonModal ref={modal} trigger={trigger} presentingElement={presentingElement} canDismiss={canDismiss} onDidDismiss={onDismiss}>
+			{ (loggedIn && !creatingUser) &&
 				<IonHeader>
 					<IonToolbar>
 						<IonTitle>Account</IonTitle>
@@ -33,9 +55,14 @@ const AccountModal = ({ trigger, canDismiss = true }) => {
 					</IonToolbar>
 				</IonHeader>
 			}
-			<IonNav root={() => <LoginIndex dismiss={dismiss} /> }>
-				
-			</IonNav>
+			{ (!loggedIn || creatingUser) &&
+				<IonNav root={() => <LoginIndex dismiss={dismiss} /> }>
+					
+				</IonNav>
+			}
+			{ (loggedIn && !creatingUser) &&
+				<AccountPage dismiss={dismiss} />
+			}
 		</IonModal>
 	);
 }

@@ -14,8 +14,48 @@ export const createUserSlice = (set,get) => ({
 			userData: false
 		});
 	},
+	userLogin: (email,password) => {
+		var url = "https://api.podfriend.com/authenticate/";
+		
+		var formData = new FormData();
+        formData.append('password', password);
+        formData.append('email', email);
+
+		return fetch(url, {
+			method: 'POST',
+			headers: {
+				'Accept': 'application/json'
+			},
+			body: formData
+		})
+		.then((resp) => {
+			return resp.json()
+		})
+		.then((data) => {
+			if (data.error) {
+				console.log('Error logging in: ' + data.error);
+
+				return false;
+			}
+			else {
+				if (data.token) {
+					set({
+						authToken: data.token
+					});
+				}
+				else {
+					alert('Error happened while logging in, this is probably not your fault. Please try again later.');
+					console.log('No token returned when logging in');
+				}
+			}
+		})
+		.catch((error) => {
+			alert('Error happened while logging in, this is probably not your fault. Please try again later.');
+			console.log(error);
+		});
+	},
 	authenticateUser: () => {
-		var { authToken } = getState().authToken;
+		const authToken = get().authToken;
 
 		if (authToken) {
 			return fetch("https://api.podfriend.com/authenticate/", {
@@ -40,15 +80,20 @@ export const createUserSlice = (set,get) => ({
 					get().userNotLoggedIn();
 				}
 				else {
-					dispatch(userLoggedIn(data))
+					console.log('User authenticated');
+					set({
+						loggedIn: true,
+						userData: data
+					});
 				}
 			})
 			.catch((error) => {
-				console.log('error loggin user in.');
+				console.log('error logging user in.');
 				console.log(error);
 			});
 		}
 		else {
+			console.log('No auth token when trying to authenticate user (UserSlice store)');
 			get().userNotLoggedIn();
 		}
 	},
@@ -97,7 +142,7 @@ export const createUserSlice = (set,get) => ({
 		})
 		.then((data) => {
 			if (data.errorMessage) {
-				return Promise.reject('Error happened while creating user. This might not be your fault. The server returned: ' + data.errorMessage);
+				return Promise.reject(data.errorMessage);
 			}
 			else {
 				console.log(data);
@@ -105,9 +150,10 @@ export const createUserSlice = (set,get) => ({
 			}
 		})
 		.catch((error) => {
-			alert('Error happened while creating user.');
+			// alert('Error happened while creating user.');
 			console.log('Error happened while creating user.');
 			console.log(error);
+			return Promise.reject(error);
 		});
 	}
 });

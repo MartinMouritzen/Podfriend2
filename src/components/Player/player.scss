@@ -247,7 +247,7 @@ ion-range {
 				flex: 1;
 
 				.episodeTitle, .podcastName {
-					
+					width: 190px !important;
 				}
 				.progressAndControls {
 					width: auto;
@@ -259,7 +259,7 @@ ion-range {
 						max-width: 700px;
 					}
 					.playerControls {
-						width: auto;
+						width: calc(100vw - 70px);
 						max-width: 600px;
 
 						.button {
@@ -512,15 +512,21 @@ ion-range {
 	}
 }
 @media (min-width: 390px) {
-
 	.playing {
 		.playerControls {
 			.button {
 				margin-right: 25px !important;
 			}
-			.buttonPlay, .buttonPause {
+			/*
+			.buttonPlay, .buttonPause, .buttonLoad {
 				margin-right: 20px !important;
 			}
+			*/
+		}
+	}
+	.fullscreen {
+		.button {
+			margin-right: 25px !important;
 		}
 	}
 }
@@ -533,7 +539,7 @@ ion-range {
 			.button {
 				margin-right: 15px !important;
 			}
-			.buttonPlay, .buttonPause {
+			.buttonPlay, .buttonPause, .buttonLoad {
 				margin-right: 15px !important;
 			}
 		}
@@ -558,5 +564,17 @@ ion-range {
 		&.mini {
 			bottom: 0px !important;
 		}
+	}
+}
+@media (any-hover: hover) {
+	.button:hover {
+		transform: scale(1.3);
+		svg {
+			fill: #FFFFFF !important;
+		}
+	}
+	.buttonPlay:hover, .buttonLoad:hover, .buttonPause:hover {
+		background-color: #1180e7;
+		transform: scale(1.1);
 	}
 }

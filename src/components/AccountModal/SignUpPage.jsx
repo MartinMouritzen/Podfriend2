@@ -37,6 +37,7 @@ const SignUpPage = ({ dismiss }) => {
 	const checkIfUsernameExists = useStore((state) => state.checkIfUsernameExists);
 	const createUser = useStore((state) => state.createUser);
 	const authTokenReceived = useStore((state) => state.authTokenReceived);
+	const authToken = useStore((state) => state.authToken);
 	const authenticateUser = useStore((state) => state.authenticateUser);
 
 	const { breakpoint } = useBreakpoint(BREAKPOINTS, 'desktop');
@@ -133,10 +134,9 @@ const SignUpPage = ({ dismiss }) => {
 
 				setTimeout(() => {
 					setCreatingUser(false);
-					setCreatedUser(true);
 
+					console.log(data.authToken);
 					authTokenReceived(data.authToken);
-					authenticateUser();
 				},remainingTime);
 			})
 			.catch((exception) => {
@@ -159,6 +159,13 @@ const SignUpPage = ({ dismiss }) => {
 		}
 		return false;
 	}
+
+	useEffect(() => {
+		if (authToken) {
+			authenticateUser();
+			setCreatedUser(true);
+		}
+	},[authToken]);
 
 	return (
 		<>
@@ -225,7 +232,7 @@ const SignUpPage = ({ dismiss }) => {
 										<form onSubmit={onCreateUserFormSubmit}>
 											<IonItem className={usernameError ? 'ion-invalid' : 'ion-valid'}>
 												<IonLabel position="floating"><IonIcon icon={userIcon} /> Username</IonLabel>
-												<IonInput type="text" onIonInput={onUsernameChange} />
+												<IonInput type="text" value={username}  onIonInput={onUsernameChange} />
 												{ !usernameError && !usernameIsFree &&
 													<IonNote slot="helper">Your username is visible to other users</IonNote>
 												}
@@ -238,14 +245,14 @@ const SignUpPage = ({ dismiss }) => {
 											</IonItem>
 											<IonItem>
 												<IonLabel position="floating"><IonIcon icon={passwordIcon} /> Password</IonLabel>
-												<IonInput type="password" clearOnEdit={false} onIonInput={onPasswordChange} />
+												<IonInput type="password" value={password} clearOnEdit={false} onIonInput={onPasswordChange} />
 												<IonNote slot="helper"><span style={{ color: passwordIsMinLength ? 'var(--ion-color-success)' : '' }}>At least 8 characters</span>, <span style={{ color: passwordContainsUppercase ? 'var(--ion-color-success)' : '' }}>one uppercase</span> and <span style={{ color: passwordContainsNumber ? 'var(--ion-color-success)' : '' }}>one number</span></IonNote>
 											</IonItem>
 
 
 											<IonItem>
 												<IonLabel position="floating"><IonIcon icon={mailIcon} /> Email address</IonLabel>
-												<IonInput type="email" onIonInput={onEmailChange} />
+												<IonInput type="email" value={email} onIonInput={onEmailChange} />
 												<IonNote slot="helper">Your email is not shown to other users</IonNote>
 											</IonItem>
 

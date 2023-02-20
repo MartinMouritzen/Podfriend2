@@ -61,12 +61,35 @@ ion-range {
 	z-index: 10;
 	display: flex;
 
-	transition: background-color 1s, bottom 0.5s;
+	transition: background-color 1s, bottom 0.5s, height 1s;
 
 	touch-action: auto;
 
 	color: #FFFFFF;
 
+	&.noPodcastPlaying {
+		height: 0px !important;
+		overflow: hidden;
+	}
+
+	.segmentContainer {
+		min-width: 320px;
+		max-width: 400px;
+		width: 100%;
+
+		margin-bottom: 10px;
+
+		ion-segment {
+			--background: #054072;
+
+			ion-segment-button {
+				--indicator-color: #FFFFFF;
+	
+				--color: rgba(255,255,255,0.6);
+				--color-checked: #054072 !important;
+			}
+		}
+	}
 	.playerCoverContainer {
 		display: flex;
 		justify-content: center;
@@ -267,16 +290,16 @@ ion-range {
 								width: 50px;
 
 								svg {
-									width: 35px;
-									height: 35px;
+									width: 30px;
+									height: 30px;
 								}
 							}
 							&.buttonSkipBackward, &.buttonSkipForward {
 								width: 30px;
 
 								svg {
-									width: 25px;
-									height: 25px;
+									width: 20px;
+									height: 20px;
 								}
 							}
 						}
@@ -498,7 +521,8 @@ ion-range {
 		}
 		.episodeContent {
 			background-color: #FFFFFF;
-			max-width: 100%;
+			color: #000000;
+			max-width: 700px;
 			margin-top: 20px;
 		}
 
@@ -563,18 +587,26 @@ ion-range {
 		}
 		&.mini {
 			bottom: 0px !important;
+
+			.progressAndControls {
+				margin-right: 200px !important;
+			}
 		}
 	}
 }
 @media (any-hover: hover) {
-	.button:hover {
-		transform: scale(1.3);
-		svg {
-			fill: #FFFFFF !important;
+	.player {
+		.playerControls {
+			.button:hover {
+				transform: scale(1.3);
+				svg {
+					fill: #FFFFFF !important;
+				}
+			}
+			.buttonPlay:hover, .buttonLoad:hover, .buttonPause:hover {
+				background-color: #1180e7;
+				transform: scale(1.1);
+			}
 		}
-	}
-	.buttonPlay:hover, .buttonLoad:hover, .buttonPause:hover {
-		background-color: #1180e7;
-		transform: scale(1.1);
 	}
 }

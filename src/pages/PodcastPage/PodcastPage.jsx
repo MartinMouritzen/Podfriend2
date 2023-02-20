@@ -1,4 +1,4 @@
-import { IonHeader, IonToolbar, IonTitle, IonSkeletonText, IonButton, IonIcon, IonRefresher, IonRefresherContent } from "@ionic/react";
+import { IonHeader, IonToolbar, IonTitle, IonSkeletonText, IonButton, IonIcon, IonRefresher, IonRefresherContent, useIonActionSheet, IonItem } from "@ionic/react";
 import Page from "components/Page/Page";
 import PodcastImage from "components/PodcastImage/PodcastImage";
 import { useState, useEffect } from "react";
@@ -35,10 +35,14 @@ const PodcastPage = ({ match }) => {
 
 	const podcastPath = match.params.podcastPath;
 
+	const [podcastRSSData,setPodcastRSSData] = useState(false);
+
 	const [podcastIsFollowed,setPodcastIsFollowed] = useState(false);
 	const [podcastState,setPodcastState] = useState('loading');
 	const [error,setError] = useState(false);
 	const [podcastData,setPodcastData] = useState(false);
+
+	const [actionSheetPresent] = useIonActionSheet();
 
 	const onFollowPodcast = () => {
 		followPodcast(podcastData);
@@ -49,15 +53,23 @@ const PodcastPage = ({ match }) => {
 		unfollowPodcast(podcastData);
 		setPodcastIsFollowed(false);
 	};
-	
+
+	useEffect(() => {
+		console.log('time to get live RSS data');
+	},[podcastData.url]);
 
 	const loadPodcast = async (podcastPath) => {
 		setPodcastState('loading');
 		setPodcastData(false);
 
+		console.log(podcastPath);
+
 		try {
 			getPodcastFromCache(podcastPath)
 			.then((podcastCache) => {
+				console.log('PodcastCache: ');
+				console.log(podcastPath);
+				console.log(podcastCache);
 				if (podcastCache) {
 					setPodcastData(podcastCache);
 					setPodcastState('loaded');
@@ -78,6 +90,11 @@ const PodcastPage = ({ match }) => {
 						throw error;
 					});
 				}
+			})
+			.catch((exception) => {
+				setPodcastState('error');
+				console.log('Error in getPodcast (2)');
+				console.log(exception);
 			});
 		}
 		catch (exception) {
@@ -88,8 +105,10 @@ const PodcastPage = ({ match }) => {
 	};
 
 	useEffect(() => {
+		console.log('Loading podcast');
 		setPodcastState('loading');
 		setPodcastData(false);
+		setPodcastRSSData(false);
 		setError(false);
 		loadPodcast(podcastPath);
 		setPodcastIsFollowed(isPodcastFollowed(podcastPath));
@@ -269,7 +288,29 @@ const PodcastPage = ({ match }) => {
 									<> episode</>
 								}
 						</IonButton>
-						<IonButton id="moreButton" className="greyButton"><IonIcon icon={dotsIcon}></IonIcon></IonButton>
+						<IonButton id="moreButton" className="greyButton" onClick={() => {
+actionSheetPresent({
+	buttons: [
+	  {
+		text: 'Add season to playlist',
+		data: {
+		  action: 'share',
+		},
+	  },
+	  {
+		text: 'Cancel',
+		role: 'cancel',
+		data: {
+		  action: 'cancel',
+		},
+	  },
+	],
+	onDidDismiss: ({ detail }) => {
+		console.log('pressed action sheet button');
+		console.log(detail);
+	},
+  })	
+						}}><IonIcon icon={dotsIcon}></IonIcon></IonButton>
 					</div>
 				</div>
 			</div>
@@ -283,10 +324,9 @@ const PodcastPage = ({ match }) => {
 				</div>
 			}
 			<EpisodeList podcastPath={podcastData.path} podcastData={podcastData} episodes={podcastData.episodes} />
-			<p>lorem</p><p>lorem</p><p>lorem</p><p>lorem</p><p>lorem</p><p>lorem</p><p>lorem</p><p>lorem</p><p>lorem</p><p>lorem</p><p>lorem</p><p>lorem</p><p>lorem</p><p>lorem</p><p>lorem</p>
-			<p>lorem</p><p>lorem</p><p>lorem</p><p>lorem</p><p>lorem</p><p>lorem</p><p>lorem</p><p>lorem</p><p>lorem</p><p>lorem</p><p>lorem</p><p>lorem</p><p>lorem</p><p>lorem</p><p>lorem</p>
-			<p>lorem</p><p>lorem</p><p>lorem</p><p>lorem</p><p>lorem</p><p>lorem</p><p>lorem</p><p>lorem</p><p>lorem</p><p>lorem</p><p>lorem</p><p>lorem</p><p>lorem</p><p>lorem</p><p>lorem</p>
-
+			<h2>
+				Trailers
+			</h2>
 
 			{/*
 			<div className='section'>

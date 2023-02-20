@@ -14,7 +14,16 @@ class ClientStorage {
 	*
 	*/
 	setItem(key,value) {
-		return localForage.setItem(key,value);
+		return localForage.setItem(key,value)
+		/*
+		.then((value) => {
+			console.log('ClientStorage.setItem success: ' + value);
+		})
+		*/
+		.catch((error) => {
+			console.log('Clienstorage.setItem error!');
+			console.log(error);
+		});
 	}
 	/**
 	*

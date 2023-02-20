@@ -86,6 +86,54 @@ export const createPodcastSlice = (set, get) => ({
 			}
 		});
 	},
+	updateProgress: () => {
+		var activePodcast = get().activePodcast;
+		var activeEpisode = get().activeEpisode;
+
+		if (activePodcast ) {
+			var newProgress = get().audioController.getCurrentTime();
+			var newDuration = get().audioController.getDuration();
+
+			// Update activeEpisode as well as the cached object
+			// var newActivePodcast = structuredClone(get().activePodcast);
+
+			let listenedPercentage = (100 * newProgress) / newDuration;
+
+			var activePodcastCopy = structuredClone(activePodcast);
+
+			var activeEpisodeCopy = structuredClone(activeEpisode);
+			activeEpisodeCopy.currentTime = newProgress;
+			activeEpisodeCopy.duration = newDuration;
+			activeEpisodeCopy.listenedPercentage = listenedPercentage;
+
+
+			activePodcastCopy.episodes.forEach((episode,index) => {
+				if (episode.url === activeEpisodeCopy.url) {
+					// console.log(episode);
+					// console.log(activeEpisodeCopy);
+
+					activePodcastCopy.episodes[index] = activeEpisodeCopy;
+				}
+			});
+
+			console.log('updating progress');
+			console.log(activePodcastCopy);
+			console.log(activeEpisodeCopy);
+
+			// newActivePodcast.episodes[]
+
+			// console.log(activeEpisodeCopy.currentTime);
+			// console.log(activePodcastCopy);
+
+			clientStorage.setItem('podcast_cache_' + activePodcastCopy.path,activePodcastCopy);
+
+
+			set({
+				activePodcast: activePodcastCopy,
+				activeEpisode: activeEpisodeCopy
+			});
+		}
+	},
 	/**********************************************************************************
 	* Trending podcasts
 	***********************************************************************************/
@@ -163,6 +211,14 @@ export const createPodcastSlice = (set, get) => ({
 	/**********************************************************************************
 	* Podcast retrieval
 	***********************************************************************************/
+	getEpisodeByUrl: (podcast,episodeUrl) => {
+		for (var i=0;i<podcast.episodes.length;i++) {
+			if (podcast.episodes[i].url == episodeUrl) {
+				console.log(podcast.episodes[i]);
+				return podcast.episodes[i];
+			}
+		}
+	},
 	fetchingPodcast: false,
 	fetchAbortController: null,
 	getPodcastFromCache: (podcastPath) => {
@@ -188,9 +244,9 @@ export const createPodcastSlice = (set, get) => ({
 				if (shouldUpdateCache) {
 					clientStorage.setItem(podcastPath,podcastCache);
 				}
+				return podcastCache;
 			}
-
-			return podcastCache;
+			return false;
 		});
 	},
 	shouldPodcastUpdate: (podcastCache) => {
@@ -273,6 +329,24 @@ export const createPodcastSlice = (set, get) => ({
 
 				return data;
 			}
+		});
+	},
+	retrieveOriginalPodcastFeed: (rssFeedURL) => {
+		var podcastFeed = new PodcastFeed(rssFeedURL);
+		console.log('before parsing feed: ' + rssFeedURL);
+		podcastFeed.parse()
+		.then((feed) => {
+			console.log('after parsing feed: ' + rssFeedURL);
+			// console.log('wa4');
+			// console.error(feed);
+
+			this.rssFeedUpdated(feed);
+
+
+		})
+		.catch((error) => {
+			console.error('Error parsing RSS feed: ');
+			console.error(error);
 		});
 	},
 	getPodcast: (podcastPath) => {

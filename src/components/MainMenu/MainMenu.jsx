@@ -1,6 +1,6 @@
 import './MainMenu.scss';
 
-import { useEffect, useState, useContext } from 'react';
+import { useEffect, useState, useContext, useRef } from 'react';
 
 import { IonMenu, IonItemDivider, IonSearchbar, IonHeader, IonContent, IonIcon, IonLabel, IonList, IonItem, IonToolbar, IonButtons, IonButton, IonMenuToggle, useIonRouter } from '@ionic/react';
 
@@ -19,21 +19,14 @@ const MainMenu = () => {
 
 	const router = useIonRouter();
 
+	const searchBar = useRef(null);
+	const [searchString,setSearchString] = useState('');
+
 	const onSearch = (event) => {
-		var searchString = event.detail.value;
-		console.log(searchString);
-		console.log(history);
-		// router.push("/search/" + searchString)
+		event.preventDefault();
+		router.push("/search/" + searchBar.current.value)
 
-		navigate("/search/" + event.detail.value,"none","replace");
-
-		/*
-		router.push({
-			pathname: "/search/" + searchString,
-			routerDirection: 'none',
-			routeAction: 'replace'
-		})
-		*/
+		return false;
 	};
 
 	return (
@@ -46,7 +39,9 @@ const MainMenu = () => {
 				</IonToolbar>
 			</IonHeader>
 			<IonContent className="menuContent">
-				<IonSearchbar type="search" placeholder="Search" debounce={1000} onIonChange={onSearch}></IonSearchbar>
+				<form method="GET" onSubmit={onSearch}>
+					<IonSearchbar type="search" placeholder="Search" ref={searchBar}></IonSearchbar>
+				</form>
 
 				<div className="subHeader">
 					My content
@@ -56,22 +51,34 @@ const MainMenu = () => {
 						<IonIcon icon={homeIcon} slot="start"></IonIcon>
 						<IonLabel>Home</IonLabel>
 					</IonItem>
-					<IonItem lines="none" button routerLink="/search/">
-						<IonIcon icon={searchIcon} slot="start"></IonIcon>
-						<IonLabel>Find podcasts</IonLabel>
+
+					<IonItem lines="none" button routerLink="/playlist/">
+						<IonIcon icon={collectionsIcon} slot="start"></IonIcon>
+						<IonLabel>Playlist</IonLabel>
 					</IonItem>
+
 					<IonItem lines="none" button routerLink="/favorites/">
 						<IonIcon icon={favoriteIcon} slot="start"></IonIcon>
 						<IonLabel>Favorites</IonLabel>
 					</IonItem>
-					<IonItem lines="none" button routerLink="/collections/">
-						<IonIcon icon={collectionsIcon} slot="start"></IonIcon>
-						<IonLabel>My collections</IonLabel>
-					</IonItem>
+
 					<IonItem lines="none" button routerLink="/podcasts/">
 						<IonIcon icon={walletIcon} slot="start"></IonIcon>
 						<IonLabel>Wallet</IonLabel>
 					</IonItem>
+
+					<IonItem lines="none" button routerLink="/search/">
+						<IonIcon icon={searchIcon} slot="start"></IonIcon>
+						<IonLabel>Find podcasts</IonLabel>
+					</IonItem>
+
+					{ /*
+					<IonItem lines="none" button routerLink="/collections/">
+						<IonIcon icon={collectionsIcon} slot="start"></IonIcon>
+						<IonLabel>My collections</IonLabel>
+					</IonItem>
+					*/ }
+
 					<IonItemDivider>
 						<hr />
 					</IonItemDivider>

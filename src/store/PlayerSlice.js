@@ -23,25 +23,10 @@ export const createPlayerSlice = (set,get) => ({
 	/**********************************************************************************
 	* Audio functions
 	***********************************************************************************/
-	updateProgress: () => {
-		var newProgress = get().audioController.getCurrentTime();
-		var newDuration = get().audioController.getDuration();
+	playEpisode: (podcast,episodeUrl) => {
+		episodeUrl = episodeUrl.url ? episodeUrl.url : episodeUrl;
 
-		// Update activeEpisode as well as the cached object
-		// var newActivePodcast = structuredClone(get().activePodcast);
-
-		let listenedPercentage = (100 * newProgress) / newDuration;
-
-		var newActiveEpisode = structuredClone(get().activeEpisode);
-		newActiveEpisode.currentTime = newProgress;
-		newActiveEpisode.duration = newDuration;
-		newActiveEpisode.listenedPercentage = listenedPercentage;
-		// newActivePodcast.episodes[]
-		set({
-			activeEpisode: newActiveEpisode
-		});
-	},
-	playEpisode: (podcast,episode) => {
+		let episode = get().getEpisodeByUrl(podcast,episodeUrl);
 		if (episode.listened) {
 			episode.listened = false;
 			episode.currentTime = 0;
@@ -139,7 +124,7 @@ export const createPlayerSlice = (set,get) => ({
 					if (activePodcast.episodes[i].episodeType !== 'trailer') {
 						console.log('found it!');
 						foundNextEpisode = true;
-						get().playEpisode(activePodcast,activePodcast.episodes[i]);
+						get().playEpisode(activePodcast,activePodcast.episodes[i].url);
 						break;
 					}
 				}
@@ -153,7 +138,7 @@ export const createPlayerSlice = (set,get) => ({
 				if (nextEpisodeIsAfterCurrent) {
 					if (activePodcast.episodes[i].episodeType !== 'trailer') {
 						foundNextEpisode = true;
-						get().playEpisode(activePodcast,activePodcast.episodes[i]);
+						get().playEpisode(activePodcast,activePodcast.episodes[i].url);
 						break;
 					}
 				}
@@ -190,7 +175,7 @@ export const createPlayerSlice = (set,get) => ({
 						foundNextEpisode = true;
 						console.log(activePodcast);
 						console.log(activePodcast.episodes[i]);
-						get().playEpisode(activePodcast,activePodcast.episodes[i]);
+						get().playEpisode(activePodcast,activePodcast.episodes[i].url);
 						break;
 					}
 				}
@@ -204,7 +189,7 @@ export const createPlayerSlice = (set,get) => ({
 				if (nextEpisodeIsAfterCurrent) {
 					if (activePodcast.episodes[i].episodeType !== 'trailer') {
 						foundNextEpisode = true;
-						get().playEpisode(activePodcast,activePodcast.episodes[i]);
+						get().playEpisode(activePodcast,activePodcast.episodes[i].url);
 						break;
 					}
 				}
@@ -230,6 +215,9 @@ export const createPlayerSlice = (set,get) => ({
 				.then(() => {
 					audioController.load()
 					.then(() => {
+						console.log('loading episode');
+						console.log(episode);
+
 						var currentTime = 0;
 
 						if (episode.currentTime) {

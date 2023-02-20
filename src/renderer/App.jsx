@@ -39,6 +39,7 @@ import useStore from 'store/Store';
 import Player from 'components/Player/Player';
 
 import { BREAKPOINTS } from 'constants/breakpoints';
+import DesktopPlayList from 'components/PlayList/DesktopPlaylist';
 
 setupIonicReact({
 	mode: 'ios',
@@ -75,6 +76,7 @@ export default function App({ platform, audioController }) {
 			<IonReactRouter>
 				<IonSplitPane contentId="main" when={showSplitPane}>
 					<MainMenu />
+					<DesktopPlayList />
 					<IonRouterOutlet id="main">
 						{routes}
 					</IonRouterOutlet>

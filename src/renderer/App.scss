@@ -11,6 +11,9 @@
 
 	--ion-color-success: #29bd73;
 
+	--list-grid-cover-size: 140px;
+	--list-scroll-cover-size: 140px;
+
 	/*--miniplayer-background-color: rgba(23,78,161,0.9); */
 
 
@@ -150,6 +153,10 @@ ion-menu {
 ion-menu {
     max-width: 250px !important;
 }
+.desktopPlaylist {
+	background-color: #ff23aa;
+	min-width: 200px;
+}
 
 
 .cover {
@@ -209,7 +216,7 @@ ion-menu {
 
 .podcastGrid {
 	display: grid;
-	grid-template-columns: repeat(auto-fill, minmax(195px, 1fr));
+	grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
 
 	@media (max-width: 410px) {
 		grid-template-columns: repeat(auto-fill, minmax(145px, 1fr));
@@ -266,19 +273,14 @@ ion-menu {
 			padding-right: 5px;
 
 			.podcastItem {
-				max-width: 200px;
-				min-width: 200px;
-
-				margin-right: 5px;
-
-				
-
+				max-width: var(--list-scroll-cover-size);
+				min-width: var(--list-scroll-cover-size);
 			}
 			.loading-podcast-item {
-				max-width: 180px;
-				min-width: 180px;
-				min-height: 180px;
-				max-height: 180px;
+				max-width: var(--list-scroll-cover-size);
+				min-width: var(--list-scroll-cover-size);
+				min-height: var(--list-scroll-cover-size);
+				max-height: var(--list-scroll-cover-size);
 			}
 		}
 	}
@@ -310,6 +312,9 @@ ion-menu {
 			width: 100% !important;
 			height: auto !important;
 
+			width: var(--list-scroll-cover-size) !important;
+			height: auto;
+
 			display: block;
 			background-size: contain;
 			background-repeat: no-repeat;
@@ -320,7 +325,9 @@ ion-menu {
 			margin-bottom: 10px;
 
 			&.fallBack {
-				height: 190px !important;
+				width: calc(var(--list-scroll-cover-size) - 10px) !important;
+				height: calc(var(--list-scroll-cover-size) - 10px) !important;
+				margin-right: 20px;
 			}
 		}
 		.content {
@@ -342,9 +349,12 @@ ion-menu {
 			-webkit-line-clamp: 2;
 			-webkit-box-orient: vertical;  
 			overflow: hidden;
+
+			max-width: var(--list-scroll-cover-size);
 		}
 		.author {
-			-webkit-line-clamp: 1;
+			width: var(--list-scroll-cover-size) !important;
+
 			color: #999999;
 			font-size: 14px;
 			overflow: hidden;

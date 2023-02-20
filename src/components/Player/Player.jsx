@@ -1,4 +1,4 @@
-import { IonMenu, IonTitle, IonSearchbar, IonHeader, IonContent, IonIcon, IonLabel, IonList, IonItem, IonToolbar, IonButtons, IonButton, IonRange, IonModal } from '@ionic/react';
+import { IonMenu, IonTitle, IonSearchbar, IonHeader, IonContent, IonIcon, IonLabel, IonList, IonItem, IonToolbar, IonButtons, IonButton, IonRange, IonSegment, IonSegmentButton } from '@ionic/react';
 
 import useStore from 'store/Store';
 
@@ -50,6 +50,7 @@ const Player = ({ audioController }) => {
 	const streamDataLoading = useStore((state) => state.streamDataLoading);
 
 	const setCurrentTime = useStore((state) => state.setCurrentTime);
+
 	const resetAudioSegmentTime = useStore((state) => state.resetAudioSegmentTime);
 	
 	const onBackward = useStore((state) => state.audioBackward);
@@ -65,6 +66,8 @@ const Player = ({ audioController }) => {
 	const defaultDarkVibrantColor = 'rgba(23,78,161,1)';
 	const [vibrantColor,setVibrantColor] = useState(defaultVibrantColor);
 	const [darkVibrantColor,setDarkVibrantColor] = useState(defaultDarkVibrantColor);
+
+	const [segmentVisible,setSegmentVisible] = useState('playing');
 
 	let fullPlayerOpen = false;
 	let hasEpisode = true;
@@ -234,49 +237,77 @@ const Player = ({ audioController }) => {
 		}
 	},[coverImageRef.current]);
 
+	var playerStyle = { backgroundColor: darkVibrantColor, borderTop: '1px solid ' + darkVibrantColor };
+
 	return (
 		<>
-			<div className="openPlayerBackground" style={{ display: (fullscreen ? 'block' : 'none') }} onClick={() => { minimize(); }} />
+			<div className="openPlayerBackground"
+				style={{
+					display: (fullscreen ? 'block' : 'none')
+				}}
+				onClick={() => { minimize(); }} />
 		<DraggablePane
 			onOpen={maximize}
 			onHide={minimize}
 			open={fullscreen}
-			className={'player ' + (fullscreen ? 'fullscreen' : 'mini') + ' ' + (shouldPlay ? ' ' + 'playing' : ' ' + 'notPlaying')}
-			style={{ backgroundColor: darkVibrantColor, borderTop: '1px solid ' + darkVibrantColor }}
+			className={'player ' + (fullscreen ? 'fullscreen' : 'mini') + ' ' + (shouldPlay ? ' ' + 'playing' : ' ' + 'notPlaying') + (activePodcast ? '' : ' noPodcastPlaying')}
+			style={playerStyle}
 		>
-			<IonModal />
 			{ audioController.useBrowserAudioElement === true &&
 				<audio {...audioElementProps}>
 					<source src={addUserAgentToUrl(activeEpisode.url) + generateTimeHash()} type={activeEpisode.type ? activeEpisode.type : 'audio/mpeg'} />
 				</audio>
 			}
-			<div className="playerCoverContainer" onClick={maximize}>
-				{ activeEpisode &&
-					<PodcastImage
-						podcastPath={activePodcast.path}
-						width={600}
-						height={600}
-						coverWidth={50}
-						coverHeight={50}
-						imageErrorText={activePodcast.name}
-						fallBackImage={activePodcast.artworkUrl600 ? activePodcast.artworkUrl600 : activePodcast.image}
-						src={podcastImageURL}
-						className={''}
-						imageRef={coverImageRef}
-						
-					/>
-				}
-			</div>
+			{ fullscreen &&
+				<div className="segmentContainer">
+					<IonSegment value={segmentVisible} onIonChange={(e) => { setSegmentVisible(e.detail.value); console.log(e.detail.value); }} onClick={(event) => { event.preventDefault(); event.stopPropagation(); }}>
+						<IonSegmentButton value="playing">
+							<IonLabel>
+								Playing
+							</IonLabel>
+						</IonSegmentButton>
+						<IonSegmentButton value="transcript">
+							<IonLabel>Transcript</IonLabel>
+						</IonSegmentButton>
+					</IonSegment>
+				</div>
+			}
+			{ (!fullscreen || segmentVisible === 'playing') &&
+				<div className="playerCoverContainer" onClick={maximize}>
+					{ activeEpisode &&
+						<PodcastImage
+							podcastPath={activePodcast.path}
+							width={600}
+							height={600}
+							coverWidth={50}
+							coverHeight={50}
+							imageErrorText={activePodcast.name}
+							fallBackImage={activePodcast.artworkUrl600 ? activePodcast.artworkUrl600 : activePodcast.image}
+							src={podcastImageURL}
+							className={''}
+							imageRef={coverImageRef}
+							
+						/>
+					}
+				</div>
+			}
+			{ (fullscreen && segmentVisible === 'transcript') &&
+				<div>
+					TRANSCRIPT
+				</div>
+			}
 			<div className="controls">
 				<div className='titleAndButtons'>
-					<div className="podcastInfo">
-						<div className="episodeTitle">
-							{activeEpisode.title}
+					{ (!fullscreen || segmentVisible === 'playing') &&
+						<div className="podcastInfo">
+							<div className="episodeTitle">
+								{activeEpisode.title}
+							</div>
+							<div className="podcastName">
+								<>{activePodcast.name}</>
+							</div>
 						</div>
-						<div className="podcastName">
-							<>{activePodcast.name}</>
-						</div>
-					</div>
+					}
 					<div className="progressAndControls">
 						<div className="progressBar">
 							<div className="progressText">
@@ -315,7 +346,9 @@ const Player = ({ audioController }) => {
 			</div>
 			{ fullscreen &&
 				<div className="episodeContent">
-					<EpisodeList podcastPath={activePodcast.path} podcastData={activePodcast} episodes={activePodcast.episodes} />
+					{ (!fullscreen || segmentVisible === 'playing') &&
+						<EpisodeList podcastPath={activePodcast.path} podcastData={activePodcast} episodes={activePodcast.episodes} />
+					}
 					Feed here, which includes Boostogram comments, boosts and other timeline events for the episode<br /><br />
 					For example &quot;Martin streamed 543 sats to the show.&quot; if only one friend streamed, and &quot;4 Friends streamed to this show&quot; if more than eg. 2 or 3 did it.
 

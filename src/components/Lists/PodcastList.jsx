@@ -45,15 +45,15 @@ const PodcastList = ({ podcasts, listType = 'scroll', filterString = '' }) => {
 								coverHeight={coverWidth}
 							/>
 							<div className='podcastInfo'>
-								<IonLabel className='author'>
+								<div className='author'>
 									{podcast.author}
-								</IonLabel>
-								<IonLabel className='title'>
+								</div>
+								<div className='title'>
 									{podcast.name}
-								</IonLabel>
-								<IonLabel className='date'>
+								</div>
+								<div className='date'>
 									{podcast.date}
-								</IonLabel>
+								</div>
 							</div>
 						</div>
 					</IonRouterLink>

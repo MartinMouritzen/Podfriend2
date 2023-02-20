@@ -36,8 +36,24 @@
 	}
 }
 .episode {
+	.date {
+		font-size: 12px;
+		text-transform: uppercase;
+		.agoText {
+			margin-left: 5px;
+		}
+	}
 	&.selected {
 		--ion-item-background: var(--primary-color);
 		color: #FFFFFF;
+
+		p {
+			color: rgba(255,255,255,0.7);
+		}
+	}
+	.cover {
+		width: 60px;
+		height: 60px;
+		margin-right: 10px;
 	}
 }

@@ -1,4 +1,4 @@
-import { useEffect, useState, useContext } from 'react';
+import { useEffect, useState, useContext, useRef } from 'react';
 
 import Page from "components/Page/Page";
 
@@ -25,6 +25,7 @@ const SearchPage = ({ match }) => {
 
 	const searchPodcasts = useStore((state) => state.searchPodcasts);
 
+	const searchBar = useRef(null);
 	const [searchString,setSearchString] = useState('');
 	const [results,setResults] = useState([]);
 
@@ -49,21 +50,13 @@ const SearchPage = ({ match }) => {
 		}
 	},[searchString]);
 
+
 	const onSearch = (event) => {
-		// setSearchString(event.detail.value);
-		// console.log('pushing');
+		event.preventDefault();
+		router.push("/search/" + searchBar.current.value)
 
-		// history.replace("/search/" + event.detail.value);
-
-		navigate("/search/" + event.detail.value,"none","replace");
-		/*
-		router.push({
-			pathname: "/search/" + event.detail.value,
-			routerDirection: 'none',
-			routeAction: 'replace'
-		})
-		*/
-	}
+		return false;
+	};
 
 	return (
 		<Page title="Search" defaultHeader={false}>
@@ -72,7 +65,9 @@ const SearchPage = ({ match }) => {
 					<IonTitle size="large">Search</IonTitle>
 				</IonToolbar>
 				<IonToolbar>
-					<IonSearchbar debounce={1000} collapse={true} animated={true} show-clear-button="focus" enterKeyHint="search" inputmode="search" placeholder="Search all podcasts" value={searchString} onIonChange={onSearch}></IonSearchbar>
+					<form method="GET" onSubmit={onSearch}>
+						<IonSearchbar ref={searchBar} collapse={true} animated={true} show-clear-button="focus" enterKeyHint="search" inputmode="search" placeholder="Search all podcasts" value={searchString}></IonSearchbar>
+					</form>
 				</IonToolbar>
 			</IonHeader>
 			{ !searchString || searchString.length <= 2 && 

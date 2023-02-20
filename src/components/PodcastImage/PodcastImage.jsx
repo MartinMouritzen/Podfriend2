@@ -107,6 +107,7 @@ const PodcastImage = React.memo(({ podcastId = false, podcastPath = false, src, 
 					}}
 					alt={alt}
 					className={className}
+					draggable="false"
 				/>
 			}
 		</>

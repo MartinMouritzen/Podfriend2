@@ -3,7 +3,7 @@ import { useEffect, useRef } from 'react';
 import { MemoryRouter as Router, Routes, Route, Redirect } from 'react-router-dom';
 import './App.scss';
 
-import { IonApp, IonRouterOutlet, IonSplitPane, setupIonicReact, IonMenu, IonTabs, IonTab, IonTabBar, IonTabButton, IonIcon, IonLabel, IonBadge, IonGrid, IonRow } from '@ionic/react';
+import { IonApp, IonRouterOutlet, IonSplitPane, setupIonicReact, IonMenu, IonTabs, IonTab, IonTabBar, IonTabButton, IonIcon, IonLabel, IonBadge, IonGrid, IonRow, IonHeader, IonToolbar } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
 
 import WindowFrame from 'components/WindowFrame/WindowFrame';
@@ -40,6 +40,7 @@ import Player from 'components/Player/Player';
 
 import { BREAKPOINTS } from 'constants/breakpoints';
 import DesktopPlayList from 'components/PlayList/DesktopPlaylist';
+import DesktopHeader from 'components/WindowFrame/DesktopHeader';
 
 setupIonicReact({
 	mode: 'ios',
@@ -71,18 +72,21 @@ export default function App({ platform, audioController }) {
 	].map((Route, index) => ({ ...Route, key: index }));
 
 	return (
-		<IonApp>
-			<Player audioController={audioController} />
-			<IonReactRouter>
-				<IonSplitPane contentId="main" when={showSplitPane}>
-					<MainMenu />
-					<DesktopPlayList />
-					<IonRouterOutlet id="main">
-						{routes}
-					</IonRouterOutlet>
-					
-				</IonSplitPane>
-			</IonReactRouter>
-		</IonApp>
+		<>
+			{ platform === 'desktop' &&
+				<DesktopHeader />
+			}
+			<IonApp className={'platform_' + platform}>
+				<Player audioController={audioController} />
+				<IonReactRouter>
+					<IonSplitPane contentId="main" when={showSplitPane}>
+						<MainMenu />
+						<IonRouterOutlet id="main">
+							{routes}
+						</IonRouterOutlet>
+					</IonSplitPane>
+				</IonReactRouter>
+			</IonApp>
+		</>
 	);
 }

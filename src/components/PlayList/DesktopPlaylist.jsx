@@ -1,7 +1,12 @@
 const DesktopPlayList = () => {
 	return (
 		<div className="desktopPlaylist">
-			Playlist
+			<div className="header">
+				Playlist
+			</div>
+			<div className="content">
+				test
+			</div>
 		</div>
 	);
 };

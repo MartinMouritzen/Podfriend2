@@ -29,7 +29,7 @@ const Page = ({ id = null, title = "Undefined", defaultHeader = true, showBackBu
 	return (
 		<IonPage id={id}>
 			<IonHeader translucent="false" className="mainHeader">
-				<IonToolbar>
+				<IonToolbar className="mainToolbar">
 					<IonButtons slot="start" className="ionButtons">
 						{ showBackButton &&
 							<IonBackButton defaultHref={'/home/'} />

@@ -1,4 +1,4 @@
-import { IonMenu, IonTitle, IonSearchbar, IonHeader, IonContent, IonIcon, IonLabel, IonList, IonItem, IonToolbar, IonButtons, IonButton, IonRange, IonSegment, IonSegmentButton } from '@ionic/react';
+import { IonMenu, IonTitle, IonSearchbar, IonHeader, IonContent, IonIcon, IonLabel, IonList, IonItem, IonToolbar, IonButtons, IonButton, IonRange, IonSegment, IonSegmentButton, IonSkeletonText } from '@ionic/react';
 
 import useStore from 'store/Store';
 
@@ -286,7 +286,7 @@ const Player = ({ audioController }) => {
 							src={podcastImageURL}
 							className={''}
 							imageRef={coverImageRef}
-							
+							loadingComponent={() => <IonSkeletonText animated={true} className="coverLoading" />}
 						/>
 					}
 				</div>

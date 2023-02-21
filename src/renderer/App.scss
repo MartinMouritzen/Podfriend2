@@ -153,13 +153,40 @@ ion-menu {
 ion-menu {
     max-width: 250px !important;
 }
+.desktopHeader {
+	position: absolute;
+	z-index: 0;
+	top: 0px;
+	right: 0px;
+	height: 40px;
+	width: 100px;
+	background-color: #FFFFFF;
+	border-bottom: 1px solid #efefef;
+}
+.platform_desktop {
+	.mainToolbar {
+		--padding-end: 100px;
+	}
+}
 .desktopPlaylist {
-	background-color: #ff23aa;
 	min-width: 200px;
+	flex-direction: column;
+	background-color: var(--primary-color);
+	box-shadow: -4px 3px 8px 1px rgba(0,0,0,.35);
+
+	.header {
+		background-color: #eeeeee;
+		padding: 10px;
+		border-bottom: 1px solid #cccccc;
+	}
+	.content {
+		background-color: #f5f9fb;
+		flex: 1;
+	}
 }
 
 
-.cover {
+.cover, .coverLoading {
 	border-radius: 5px;
 	/* box-shadow: 5px 5px 17px -2px rgba(0,0,0,0.14); */
 	box-shadow: 0px 0px 28px -6px rgb(0 0 0 / 29%);
@@ -242,7 +269,7 @@ ion-menu {
 				max-width: 300px;
 				width: 100%;
 
-				.cover {
+				.cover, .coverLoading {
 					width: 60px !important;
 					height: 60px !important;
 					max-width: 60px;
@@ -272,11 +299,11 @@ ion-menu {
 			padding-left: 5px;
 			padding-right: 5px;
 
-			.podcastItem {
+			.podcastItem, .coverLoading {
 				max-width: var(--list-scroll-cover-size);
 				min-width: var(--list-scroll-cover-size);
 			}
-			.loading-podcast-item {
+			.loading-podcast-item, .coverLoading {
 				max-width: var(--list-scroll-cover-size);
 				min-width: var(--list-scroll-cover-size);
 				min-height: var(--list-scroll-cover-size);
@@ -284,7 +311,7 @@ ion-menu {
 			}
 		}
 	}
-	.podcastItem, .loading-podcast-item {
+	.podcastItem, .loading-podcast-item, .coverLoading {
 		padding: 10px;
 
 		border-radius: 5px;
@@ -292,9 +319,9 @@ ion-menu {
 		
 		text-decoration: none;
 	}
-	.loading-podcast-item {
+	.loading-podcast-item, .coverLoading {
 		margin: 10px;
-		height: 180px;
+		height: 120px;
 	}
 	.podcastItem {
 		transition: all 0.5s;

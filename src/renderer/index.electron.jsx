@@ -5,6 +5,7 @@ import App from './App';
 const container = document.getElementById('root');
 const root = createRoot(container);
 
+import WebAudioController from "library/AudioController/WebAudioController";
 
 let animationId;
 let mouseX;
@@ -15,14 +16,14 @@ let listenToWindowMove = false;
 
 function onDoubleClick(event) {
 	for(var i=0;i<event.path.length;i++) {
-		if (event.path[i] && event.path[i].classList && event.path[i].classList.contains('toolbar-container')) {
+		if (event.path[i] && event.path[i].classList && event.path[i].classList.contains('mainToolbar')) {
 			window.electron.ipcRenderer.sendMessage('windowMaximizeRequested');
 		}
 	}
 }
 function onMouseDown(event) {
 	for(var i=0;i<event.path.length;i++) {
-		if (event.path[i] && event.path[i].classList && event.path[i].classList.contains('toolbar-container')) {
+		if (event.path[i] && event.path[i].classList && event.path[i].classList.contains('mainToolbar')) {
 			mouseX = event.clientX;  
 			mouseY = event.clientY;
 			
@@ -55,7 +56,9 @@ document.addEventListener('dblclick',onDoubleClick);
 document.addEventListener('mousedown',onMouseDown);
 document.addEventListener('mouseup',onMouseUp);
 
-root.render(<App platform="desktop" />);
+const audioController = new WebAudioController();
+
+root.render(<App platform="desktop" audioController={audioController} />);
 
 if (window.electron) {
 	// calling IPC exposed from preload script

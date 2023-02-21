@@ -1,4 +1,4 @@
-import { IonSlides, IonSlide, IonLabel, IonRouterLink } from '@ionic/react';
+import { IonSlides, IonSlide, IonLabel, IonRouterLink, IonSkeletonText } from '@ionic/react';
 import PodcastImage from 'components/PodcastImage/PodcastImage';
 
 const PodcastList = ({ podcasts, listType = 'scroll', filterString = '' }) => {
@@ -43,6 +43,7 @@ const PodcastList = ({ podcasts, listType = 'scroll', filterString = '' }) => {
 								height={imageWidth}
 								coverWidth={coverWidth}
 								coverHeight={coverWidth}
+								loadingComponent={() => <IonSkeletonText animated={true} className="coverLoading" />}
 							/>
 							<div className='podcastInfo'>
 								<div className='author'>

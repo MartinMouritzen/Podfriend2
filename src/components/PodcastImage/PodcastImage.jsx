@@ -36,7 +36,9 @@ const PodcastImage = React.memo(({ podcastId = false, podcastPath = false, src, 
 	useEffect(() => {
 		setStatus(STATUS_PRELOAD);
 		setImageSource(src);
-		loadImage(src);
+		setTimeout(() => {
+			loadImage(src);
+		},1000);
 	},[src]);
 
 	const onError = () => {

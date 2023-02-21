@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 
-import { IonList, IonItem, IonLabel, IonSelect,IonSelectOption, IonImg, IonIcon, IonButton, IonHeader, IonToolbar, IonTitle, IonButtons, IonModal, IonContent, IonListHeader } from '@ionic/react';
+import { IonList, IonItem, IonLabel, IonSelect,IonSelectOption, IonImg, IonIcon, IonButton, IonHeader, IonToolbar, IonTitle, IonButtons, IonModal, IonContent, IonListHeader, IonSkeletonText } from '@ionic/react';
 
 import {
 	timeOutline as timeIcon
@@ -282,6 +282,7 @@ const EpisodeItem = ({ podcastData, episode, selected, activeEpisode }) => {
 				fallBackImage={podcastData.artworkUrl600}
 				className={'cover'}
 				asBackground={true}
+				loadingComponent={() => <IonSkeletonText animated={true} className="coverLoading" />}
 			/>
 			<IonLabel>
 				<p className="date">

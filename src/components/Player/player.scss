@@ -61,7 +61,7 @@ ion-range {
 	z-index: 10;
 	display: flex;
 
-	transition: background-color 1s, bottom 0.5s, height 1s;
+	transition: background-color 1s, bottom 0.5s;
 
 	touch-action: auto;
 
@@ -70,6 +70,7 @@ ion-range {
 	&.noPodcastPlaying {
 		height: 0px !important;
 		overflow: hidden;
+		transition: background-color 1s, bottom 0.5s, height 1s;
 	}
 
 	.segmentContainer {
@@ -99,7 +100,7 @@ ion-range {
 		
 		transition: all 0.2s;
 
-		img {
+		img, .coverLoading {
 			width: 30px;
 			height: 30px;
 
@@ -511,7 +512,7 @@ ion-range {
 			margin-left: 20px;
 			margin-right: 20px;
 
-			img {
+			img, .coverLoading {
 				width: 100% !important;
 				height: auto !important;
 
@@ -572,7 +573,7 @@ ion-range {
 				padding-left: 3px;
 				min-width: 70px;
 
-				img {
+				img, .coverLoading {
 					width: 70px !important;
 					height: 70px !important;
 				}

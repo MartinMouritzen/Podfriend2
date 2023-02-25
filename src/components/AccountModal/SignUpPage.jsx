@@ -13,7 +13,7 @@ import BlueOnBlueWave from './blueonblue_wave.svg';
 
 const TXT_ERROR_USERNAME_TOO_SHORT = 'Your username needs to be 3 or more characters long.';
 
-timeoutId = false;
+let timeoutId = false;
 
 const SignUpPage = ({ dismiss }) => {
 	const [username,setUsername] = useState('');

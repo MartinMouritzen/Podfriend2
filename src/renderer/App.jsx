@@ -41,6 +41,7 @@ import Player from 'components/Player/Player';
 import { BREAKPOINTS } from 'constants/breakpoints';
 import DesktopPlayList from 'components/PlayList/DesktopPlaylist';
 import DesktopHeader from 'components/WindowFrame/DesktopHeader';
+import AccountModal from 'components/AccountModal/AccountModal';
 
 setupIonicReact({
 	mode: 'ios',
@@ -63,20 +64,22 @@ export default function App({ platform, audioController }) {
 		<Route path="/home/" exact={true} render={(props) => <Home {...props} />} />,
 		<Route path="/discover/" render={(props) => <DiscoverPage {...props} />} />,
 		<Route path="/favorites/" render={(props) => <FavoritePage {...props} />} />,
+		<Route path="/playlist/" render={(props) => <Home {...props} />} />,
 		<Route path="/collections/" render={(props) => <Home {...props} />} />,
 		<Route path="/wallet/" render={(props) => <Home {...props} />} />,
 		<Route path="/search/:searchQuery?" render={(props) => <SearchPage {...props} />} />,
 		<Route path="/podcast/:podcastPath/" render={(props) => <PodcastPage {...props} />} />,
 		<Route path="/podcast/:podcastPath/:episodeId" render={(props) => <PodcastPage {...props} />} />,
-		<Redirect exact from="/" to="home/" />
+		<Redirect exact from="/" to="home/" />,
+		<Redirect exact from="/index.html" to="home/" />
 	].map((Route, index) => ({ ...Route, key: index }));
 
 	return (
 		<>
-			{ platform === 'desktop' &&
-				<DesktopHeader />
-			}
 			<IonApp className={'platform_' + platform}>
+				{ platform === 'desktop' &&
+					<DesktopHeader />
+				}
 				<Player audioController={audioController} />
 				<IonReactRouter>
 					<IonSplitPane contentId="main" when={showSplitPane}>

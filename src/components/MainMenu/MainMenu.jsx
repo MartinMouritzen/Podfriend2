@@ -69,7 +69,7 @@ const MainMenu = () => {
 
 					<IonItem lines="none" button routerLink="/search/">
 						<IonIcon icon={searchIcon} slot="start"></IonIcon>
-						<IonLabel>Find podcasts</IonLabel>
+						<IonLabel>Discover</IonLabel>
 					</IonItem>
 
 					{ /*

@@ -35,11 +35,12 @@ const BottomMenu = ({ routes }) => {
 					<IonIcon icon={homeIcon} />
 					<IonLabel>Home</IonLabel>
 				</IonTabButton>
-
+				{ /*
 				<IonTabButton tab="playlist" href="/playlist/">
 					<IonIcon icon={playlistIcon} />
 					<IonLabel>Playlist</IonLabel>
 				</IonTabButton>
+				*/ }
 
 				<IonTabButton tab="favorites" href="/favorites/">
 					<IonIcon icon={favoriteIcon} />
@@ -53,7 +54,7 @@ const BottomMenu = ({ routes }) => {
 
 				<IonTabButton tab="search" href="/search/">
 					<IonIcon icon={searchIcon} />
-					<IonLabel>Find podcasts</IonLabel>
+					<IonLabel>Discover</IonLabel>
 				</IonTabButton>
 			</IonTabBar>
 	);

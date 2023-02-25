@@ -68,20 +68,20 @@ ion-range {
 	color: #FFFFFF;
 
 	&.noPodcastPlaying {
-		height: 0px !important;
-		overflow: hidden;
-		transition: background-color 1s, bottom 0.5s, height 1s;
+		.controls {
+			display: none;
+		}
 	}
 
 	.segmentContainer {
-		min-width: 320px;
-		max-width: 400px;
-		width: 100%;
-
-		margin-bottom: 10px;
+		margin-bottom: 20px;
 
 		ion-segment {
 			--background: #054072;
+			width: calc(100vw - 30px);
+
+			min-width: 294px;
+			max-width: 400px;
 
 			ion-segment-button {
 				--indicator-color: #FFFFFF;
@@ -227,7 +227,7 @@ ion-range {
 							fill: var(--miniplayer-button-color);
 						}
 					}
-					&.buttonSkipBackward, &.buttonSkipForward {
+					&.buttonSkipBackward, &.buttonSkipForward, &.buttonExpand {
 						height: 40px;
 			
 						svg {
@@ -295,7 +295,7 @@ ion-range {
 									height: 30px;
 								}
 							}
-							&.buttonSkipBackward, &.buttonSkipForward {
+							&.buttonSkipBackward, &.buttonSkipForward, &.buttonExpand {
 								width: 30px;
 
 								svg {
@@ -330,7 +330,7 @@ ion-range {
 						&.buttonPlay, &.buttonLoad, &.buttonPause {
 							background-color: var(--primary-color) !important;
 						}
-						&.buttonSkipBackward, &.buttonSkipForward {
+						&.buttonSkipBackward, &.buttonSkipForward, &.buttonExpand {
 							width: 30px;
 		
 							svg {
@@ -369,7 +369,7 @@ ion-range {
 				width: 0px;
 			}
 		}
-		.buttonSkipBackward, .buttonSkipForward {
+		.buttonSkipBackward, .buttonSkipForward, &.buttonExpand {
 			width: 0px;
 
 			svg {
@@ -401,7 +401,7 @@ ion-range {
 							&.buttonRewind, &.buttonForward {
 								min-width: 30px;
 							}
-							&.buttonSkipBackward, &.buttonSkipForward {
+							&.buttonSkipBackward, &.buttonSkipForward, &.buttonExpand {
 								min-width: 30px;
 							}
 						}
@@ -424,6 +424,7 @@ ion-range {
 		/*background:  rgba(1,118,229,1);*/
 		z-Index: 9999;
 		overflow: auto;
+		background-color: var(--miniplayer-background-color) !important;
 
 		.playerCoverContainer {
 			max-width: 400px;
@@ -432,6 +433,13 @@ ion-range {
 			border: 2px solid #FFFFFF;
 			border-radius: 5px;
 			box-shadow: 0px 3px 11px -1px rgb(0 0 0 / 33%);
+
+			img {
+				width: 90vw !important;
+				height: 90vw !important;
+				max-width: 400px;
+				max-height: 400px;
+			}
 		}
 		.dragHandle {
 			display: block;
@@ -479,6 +487,8 @@ ion-range {
 							--knob-size: 15px;
 					
 							padding-inline: 16px;
+
+							pointer-events: all;
 					
 							&.range-has-pin {
 								padding-top: 8px;

@@ -26,6 +26,7 @@ import SkipForwardIcon from 'images/player/skip-forward.svg';
 
 import LoadingIcon from 'images/player/loading.png';
 
+
 const Player = ({ audioController }) => {
 	const audioElement = useRef(null);
 	const scrollChild = useRef(null);
@@ -60,7 +61,18 @@ const Player = ({ audioController }) => {
 
 	const changeActiveEpisode = useStore((state) => state.changeActiveEpisode);
 
-	const isVideo = false;
+	const [isVideo,setIsVideo] = useState(false);
+
+	const [chapters,setChapters] = useState(false);
+	const [chaptersLoading,setChaptersLoading] = useState(true);
+	const [currentChapter,setCurrentChapter] = useState(false);
+
+	const [subtitleFileURL,setSubtitleFileURL] = useState(false);
+
+	const [error,setError] = useState(false);
+	const [errorText,setErrorText] = useState(false);
+
+	const [errorRetries,setErrorRetries] = useState(0);
 
 	const defaultVibrantColor = 'rgba(41, 121, 255, 1)';
 	const defaultDarkVibrantColor = 'rgba(23,78,161,1)';
@@ -131,6 +143,7 @@ const Player = ({ audioController }) => {
 		return '#t=' + Math.round(activeEpisode.currentTime ? activeEpisode.currentTime : 0);
 	};
 	const addUserAgentToUrl = (fileUrl) => {
+		if (!fileUrl) { return; }
 		try {
 			const resourceUrl = new URL(fileUrl);
 			resourceUrl.searchParams.delete('_from');
@@ -190,15 +203,20 @@ const Player = ({ audioController }) => {
 				retryAudioOnError();
 			},1000);
 		},
-		onAbort: (error) => { console.log('onAbort happened in audio element'); console.log(error); console.log(error.nativeEvent); console.log(error.nativeEvent.message); console.log(error.nativeEvent.code); },
-		onEmptied: (error) => { console.log('onEmptied happened in audio element'); console.log(error); console.log(error.nativeEvent); console.log(error.nativeEvent.message); console.log(error.nativeEvent.code); },
-		onStalled: (error) => { console.log('onStalled happened in audio element'); console.log(error); console.log(error.nativeEvent); console.log(error.nativeEvent.message); console.log(error.nativeEvent.code); }
+		onAbort: (error) => { /* console.log('onAbort happened in audio element'); console.log(error); console.log(error.nativeEvent); console.log(error.nativeEvent.message); console.log(error.nativeEvent.code); */ },
+		onEmptied: (error) => { /* console.log('onEmptied happened in audio element'); console.log(error); console.log(error.nativeEvent); console.log(error.nativeEvent.message); console.log(error.nativeEvent.code); */  },
+		onStalled: (error) => { /* console.log('onStalled happened in audio element'); console.log(error); console.log(error.nativeEvent); console.log(error.nativeEvent.message); console.log(error.nativeEvent.code); */ }
 	};
 	useEffect(() => {
 		audioController.setAudioElement(audioElement.current);
 	},[audioElement]);
 
 	useEffect(() => {
+		setError(false);
+		setErrorText(false);
+		setErrorRetries(0);
+		setSubtitleFileURL(false);
+
 		changeActiveEpisode(activePodcast,activeEpisode);
 	},[activeEpisode.url]);
 
@@ -241,25 +259,26 @@ const Player = ({ audioController }) => {
 
 	return (
 		<>
-			<div className="openPlayerBackground"
+			<div
+				className="openPlayerBackground"
 				style={{
 					display: (fullscreen ? 'block' : 'none')
 				}}
-				onClick={() => { minimize(); }} />
-		<DraggablePane
-			onOpen={maximize}
-			onHide={minimize}
-			open={fullscreen}
-			className={'player ' + (fullscreen ? 'fullscreen' : 'mini') + ' ' + (shouldPlay ? ' ' + 'playing' : ' ' + 'notPlaying') + (activePodcast ? '' : ' noPodcastPlaying')}
-			style={playerStyle}
-		>
-			{ audioController.useBrowserAudioElement === true &&
-				<audio {...audioElementProps}>
-					<source src={addUserAgentToUrl(activeEpisode.url) + generateTimeHash()} type={activeEpisode.type ? activeEpisode.type : 'audio/mpeg'} />
-				</audio>
-			}
-			{ fullscreen &&
-				<div className="segmentContainer">
+				onClick={() => { minimize(); }}
+			/>
+			<DraggablePane
+				onOpen={maximize}
+				onHide={minimize}
+				open={fullscreen}
+				className={'player ' + (fullscreen ? 'fullscreen' : 'mini') + ' ' + (shouldPlay ? ' ' + 'playing' : ' ' + 'notPlaying') + (activePodcast ? '' : ' noPodcastPlaying')}
+				style={playerStyle}
+			>
+				{ audioController.useBrowserAudioElement === true &&
+					<audio {...audioElementProps}>
+						<source src={addUserAgentToUrl(activeEpisode.url) + generateTimeHash()} type={activeEpisode.type ? activeEpisode.type : 'audio/mpeg'} />
+					</audio>
+				}
+				<div className="segmentContainer" style={{ display: (fullscreen ? 'block' : 'none') }}>
 					<IonSegment value={segmentVisible} onIonChange={(e) => { setSegmentVisible(e.detail.value); console.log(e.detail.value); }} onClick={(event) => { event.preventDefault(); event.stopPropagation(); }}>
 						<IonSegmentButton value="playing">
 							<IonLabel>
@@ -271,101 +290,100 @@ const Player = ({ audioController }) => {
 						</IonSegmentButton>
 					</IonSegment>
 				</div>
-			}
-			{ (!fullscreen || segmentVisible === 'playing') &&
-				<div className="playerCoverContainer" onClick={maximize}>
-					{ activeEpisode &&
-						<PodcastImage
-							podcastPath={activePodcast.path}
-							width={600}
-							height={600}
-							coverWidth={50}
-							coverHeight={50}
-							imageErrorText={activePodcast.name}
-							fallBackImage={activePodcast.artworkUrl600 ? activePodcast.artworkUrl600 : activePodcast.image}
-							src={podcastImageURL}
-							className={''}
-							imageRef={coverImageRef}
-							loadingComponent={() => <IonSkeletonText animated={true} className="coverLoading" />}
-						/>
-					}
-				</div>
-			}
-			{ (fullscreen && segmentVisible === 'transcript') &&
-				<div>
-					TRANSCRIPT
-				</div>
-			}
-			<div className="controls">
-				<div className='titleAndButtons'>
-					{ (!fullscreen || segmentVisible === 'playing') &&
-						<div className="podcastInfo">
-							<div className="episodeTitle">
-								{activeEpisode.title}
-							</div>
-							<div className="podcastName">
-								<>{activePodcast.name}</>
-							</div>
-						</div>
-					}
-					<div className="progressAndControls">
-						<div className="progressBar">
-							<div className="progressText">
-								{TimeUtil.formatPrettyDurationText(activeEpisode.currentTime)}
-							</div>
-							<ProgressBar
-								progress={activeEpisode.currentTime}
-								duration={activeEpisode.duration}
-								onProgressSliderChange={onProgressSliderChange}
+				{ (!fullscreen || segmentVisible === 'playing') &&
+					<div className="playerCoverContainer" onClick={maximize}>
+						{ activeEpisode &&
+							<PodcastImage
+								podcastPath={activePodcast.path}
+								width={600}
+								height={600}
+								coverWidth={50}
+								coverHeight={50}
+								imageErrorText={activePodcast.name}
+								fallBackImage={activePodcast.artworkUrl600 ? activePodcast.artworkUrl600 : activePodcast.image}
+								src={podcastImageURL}
+								className={''}
+								imageRef={coverImageRef}
+								loadingComponent={() => <IonSkeletonText animated={true} className="coverLoading" />}
 							/>
-							<div className="durationText" title={TimeUtil.formatPrettyDurationText(activeEpisode.duration - activeEpisode.progress) + ' left.'}>
-								{TimeUtil.formatPrettyDurationText(activeEpisode.duration)}
+						}
+					</div>
+				}
+				{ (fullscreen && segmentVisible === 'transcript') &&
+					<div>
+						TRANSCRIPT
+					</div>
+				}
+				<div className="controls">
+					<div className='titleAndButtons'>
+						{ (!fullscreen || segmentVisible === 'playing') &&
+							<div className="podcastInfo">
+								<div className="episodeTitle">
+									{activeEpisode.title}
+								</div>
+								<div className="podcastName">
+									<>{activePodcast.name}</>
+								</div>
+							</div>
+						}
+						<div className="progressAndControls">
+							<div className="progressBar">
+								<div className="progressText">
+									{TimeUtil.formatPrettyDurationText(activeEpisode.currentTime)}
+								</div>
+								<ProgressBar
+									progress={activeEpisode.currentTime}
+									duration={activeEpisode.duration}
+									onProgressSliderChange={onProgressSliderChange}
+								/>
+								<div className="durationText" title={TimeUtil.formatPrettyDurationText(activeEpisode.duration - activeEpisode.progress) + ' left.'}>
+									{TimeUtil.formatPrettyDurationText(activeEpisode.duration)}
+								</div>
+							</div>
+							<div className="playerControls">
+								<div className="button buttonSkipBackward" onClick={onSkipBackward}><SVG src={SkipBackwardIcon} /></div>
+								<div className="button buttonRewind" onClick={onBackward}><SVG src={RewindIcon} /></div>
+								{ streamDataLoading &&
+									<div className="button buttonLoad" onClick={onPauseClicked} style={{ backgroundColor: vibrantColor }} ><img src={LoadingIcon} /></div>
+								}
+								{ streamDataLoading === false &&
+									<>
+									{ shouldPlay &&
+										<div className="button buttonPause" onClick={onPauseClicked} style={{ backgroundColor: vibrantColor }}><SVG src={PauseIcon} /></div>
+									}
+									{ shouldPlay === false &&
+										<div className="button buttonPlay" onClick={onPlayClicked} style={{ backgroundColor: vibrantColor }}><SVG src={PlayIcon} /></div>
+									}
+									</>
+								}
+								<div className="button buttonForward" onClick={onForward}><SVG src={ForwardIcon} /></div>
+								<div className="button buttonSkipForward" onClick={onSkipForward}><SVG src={SkipForwardIcon} /></div>
 							</div>
 						</div>
-						<div className="playerControls">
-							<div className="button buttonSkipBackward" onClick={onSkipBackward}><SVG src={SkipBackwardIcon} /></div>
-							<div className="button buttonRewind" onClick={onBackward}><SVG src={RewindIcon} /></div>
-							{ streamDataLoading &&
-								<div className="button buttonLoad" onClick={onPauseClicked} style={{ backgroundColor: vibrantColor }} ><img src={LoadingIcon} /></div>
-							}
-							{ streamDataLoading === false &&
-								<>
-								{ shouldPlay &&
-									<div className="button buttonPause" onClick={onPauseClicked} style={{ backgroundColor: vibrantColor }}><SVG src={PauseIcon} /></div>
-								}
-								{ shouldPlay === false &&
-									<div className="button buttonPlay" onClick={onPlayClicked} style={{ backgroundColor: vibrantColor }}><SVG src={PlayIcon} /></div>
-								}
-								</>
-							}
-							<div className="button buttonForward" onClick={onForward}><SVG src={ForwardIcon} /></div>
-							<div className="button buttonSkipForward" onClick={onSkipForward}><SVG src={SkipForwardIcon} /></div>
+					</div>
+				</div>
+				{ fullscreen &&
+					<div className="episodeContent">
+						{ (!fullscreen || segmentVisible === 'playing') &&
+							<EpisodeList podcastPath={activePodcast.path} podcastData={activePodcast} episodes={activePodcast.episodes} />
+						}
+						Feed here, which includes Boostogram comments, boosts and other timeline events for the episode<br /><br />
+						For example &quot;Martin streamed 543 sats to the show.&quot; if only one friend streamed, and &quot;4 Friends streamed to this show&quot; if more than eg. 2 or 3 did it.
+
+						<div>
+							<p>test, test test, test test, test test, test test, test test, test test, test test, test</p>
+							<p>test, test test, test test, test test, test test, test test, test test, test test, test</p>
+							<p>test, test test, test test, test test, test test, test test, test test, test test, test</p>
+							<p>test, test test, test test, test test, test test, test test, test test, test test, test</p>
+							<p>test, test test, test test, test test, test test, test test, test test, test test, test</p>
+							<p>test, test test, test test, test test, test test, test test, test test, test test, test</p>
+							<p>test, test test, test test, test test, test test, test test, test test, test test, test</p>
+							<p>test, test test, test test, test test, test test, test test, test test, test test, test</p>
+							<p>test, test test, test test, test test, test test, test test, test test, test test, test</p>
 						</div>
 					</div>
-				</div>
-			</div>
-			{ fullscreen &&
-				<div className="episodeContent">
-					{ (!fullscreen || segmentVisible === 'playing') &&
-						<EpisodeList podcastPath={activePodcast.path} podcastData={activePodcast} episodes={activePodcast.episodes} />
-					}
-					Feed here, which includes Boostogram comments, boosts and other timeline events for the episode<br /><br />
-					For example &quot;Martin streamed 543 sats to the show.&quot; if only one friend streamed, and &quot;4 Friends streamed to this show&quot; if more than eg. 2 or 3 did it.
-
-					<div>
-						<p>test, test test, test test, test test, test test, test test, test test, test test, test</p>
-						<p>test, test test, test test, test test, test test, test test, test test, test test, test</p>
-						<p>test, test test, test test, test test, test test, test test, test test, test test, test</p>
-						<p>test, test test, test test, test test, test test, test test, test test, test test, test</p>
-						<p>test, test test, test test, test test, test test, test test, test test, test test, test</p>
-						<p>test, test test, test test, test test, test test, test test, test test, test test, test</p>
-						<p>test, test test, test test, test test, test test, test test, test test, test test, test</p>
-						<p>test, test test, test test, test test, test test, test test, test test, test test, test</p>
-						<p>test, test test, test test, test test, test test, test test, test test, test test, test</p>
-					</div>
-				</div>
-			}
-		</DraggablePane>
+				}
+			</DraggablePane>
 		</>
 	);
 };

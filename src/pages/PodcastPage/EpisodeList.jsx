@@ -15,16 +15,22 @@ import PodcastImage from 'components/PodcastImage/PodcastImage';
 
 import DOMPurify from 'dompurify';
 
-const EpisodeList = ({ podcastData, podcastPath, episodes, showNumberOfEpisodes = 6, inset = false }) => {
+const EpisodeList = ({ podcastData, podcastPath, episodes, showNumberOfEpisodes = 3, inset = false }) => {
 	const [selectedSeason,setSelectedSeason] = useState(0);
 	const [selectedSortOrder,setSelectedSortOrder] = useState('new');
 	const [sortedEpisodes,setSortedEpisodes] = useState([]);
 	const [seasons,setSeasons] = useState([]);
 	const [trailers,setTrailers] = useState([]);
 
+	const episodeCountShowMoreTrigger = 20;
+
 	const updatePodcastConfig = useStore((state) => state.updatePodcastConfig);
 	const activePodcast = useStore((state) => state.activePodcast);
 	const activeEpisode = useStore((state) => state.activeEpisode);
+
+	if (activePodcast.guid === podcastData.guid) {
+		podcastData = activePodcast;
+	}
 
 	useEffect(() => {
 		let seasonCount = 0;
@@ -72,7 +78,7 @@ const EpisodeList = ({ podcastData, podcastPath, episodes, showNumberOfEpisodes 
 				setSelectedSortOrder('new');
 			}
 		}
-	},[episodes]);
+	},[podcastPath]);
 
 	useEffect(() => {
 		if (!seasons[selectedSeason]) {
@@ -101,7 +107,8 @@ const EpisodeList = ({ podcastData, podcastPath, episodes, showNumberOfEpisodes 
 	};
 
 	return (
-		<div>
+		<div className="episodeListOuter">
+			<h1>Episode list</h1>
 			<div className="episodeListActions">
 				{ seasons.length > 1 &&
 					<IonSelect
@@ -141,8 +148,8 @@ const EpisodeList = ({ podcastData, podcastPath, episodes, showNumberOfEpisodes 
 					</IonItem>
 				</IonSelect>
 			</div>
-			<EpisodeListInner showNumberOfEpisodes={showNumberOfEpisodes} podcastData={podcastData} seasons={seasons} selectedSeason={selectedSeason} sortedEpisodes={sortedEpisodes} activePodcast={activePodcast} activeEpisode={activeEpisode} inset={inset} />
-			{ (showNumberOfEpisodes > 0 && showNumberOfEpisodes < sortedEpisodes.length) &&
+			<EpisodeListInner episodeCountShowMoreTrigger={episodeCountShowMoreTrigger} showNumberOfEpisodes={showNumberOfEpisodes} podcastData={podcastData} seasons={seasons} selectedSeason={selectedSeason} sortedEpisodes={sortedEpisodes} activePodcast={activePodcast} activeEpisode={activeEpisode} inset={inset} />
+			{ (sortedEpisodes.length > episodeCountShowMoreTrigger && showNumberOfEpisodes > 0 && showNumberOfEpisodes < sortedEpisodes.length) &&
 				<div style={{ padding: '10px', textAlign: 'right' }}>
 					<IonButton id="open-episode-modal" fill="clear">Show all episodes ({sortedEpisodes.length})</IonButton>
 
@@ -155,19 +162,19 @@ const EpisodeList = ({ podcastData, podcastPath, episodes, showNumberOfEpisodes 
 /************************************************
 * Actual list of episdoes
 ************************************************/
-const EpisodeListInner = ({ podcastData, seasons, selectedSeason, sortedEpisodes, showNumberOfEpisodes, inset = false }) => {
+const EpisodeListInner = ({ podcastData, seasons, selectedSeason, sortedEpisodes, showNumberOfEpisodes, episodeCountShowMoreTrigger, inset = false }) => {
 	const activePodcast = useStore((state) => state.activePodcast);
 	const activeEpisode = useStore((state) => state.activeEpisode);
 
 	return (
-		<IonList lines="full" inset={inset}>
+		<IonList lines="full" inset={inset} className="episodeList">
 		{ seasons.map((episodes,seasonIndex) => {
 			if (selectedSeason == seasonIndex && sortedEpisodes) {
 				var shownEpisodes = 0;
 				return sortedEpisodes.map((episode,episodeIndex) => {
 					shownEpisodes++;
 
-					if (showNumberOfEpisodes > 0 && shownEpisodes > showNumberOfEpisodes) {
+					if (sortedEpisodes.length > episodeCountShowMoreTrigger && showNumberOfEpisodes > 0 && shownEpisodes > showNumberOfEpisodes) {
 						return;
 					}
 					const isSelected = activePodcast.url === podcastData.url && activeEpisode.id == episode.id;
@@ -215,7 +222,7 @@ const AllEpisodesModal = ({ podcastData, trigger, seasons, selectedSeason, sorte
 						if (selectedSeason == seasonIndex && sortedEpisodes) {
 							return sortedEpisodes.map((episode,episodeIndex) => {
 								const isSelected = activePodcast.url === podcastData.url && activeEpisode.id == episode.id;
-								return <EpisodeItem podcastData={podcastData} episode={episode} selected={isSelected} />
+								return <EpisodeItem key={episode.id} podcastData={podcastData} episode={episode} selected={isSelected} />
 							})
 						}
 					})}
@@ -250,6 +257,9 @@ const EpisodeItem = ({ podcastData, episode, selected, activeEpisode }) => {
 	if (progressPercentage > 100) {
 		progressPercentage = 100;
 	}
+	else if (isNaN(progressPercentage)) {
+		progressPercentage = 0;
+	}
 
 	const onEpisodeSelect = (episode) => {
 		playEpisode(podcastData,episode.url);
@@ -257,6 +267,7 @@ const EpisodeItem = ({ podcastData, episode, selected, activeEpisode }) => {
 
 	// var realEpisode = false;
 	// Find the "real" episode object.
+	/*
 	if (podcastData && podcastData.episodes) {
 		for (var i=0;i<podcastData.episodes.length;i++) {
 			if (podcastData.episodes[i].url == episode.url) {
@@ -264,6 +275,7 @@ const EpisodeItem = ({ podcastData, episode, selected, activeEpisode }) => {
 			}
 		}
 	}
+	*/
 
 	return (
 		<IonItem
@@ -284,23 +296,33 @@ const EpisodeItem = ({ podcastData, episode, selected, activeEpisode }) => {
 				asBackground={true}
 				loadingComponent={() => <IonSkeletonText animated={true} className="coverLoading" />}
 			/>
-			<IonLabel>
+			<IonLabel className="ion-text-wrap">
 				<p className="date">
 					{format(episode.date ? new Date(episode.date) : new Date(),'MMM d, yyyy')}
 					<span className='agoText'>({formatDistance(new Date(episode.date), new Date())} ago)</span>
 				</p>
 				<h2>{ episodeTitle }</h2>
-				<p>{episodeDescription}</p>
-				<p>
-					<IonIcon icon={timeIcon} style={{ marginRight: '5px', position: 'relative', top: '2px' }}/> 
-					{ minutesLeft == totalMinutes && 
+				<p className="description ">{episodeDescription}</p>
+				<div className="progress">
+					{ (!isNaN(minutesLeft) && progressPercentage > 0 && minutesLeft !== totalMinutes) &&
+						<div className="episodeProgressBarOuter">
+							<div className="episodeProgressBarInner" style={{ width: Math.round(progressPercentage) + '%' }}/>
+						</div>
+					}
+					{ (!isNaN(minutesLeft) && minutesLeft == totalMinutes) &&
+						<IonIcon icon={timeIcon} style={{ marginRight: '5px', position: 'relative', bottom: '1px' }}/> 
+					}
+
+					{ (!isNaN(minutesLeft) && minutesLeft == totalMinutes) && 
 						<span>{totalMinutes} minutes</span>
 					}
-					{ minutesLeft != totalMinutes && 
+					{ (!isNaN(minutesLeft) && minutesLeft != totalMinutes) && 
 						<span>{Math.round((episode.duration - episode.currentTime) / 60)} of {totalMinutes} minutes left</span>
 					}
-					- { episode.url === activeEpisode.url ? activeEpisode.currentTime : episode.currentTime}
-				</p>
+					{ isNaN(minutesLeft) &&
+						<span>&nbsp;</span>
+					}
+				</div>
 			</IonLabel>
 		</IonItem>
 	);

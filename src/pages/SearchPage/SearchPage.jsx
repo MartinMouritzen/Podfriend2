@@ -31,10 +31,12 @@ const SearchPage = ({ match }) => {
 
 	useEffect(() => {
 		setSearchString(match.params.searchQuery);
+		setResults([]);
 	},[match.params.searchQuery]);
 
 	useEffect(() => {
 		if (searchString && searchString.length && searchString.length > 2) {
+			setResults([]);
 			searchPodcasts(searchString,'podcast')
 			.then((results) => {
 				setResults(results);

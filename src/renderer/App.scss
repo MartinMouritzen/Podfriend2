@@ -12,7 +12,7 @@
 	--ion-color-success: #29bd73;
 
 	--list-grid-cover-size: 140px;
-	--list-scroll-cover-size: 140px;
+	--list-scroll-cover-size: 175px;
 
 	/*--miniplayer-background-color: rgba(23,78,161,0.9); */
 
@@ -155,17 +155,45 @@ ion-menu {
 }
 .desktopHeader {
 	position: absolute;
-	z-index: 0;
+	z-index: 1;
 	top: 0px;
 	right: 0px;
 	height: 40px;
 	width: 100px;
 	background-color: #FFFFFF;
-	border-bottom: 1px solid #efefef;
+
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	
+	.windowControlButton {
+		color: #999999;
+		padding: 10px;
+		padding-left: 15px;
+		padding-right: 15px;
+
+		display: flex;
+		align-items: center;
+		justify-content: center;
+
+		&:hover {
+			background-color: #e6e6e6;
+		}
+
+		&.closeButton {
+			padding-left: 20px;
+			padding-right: 20px;
+
+			&:hover {
+				background-color: #b13435;
+				color: #FFFFFF;
+			}
+		}
+	}
 }
 .platform_desktop {
 	.mainToolbar {
-		--padding-end: 100px;
+		--padding-end: 150px;
 	}
 }
 .desktopPlaylist {
@@ -243,11 +271,8 @@ ion-menu {
 
 .podcastGrid {
 	display: grid;
-	grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+	grid-template-columns: repeat(auto-fill, minmax(185px, 1fr));
 
-	@media (max-width: 410px) {
-		grid-template-columns: repeat(auto-fill, minmax(145px, 1fr));
-	}
 	/*
 	@media (min-width: 900px) {
 		&.scroll {
@@ -256,6 +281,10 @@ ion-menu {
 		}
 	}
 	*/
+	&.scroll {
+		padding-left: 5px;
+		padding-right: 5px;
+	}
 	@media (any-hover: none) {
 		&.list {
 			grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
@@ -278,7 +307,7 @@ ion-menu {
 
 					font-size: 12px !important;
 					padding: 0px !important;
-					box-shadow: none;
+					box-shadow: 0px 1px 5px 0px rgb(50 50 50 / 15% );
 				}
 				.author {
 					max-width: 200px;
@@ -313,10 +342,7 @@ ion-menu {
 	}
 	.podcastItem, .loading-podcast-item, .coverLoading {
 		padding: 10px;
-
 		border-radius: 5px;
-
-		
 		text-decoration: none;
 	}
 	.loading-podcast-item, .coverLoading {
@@ -331,7 +357,7 @@ ion-menu {
 		height: auto;
 		max-height: none;
 		margin-left: 5px;
-		margin-right: 5px;
+		margin-right: 10px;
 		margin-bottom: 5px;
 		padding: 5px;
 
@@ -340,7 +366,11 @@ ion-menu {
 			height: auto !important;
 
 			width: var(--list-scroll-cover-size) !important;
-			height: auto;
+			height: var(--list-scroll-cover-size) !important;
+			min-width: var(--list-scroll-cover-size) !important;
+			min-height: var(--list-scroll-cover-size) !important;
+			max-width: var(--list-scroll-cover-size) !important;
+			max-height: var(--list-scroll-cover-size) !important;
 
 			display: block;
 			background-size: contain;
@@ -352,9 +382,9 @@ ion-menu {
 			margin-bottom: 10px;
 
 			&.fallBack {
-				width: calc(var(--list-scroll-cover-size) - 10px) !important;
-				height: calc(var(--list-scroll-cover-size) - 10px) !important;
-				margin-right: 20px;
+				width: calc(var(--list-scroll-cover-size)) !important;
+				height: calc(var(--list-scroll-cover-size)) !important;
+				
 			}
 		}
 		.content {
@@ -363,12 +393,9 @@ ion-menu {
 			padding-right: 0px;
 		}
 		.title {
-			font-size: 16px;
+			font-size: 17px;
 			
-			color: #1f335e;
-			margin-top: 5px;
-			margin-bottom: 5px;
-			-webkit-text-stroke: 0.25px;
+			color: #000000;
 			
 			transition: color 0.2s;
 		
@@ -387,10 +414,11 @@ ion-menu {
 			overflow: hidden;
 			white-space: nowrap;
 			text-overflow: ellipsis;
-
-			
 			
 			transition: color 0.2s;
+
+			margin-top: 5px;
+			margin-bottom: 5px;
 		}
 		.date {
 			font-size: 13px;
@@ -420,6 +448,13 @@ ion-menu {
 		}
 	}
 	@media (any-hover: hover) {
+		.podcastItem {
+			width: 190px;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			padding-top: 7px;
+		}
 		.podcastItem:hover {
 			transform: scale(1.1);
 			z-index: 10;
@@ -444,6 +479,7 @@ ion-menu {
 *******************************************************/
 ion-modal {
 	--backdrop-opacity: 0.6 !important;
+
 }
 .blueModalHeader {
 	ion-toolbar {

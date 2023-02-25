@@ -122,6 +122,11 @@ const createWindow = async () => {
 
 	mainWindow.loadURL(resolveHtmlPath('index.html'));
 
+	mainWindow.webContents.on('new-window', function(e, url) {
+		e.preventDefault();
+		require('electron').shell.openExternal(url);
+	});
+
 	mainWindow.on('ready-to-show', () => {
 		if (!mainWindow) {
 			throw new Error('"mainWindow" is not defined');

@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
 
-import { IonImg } from '@ionic/react';
-
 import PodcastImageFallback from './PodcastImageFallback.jsx';
 
 const STATUS_PRELOAD = 1;
@@ -36,9 +34,9 @@ const PodcastImage = React.memo(({ podcastId = false, podcastPath = false, src, 
 	useEffect(() => {
 		setStatus(STATUS_PRELOAD);
 		setImageSource(src);
-		setTimeout(() => {
+		// setTimeout(() => {
 			loadImage(src);
-		},1000);
+		// },9000);
 	},[src]);
 
 	const onError = () => {
@@ -80,6 +78,7 @@ const PodcastImage = React.memo(({ podcastId = false, podcastPath = false, src, 
 			{ status === STATUS_ERROR &&
 				<PodcastImageFallback
 					podcastId={podcastId}
+					podcastPath={podcastPath}
 					imageSource={imageSource}
 					imageErrorText={imageErrorText}
 					originalSource={originalSource}
@@ -97,6 +96,7 @@ const PodcastImage = React.memo(({ podcastId = false, podcastPath = false, src, 
 				</>
 			}
 			{ status !== STATUS_ERROR && status !== STATUS_PRELOAD &&
+			
 				<img
 					ref={imageRef}
 					loading="lazy"

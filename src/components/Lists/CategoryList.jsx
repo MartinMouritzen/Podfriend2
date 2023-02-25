@@ -58,7 +58,7 @@ const CategoryList = () => {
 		<div className="categoryList">
 			{ categories.map((category) => {
 				return (
-					<div className="category">
+					<div className="category" key={category.name}>
 						<div className="categoryPhoto" style={{ backgroundImage: 'url("' + category.image + '")' }}>
 
 						</div>

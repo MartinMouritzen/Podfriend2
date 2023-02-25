@@ -17,6 +17,7 @@ const AccountModal = ({ trigger, canDismiss = true }) => {
 	const loggedIn = useStore((state) => state.loggedIn);
 	
 	useEffect(() => {
+		console.log('accountmodal');
 		setPresentingElement(page.current);
 	}, []);
 
@@ -27,21 +28,18 @@ const AccountModal = ({ trigger, canDismiss = true }) => {
 	const [creatingUser,setCreatingUser] = useState(false);
 
 	useEffect(() => {
-		console.log('abc0');
 		if (!loggedIn) {
-			console.log('abc1');
 			setCreatingUser(true);
 		}
 	},[loggedIn]);
 
 	const onDismiss = () => {
 		if (loggedIn) {
-			console.log('setCreating false');
 			setCreatingUser(false);
 		}
 	};
 
-	console.log(loggedIn + ':' + creatingUser);
+	// console.log(loggedIn + ':' + creatingUser);
 
 	return (
 		<IonModal ref={modal} trigger={trigger} presentingElement={presentingElement} canDismiss={canDismiss} onDidDismiss={onDismiss}>

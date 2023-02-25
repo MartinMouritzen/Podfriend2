@@ -13,8 +13,8 @@ import { IonSearchbar, IonToolbar, IonHeader, IonTitle, IonButtons, IonButton, I
 const FavoritePage = () => {
 	const [present] = useIonActionSheet();
 
-	const favoriteSorderOrder = useStore((state) => state.favoriteSorderOrder);
-	const setFavoriteSorderOrder = useStore((state) => state.setFavoriteSorderOrder);
+	const favoriteSortOrder = useStore((state) => state.favoriteSortOrder);
+	const setFavoriteSortOrder = useStore((state) => state.setFavoriteSortOrder);
 
 	const followedPodcasts = useStore((state) => state.followedPodcasts);
 	const [orderedFollowedPodcasts,setOrderedFollowedPodcasts] = useState(followedPodcasts);
@@ -26,13 +26,13 @@ const FavoritePage = () => {
 	}
 
 	const sortFavoritePodcasts = () => {
-		if (favoriteSorderOrder === 'latest') {
+		if (favoriteSortOrder === 'latest') {
 			var sortByLatest = followedPodcasts.slice().sort((a, b) => {
 				return new Date(b.dateFollowed) - new Date(a.dateFollowed);
 			});
 			setOrderedFollowedPodcasts(sortByLatest);
 		}
-		else if (favoriteSorderOrder === 'oldest') {
+		else if (favoriteSortOrder === 'oldest') {
 			var sortByOldest= followedPodcasts.slice().sort((a, b) => {
 				return new Date(a.dateFollowed) - new Date(b.dateFollowed);
 			});
@@ -49,7 +49,7 @@ const FavoritePage = () => {
 	useEffect(() => {
 		console.log('change sorting order');
 		sortFavoritePodcasts();
-	},[followedPodcasts,favoriteSorderOrder]);
+	},[followedPodcasts,favoriteSortOrder]);
 	
 
 	const showFavoriteSortMenu = () => {
@@ -58,21 +58,21 @@ const FavoritePage = () => {
 			buttons: [
 				{
 					text: 'Latest added on top',
-					role: favoriteSorderOrder === 'latest' ? 'selected' : '',
+					role: favoriteSortOrder === 'latest' ? 'selected' : '',
 					data: {
 						action: 'latest',
 					},
 				},
 				{
 					text: 'Oldest added on top',
-					role: favoriteSorderOrder === 'oldest' ? 'selected' : '',
+					role: favoriteSortOrder === 'oldest' ? 'selected' : '',
 					data: {
 						action: 'oldest',
 					},
 				},
 				{
 					text: 'Alphabetical',
-					role: favoriteSorderOrder === 'alphabetical_az' ? 'selected' : '',
+					role: favoriteSortOrder === 'alphabetical_az' ? 'selected' : '',
 					data: {
 						action: 'alphabetical_az',
 					},
@@ -87,7 +87,7 @@ const FavoritePage = () => {
 			],
 			onWillDismiss: ({ detail }) => {
 				if (detail && detail.data && detail.data.action !== 'cancel') {
-					setFavoriteSorderOrder(detail.data.action);
+					setFavoriteSortOrder(detail.data.action);
 				}
 			},
 		})
@@ -107,6 +107,9 @@ const FavoritePage = () => {
 				</IonToolbar>
 			</IonHeader>
 			<div style={{ paddingLeft: '7px', paddingRight: '7px' }}>
+				<div style={{ paddingLeft: '16px', paddingRight: '16px' }}>
+					<h2>Favorite podcasts sorted by {favoriteSortOrder === 'alphabetical_az' ? 'alphabetical order' : favoriteSortOrder}</h2>
+				</div>
 				<PodcastList podcasts={orderedFollowedPodcasts} listType='grid' filterString={filterString} />
 			</div>
 		</Page>

@@ -1,6 +1,6 @@
 import RSSFeed from './RSSFeed.js';
 
-import XMLParser from 'fast-xml-parser';
+import { XMLParser } from 'fast-xml-parser';
 /**
 * 
 */
@@ -11,6 +11,10 @@ class PodcastFeed {
 
 	constructor (feedUrl) {
 		this.feedUrl = feedUrl;
+		this.parser = new XMLParser({
+			attributeNamePrefix: '',
+			ignoreAttributes: false
+		});
 	}
 	decodeXMLString = function (text) {
 		if (text)  {
@@ -74,10 +78,7 @@ class PodcastFeed {
 		if (response) {
 			var responseBody = await response.text();
 
-			var xml = XMLParser.parse(responseBody,{
-				attributeNamePrefix: '',
-				ignoreAttributes: false
-			});
+			var xml = this.parser.parse(responseBody);
 			return this.parseContent(xml);
 		}
 		return false;

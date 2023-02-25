@@ -4,6 +4,9 @@ const clientStorage = new ClientStorage();
 
 import PodcastUtil from 'library/PodcastUtil';
 
+import PodcastFeed from 'library/PodcastFeed';
+
+import { v4 as uuidv4 } from 'uuid';
 
 /**
 * Gets a podcast from the API
@@ -13,10 +16,10 @@ export const createPodcastSlice = (set, get) => ({
 	/**********************************************************************************
 	* Favorite settings
 	***********************************************************************************/
-	favoriteSorderOrder: 'latest',
-	setFavoriteSorderOrder: (newOrder) => {
+	favoriteSortOrder: 'latest',
+	setFavoriteSortOrder: (newOrder) => {
 		set({
-			favoriteSorderOrder: newOrder
+			favoriteSortOrder: newOrder
 		});
 	},
 	/**********************************************************************************
@@ -63,6 +66,31 @@ export const createPodcastSlice = (set, get) => ({
 	/**********************************************************************************
 	* Details about specific podcast, like sorting, season etc.
 	***********************************************************************************/
+	updatePodcastAttributes: ({ podcastData, attributes }) => {
+		var activePodcast = get().activePodcast;
+		console.log('Updating attributes');
+		console.log(activePodcast);
+		console.log(podcastData);
+		console.log(attributes);
+
+		if (activePodcast.guid === podcastData.guid) {
+			var activePodcastCopy = structuredClone(activePodcast);
+			for (const [key, value] of Object.entries(attributes)) {
+				activePodcastCopy[key] = value;
+			}
+			set({
+				activePodcast: activePodcastCopy
+			});
+		}
+
+		return clientStorage.getPodcast(podcastData.path)
+		.then((podcastCache) => {
+			for (const [key, value] of Object.entries(attributes)) {
+				podcastCache[key] = value;
+			}
+			clientStorage.setItem('podcast_cache_' + podcastData.path,podcastCache);
+		});
+	},
 	updatePodcastConfig: ({ guid, podcastPath, season = false, sortOrder = false }) => {
 		return clientStorage.getPodcast(podcastPath)
 		.then((podcastCache) => {
@@ -100,7 +128,6 @@ export const createPodcastSlice = (set, get) => ({
 			let listenedPercentage = (100 * newProgress) / newDuration;
 
 			var activePodcastCopy = structuredClone(activePodcast);
-
 			var activeEpisodeCopy = structuredClone(activeEpisode);
 			activeEpisodeCopy.currentTime = newProgress;
 			activeEpisodeCopy.duration = newDuration;
@@ -116,9 +143,9 @@ export const createPodcastSlice = (set, get) => ({
 				}
 			});
 
-			console.log('updating progress');
-			console.log(activePodcastCopy);
-			console.log(activeEpisodeCopy);
+			// console.log('updating progress');
+			// console.log(activePodcastCopy);
+			// console.log(activeEpisodeCopy);
 
 			// newActivePodcast.episodes[]
 
@@ -126,7 +153,6 @@ export const createPodcastSlice = (set, get) => ({
 			// console.log(activePodcastCopy);
 
 			clientStorage.setItem('podcast_cache_' + activePodcastCopy.path,activePodcastCopy);
-
 
 			set({
 				activePodcast: activePodcastCopy,
@@ -311,9 +337,13 @@ export const createPodcastSlice = (set, get) => ({
 				if (podcastCache) {
 					data.configSelectedSeason = podcastCache.configSelectedSeason;
 					data.configSelectedSortOrder = podcastCache.configSelectedSortOrder;
+					data.lastOriginalRSSFeedUpdate = podcastCache.lastOriginalRSSFeedUpdate;
+					data.rssFeedContents = podcastCache.rssFeedContents;
 				}
 				if (!data.podcastSeasonType) {
 					let episodeInfo = PodcastUtil.parseEpisodes(data.episodes);
+					// console.log(episodeInfo);
+
 					data.podcastSeasonType = episodeInfo.podcastSeasonType;
 				}
 				if (!data.configSelectedSortOrder || typeof data.configSelectedSortOrder === 'undefined') {
@@ -321,7 +351,7 @@ export const createPodcastSlice = (set, get) => ({
 						data.configSelectedSortOrder = 'old';
 					}
 					else {
-						data.configSelectedSortOrder = 'episodic';
+						data.configSelectedSortOrder = 'new';
 					}
 				}
 
@@ -331,23 +361,50 @@ export const createPodcastSlice = (set, get) => ({
 			}
 		});
 	},
-	retrieveOriginalPodcastFeed: (rssFeedURL) => {
-		var podcastFeed = new PodcastFeed(rssFeedURL);
-		console.log('before parsing feed: ' + rssFeedURL);
-		podcastFeed.parse()
-		.then((feed) => {
-			console.log('after parsing feed: ' + rssFeedURL);
-			// console.log('wa4');
-			// console.error(feed);
+	retrieveOriginalPodcastFeed: (podcastData,overruleCache = false) => {
+		var podcastFeed = new PodcastFeed(podcastData.feedUrl);
+		var shouldUpdate = false;
 
-			this.rssFeedUpdated(feed);
+		if (!podcastData.lastOriginalRSSFeedUpdate || !podcastData.rssFeedContents) {
+			console.log('Original RSS not cached');
+			console.log(podcastData.lastOriginalRSSFeedUpdate);
+			console.log(podcastData.rssFeedContents);
+			shouldUpdate = true;
+		}
+		else {
+			var minutesSinceLastUpdate = Math.floor((Math.abs(new Date() - new Date(podcastData.lastOriginalRSSFeedUpdate)) / 1000) / 60);
+				
+			if (isNaN(minutesSinceLastUpdate) || minutesSinceLastUpdate > 5) {
+				console.log('Original RSS minutesSinceLastUpdate: ' + minutesSinceLastUpdate);
+				shouldUpdate = true;
+			}
+		}
+		if (!shouldUpdate) {
+			return podcastData.rssFeedContents;
+		}
+		if (shouldUpdate) {
+			console.log('Fetching original RSS feed to scan for changes.: ' + podcastData.feedUrl);
+			return podcastFeed.parse()
+			.then((feed) => {
+				console.log('Fetching original RSS feed to scan for changes. - Done');
 
+				feed.uuid = uuidv4();
 
-		})
-		.catch((error) => {
-			console.error('Error parsing RSS feed: ');
-			console.error(error);
-		});
+				return feed;
+
+				get().updatePodcastAttributes({
+					podcastData: podcastData,
+					attributes: {
+						rssFeedContents: feed,
+						lastOriginalRSSFeedUpdate: new Date()
+					}
+				});
+			})
+			.catch((error) => {
+				console.error('Error parsing RSS feed: ');
+				console.error(error);
+			});
+		}
 	},
 	getPodcast: (podcastPath) => {
 		var startTime = performance.now();

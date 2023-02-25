@@ -24,7 +24,7 @@ const PodcastList = ({ podcasts, listType = 'scroll', filterString = '' }) => {
 					}
 				}
 				var imageWidth = 400;
-				var coverWidth = 180;
+				var coverWidth = 170;
 
 				if (listType === 'list') {
 					imageWidth = 120;
@@ -46,14 +46,11 @@ const PodcastList = ({ podcasts, listType = 'scroll', filterString = '' }) => {
 								loadingComponent={() => <IonSkeletonText animated={true} className="coverLoading" />}
 							/>
 							<div className='podcastInfo'>
-								<div className='author'>
-									{podcast.author}
-								</div>
 								<div className='title'>
 									{podcast.name}
 								</div>
-								<div className='date'>
-									{podcast.date}
+								<div className='author'>
+									{podcast.author}
 								</div>
 							</div>
 						</div>

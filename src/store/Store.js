@@ -6,6 +6,7 @@ import { persist } from 'zustand/middleware';
 import { createPodcastSlice } from './PodcastSlice';
 import { createPlayerSlice } from './PlayerSlice';
 import { createUserSlice } from './UserSlice';
+import { createUISlice } from './UISlice';
 
 
 /*

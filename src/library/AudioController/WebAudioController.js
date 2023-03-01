@@ -2,6 +2,7 @@ import AudioController from './AudioController.js';
 
 class WebAudioController extends AudioController {
 	useBrowserAudioElement = true;
+	browserShortcutsEnabled = true;
 
 	/**
 	*
@@ -14,7 +15,7 @@ class WebAudioController extends AudioController {
 		
 	}
 	init() {
-		if ('mediaSession' in navigator) {
+		if (this.browserShortcutsEnabled && 'mediaSession' in navigator) {
 			navigator.mediaSession.playbackState = "none";
 
 			try { navigator.mediaSession.setActionHandler('play',() => { this.play(); }); } catch (exception) { console.log('media exception: ' + exception); }
@@ -37,7 +38,7 @@ class WebAudioController extends AudioController {
 	*
 	*/
 	setCoverImage(src) {
-		if ('mediaSession' in navigator) {
+		if (this.browserShortcutsEnabled && 'mediaSession' in navigator) {
 			var trackClone = {...this.playingTrack};
 			trackClone.artwork = [{
 				src: src,
@@ -55,7 +56,7 @@ class WebAudioController extends AudioController {
 	*
 	*/
 	restoreCoverImage() {
-		if ('mediaSession' in navigator) {
+		if (this.browserShortcutsEnabled && 'mediaSession' in navigator) {
 			console.log('restoring cover image');
 			navigator.mediaSession.metadata = new MediaMetadata(this.playingTrack);
 		}
@@ -97,7 +98,7 @@ class WebAudioController extends AudioController {
 		return this.audioElement.duration;
 	}
 	pause() {
-		if ('mediaSession' in navigator) {
+		if (this.browserShortcutsEnabled && 'mediaSession' in navigator) {
 			navigator.mediaSession.playbackState = "paused";
 		}
 		this.audioElement.pause();
@@ -111,7 +112,7 @@ class WebAudioController extends AudioController {
 		try {
 			var returnValue = this.audioElement.play()
 			if (returnValue.then) {
-				if ('mediaSession' in navigator) {
+				if (this.browserShortcutsEnabled && 'mediaSession' in navigator) {
 					navigator.mediaSession.playbackState = "playing";
 				}
 				return returnValue;
@@ -150,7 +151,7 @@ class WebAudioController extends AudioController {
 			artwork: coverSizes
 		};
 
-		if ('mediaSession' in navigator) {
+		if (this.browserShortcutsEnabled && 'mediaSession' in navigator) {
 			navigator.mediaSession.metadata = new MediaMetadata(this.playingTrack);
 		}
 

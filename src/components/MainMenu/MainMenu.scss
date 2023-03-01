@@ -22,16 +22,17 @@
 		margin-bottom: 5px;
 	}
 	ion-icon {
-		color:  #ffffff;
+		color:  var(--sidemenu-icon-color);
 		font-size: 20px;
 		margin-inline: 0px;
 		margin-right: 12px;
 	}
 	ion-searchbar {
-		--icon-color: var(--primary-input-text-color);
-		--background: var(--primary-input-color);
+		--icon-color: var(--sidemenu-searchbar-text-color);
+		/*--background: var(--primary-input-color);*/
+		--background: var(--sidemenu-searchbar-background-color);
 
-		color: var(--primary-input-text-color);
+		color: var(--sidemenu-searchbar-text-color);
 	}
 	ion-input {
 		background-color: var(--primary-input-color);
@@ -54,7 +55,7 @@
 		font-size: 16px !important;
 	}
 	* {
-		--ion-item-color: #FFFFFF;
-		--ion-text-color: #FFFFFF;
+		--ion-item-color: var(--sidemenu-text-color);
+		--ion-text-color: var(--sidemenu-text-color);
 	}
 }

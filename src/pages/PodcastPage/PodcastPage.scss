@@ -15,7 +15,7 @@ h3 {
 
 		margin-bottom: 10px;
 
-		max-width: 400px;
+		max-width: 450px;
 		margin-left: auto;
 		margin-right: auto;
 
@@ -26,6 +26,7 @@ h3 {
 			font-family: Roboto;
 
 			padding-inline: 0px;
+			position: static;
 		}
 	}
 
@@ -146,6 +147,7 @@ h3 {
 			margin-right: 0px;
 
 			.title-large {
+				font-size: 36px;
 				text-align: left !important;
 			}
 		}

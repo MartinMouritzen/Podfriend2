@@ -16,28 +16,53 @@
 
 	/*--miniplayer-background-color: rgba(23,78,161,0.9); */
 
-
-
-	/* grey player */
-/*
-	--miniplayer-background-color: #f4f4f4;
+	/* Grey theme */
+	--sidemenu-background-color: #f1f1f1;
+	--sidemenu-searchbar-text-color: rgba(0,0,0,0.6);
+	--sidemenu-searchbar-background-color: rgba(255,255,255,0.5);
+	--sidemenu-text-color: #222222;
+	--sidemenu-icon-color: var(--primary-color);
+	--miniplayer-background-color: rgba(241,241,241,0.7);
 	--miniplayer-border-color: #dddddd;
-	--miniplayer-button-color: #010101;
-	--miniplayer-playbutton-color: #FFFFFF;
+	--miniplayer-button-color: #4c4c4c;
+	--miniplayer-playbutton-background-color: #FFFFFF;
+	--miniplayer-playbutton-background-color-hover: #ff23aa;
+	--miniplayer-playbutton-icon-color: #FFFFFF;
 	--miniplayer-episode-title-color: rgba(0,0,0,0.8);
 	--miniplayer-podcast-title-color: rgba(0,0,0,0.8);
-*/
-	/* Blue player */
+	--miniplayer-backdrop-filter: blur(40px);
 
+	/* Blue player */
+	/*
 	--miniplayer-background-color: rgba(23,78,161,1);
 	--miniplayer-border-color: #123e81;
 	--miniplayer-button-color: rgba(255,255,255,0.8);
 	--miniplayer-playbutton-icon-color: #FFFFFF;
+	--miniplayer-playbutton-background-color: var(--primary-color);
+	--miniplayer-playbutton-background-color-hover: #1180e7;
 	--miniplayer-episode-title-color: rgba(255,255,255,0.9);
 	--miniplayer-podcast-title-color: rgba(255,255,255,0.6);
-
-
+	--miniplayer-duration-text-color: rgba(255,255,255,0.9);
+	*/
 	
+	/* 2.0 blue theme */
+	--sidemenu-background-color: var(--primary-color);
+	--sidemenu-searchbar-text-color: rgba(255,255,255,0.9);
+	--sidemenu-searchbar-background-color: rgba(0,0,0,0.2);
+	--sidemenu-text-color: #FFFFFF;
+	--sidemenu-icon-color: rgba(255,255,255,0.9);
+
+	--miniplayer-background-color: rgba(255,255,255,0.7);
+	--miniplayer-fullscreen-background-color: rgba(255,255,255,1);
+	--miniplayer-border-color: #dddddd;
+	--miniplayer-button-color: #4c4c4c;
+	--miniplayer-playbutton-background-color: var(--primary-color);
+	--miniplayer-playbutton-background-color-hover: #1180e7;
+	--miniplayer-playbutton-icon-color: #FFFFFF;
+	--miniplayer-episode-title-color: rgba(0,0,0,0.8);
+	--miniplayer-podcast-title-color: rgba(0,0,0,0.8);
+	--miniplayer-backdrop-filter: blur(60px);
+	--miniplayer-duration-text-color: rgba(0,0,0,0.9);
 
 	--review-spot-background-color: #F5F7FB;
 
@@ -67,9 +92,25 @@ ion-nav-link {
 		bottom: 6px;
 	}
 }
+.menuShadow {
+	position: absolute;
+	top: 0;
+	left: 249px;
+	width: 1px;
+	height: 100%;
+	z-index: 1;
+	background-color: rgba(0,0,0,0.3);
+
+
+
+	@media (min-width: 1024px) {
+		display: block !important;
+	}
+}
 .greyPage {
 	--background: #f0f0f0;
 }
+/*
 .playerPagePadding {
 	height: 60px;
 }
@@ -78,6 +119,7 @@ ion-nav-link {
 		height: 90px !important;
 	}
 }
+*/
 .greyButton {
 	--background: #E4E6EB;
 	
@@ -90,15 +132,14 @@ ion-split-pane {
 }
 .split-pane-main {
 	#main {
-
 		&::part(scroll) {
-			height: calc(100% - 60px);
+			/* height: calc(100% - 60px); */
 		}
 		display: block;
 
 		@media (min-width: 670px) {
 			&::part(scroll) {
-				height: calc(100% - 90px);
+				/* height: calc(100% - 90px); */
 			}
 		}
 
@@ -124,9 +165,9 @@ ion-split-pane {
 	--border: 0;
 }
 ion-menu {
-	--background: var(--primary-color);
-	--ion-background-color: var(--primary-color);
-	--ion-color-base: var(--primary-color) !important;
+	--background: var(--sidemenu-background-color);
+	--ion-background-color: var(--sidemenu-background-color);
+	--ion-color-base: var(--sidemenu-background-color) !important;
   
 	left: 0px;
 
@@ -141,7 +182,7 @@ ion-menu {
 	}
 
 	ion-item-divider {
-		--background: var(--primary-color);
+		--background: var(--sidemenu-background-color);
 	}
 }
 .mainHeader {

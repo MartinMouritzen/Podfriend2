@@ -210,7 +210,6 @@ export const createPodcastSlice = (set, get) => ({
 	},
 	searchPodcasts: (query,searchType = 'podcast') => {
 		var searchUrl = 'https://api.podfriend.com/search/' + (searchType == 'podcast' ? 'podcast' : 'person') + '/' + encodeURIComponent(query);
-		let authToken = false;
 
 		return fetch(searchUrl, {
 			method: "GET",
@@ -218,7 +217,7 @@ export const createPodcastSlice = (set, get) => ({
 				'Content-Type': 'application/json',
 				'Accept': 'application/json',
 				'User-Agent': 'Podfriend',
-				'Authorization': `Bearer ${authToken}`
+				'Authorization': `Bearer ${get().authToken}`
 			}
 		})
 		.then((resp) => {
@@ -298,7 +297,6 @@ export const createPodcastSlice = (set, get) => ({
 		var podcastAPIURL = "https://api.podfriend.com/podcast/" + podcastPath;
 
 		let abortController = new AbortController();
-		let authToken = false;
 
 		// If we are in the process of fetching already we need to abort.
 		if (get().fetchingPodcast) {
@@ -312,7 +310,7 @@ export const createPodcastSlice = (set, get) => ({
 			headers: {
 				'Content-Type': 'application/json',
 				'Accept': 'application/json',
-				'Authorization': `Bearer ${authToken}`
+				'Authorization': `Bearer ${get().authToken}`
 			},
 			signal: abortController.signal
 		})
@@ -380,17 +378,16 @@ export const createPodcastSlice = (set, get) => ({
 			}
 		}
 		if (!shouldUpdate) {
-			return podcastData.rssFeedContents;
+			console.log('Original RSS Feed cached');
+			return Promise.resolve(podcastData.rssFeedContents);
 		}
-		if (shouldUpdate) {
+		else {
 			console.log('Fetching original RSS feed to scan for changes.: ' + podcastData.feedUrl);
 			return podcastFeed.parse()
 			.then((feed) => {
 				console.log('Fetching original RSS feed to scan for changes. - Done');
 
 				feed.uuid = uuidv4();
-
-				return feed;
 
 				get().updatePodcastAttributes({
 					podcastData: podcastData,
@@ -399,6 +396,8 @@ export const createPodcastSlice = (set, get) => ({
 						lastOriginalRSSFeedUpdate: new Date()
 					}
 				});
+				return Promise.resolve(feed);
+
 			})
 			.catch((error) => {
 				console.error('Error parsing RSS feed: ');

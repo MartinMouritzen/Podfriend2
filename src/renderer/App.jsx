@@ -49,15 +49,20 @@ setupIonicReact({
 
 });
 
+/* import MenuShadow from 'images/layout/menushadow.png'; */
+
 export default function App({ platform, audioController }) {
 	const { breakpoint } = useBreakpoint(BREAKPOINTS, 'desktop');
 
 	const showSplitPane = breakpoint === 'desktop';
 
 	const setAudioController = useStore((state) => state.setAudioController);
+	const synchronizePodcasts = useStore((state) => state.synchronizePodcasts);
 
 	useEffect(() => {
 		setAudioController(audioController);
+		synchronizePodcasts();
+		console.log('App loaded');
 	},[]);
 
 	const routes = [
@@ -81,6 +86,7 @@ export default function App({ platform, audioController }) {
 					<DesktopHeader />
 				}
 				<Player audioController={audioController} />
+				<div className="menuShadow" style={{ display: 'none' }}>&nbsp;</div>
 				<IonReactRouter>
 					<IonSplitPane contentId="main" when={showSplitPane}>
 						<MainMenu />

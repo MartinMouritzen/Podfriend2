@@ -95,15 +95,15 @@ const PodcastPage = ({ match }) => {
 		}
 		if (podcastRSSData.location) {
 			// console.log('Feed has location');
-			console.log(podcastRSSData.location);
+			// console.log(podcastRSSData.location);
 			setLocation(podcastRSSData.location);
 		}
 		else {
 			setLocation(false);
 		}
 		if (podcastRSSData.persons) {
-			console.log('Feed has persons');
-			console.log(podcastRSSData.persons);
+			// console.log('Feed has persons');
+			// console.log(podcastRSSData.persons);
 			setPersons(podcastRSSData.persons);
 		}
 		else {
@@ -176,7 +176,9 @@ const PodcastPage = ({ match }) => {
 	useEffect(() => {
 		// Scroll to the top when podcast changes. Otherwise we risk weird behaviour if the user scrolled on a previous podcast page
 		setTimeout(() => {
-			podcastPane.current.scrollToTop(0);
+			if (podcastPane && podcastPane.current && podcastPane.current.scrollToTop) {
+				podcastPane.current.scrollToTop(0);
+			}
 		},50);
 		setPodcastState('loading');
 		setPodcastData(false);
@@ -299,7 +301,9 @@ const PodcastPage = ({ match }) => {
 									}
 									{ podcastState === 'loaded' &&
 										<>
+										<div className="ion-text-wrap">
 											{podcastData.name}
+											</div>
 										</>
 									}
 								</IonTitle>

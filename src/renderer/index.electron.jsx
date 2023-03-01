@@ -57,6 +57,7 @@ document.addEventListener('mousedown',onMouseDown);
 document.addEventListener('mouseup',onMouseUp);
 
 const audioController = new WebAudioController();
+audioController.browserShortcutsEnabled = false;
 
 root.render(<App platform="desktop" audioController={audioController} />);
 

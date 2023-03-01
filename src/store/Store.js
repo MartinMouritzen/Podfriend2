@@ -7,6 +7,8 @@ import { createPodcastSlice } from './PodcastSlice';
 import { createPlayerSlice } from './PlayerSlice';
 import { createUserSlice } from './UserSlice';
 import { createUISlice } from './UISlice';
+import { createServerSyncSlice } from './ServerSyncSlice';
+
 
 
 /*
@@ -18,6 +20,8 @@ const useStore = create(persist((...a) => ({
 	...createPodcastSlice(...a),
 	...createPlayerSlice(...a),
 	...createUserSlice(...a),
+	...createUISlice(...a),
+	...createServerSyncSlice(...a)
 }),{
 	// Define what parts we do not want persisted
 	partialize: (state) => {

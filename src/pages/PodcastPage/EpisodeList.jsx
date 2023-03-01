@@ -267,7 +267,6 @@ const EpisodeItem = ({ podcastData, episode, selected, activeEpisode }) => {
 
 	// var realEpisode = false;
 	// Find the "real" episode object.
-	/*
 	if (podcastData && podcastData.episodes) {
 		for (var i=0;i<podcastData.episodes.length;i++) {
 			if (podcastData.episodes[i].url == episode.url) {
@@ -275,7 +274,6 @@ const EpisodeItem = ({ podcastData, episode, selected, activeEpisode }) => {
 			}
 		}
 	}
-	*/
 
 	return (
 		<IonItem

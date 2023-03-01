@@ -52,7 +52,7 @@ ion-range {
 }
 .player {
 	background-color: var(--miniplayer-background-color);
-	/*backdrop-filter: blur(20px);*/
+	backdrop-filter: var(--miniplayer-backdrop-filter);
 	border-top: 1px solid var(--miniplayer-border-color);
 	position: absolute;
 	bottom: 0px;
@@ -68,6 +68,11 @@ ion-range {
 	color: #FFFFFF;
 
 	&.noPodcastPlaying {
+		height: 0px !important;
+		overflow: hidden;
+
+		transition: background-color 1s, bottom 0.5s, height 1s;
+
 		.controls {
 			display: none;
 		}
@@ -105,6 +110,8 @@ ion-range {
 			height: 30px;
 
 			transition: all 0.4s;
+
+			border-radius: 5px;
 		}
 	}
 
@@ -153,7 +160,7 @@ ion-range {
 			display: none;
 			justify-content: center;
 			align-items: center;
-			color: rgba(255,255,255,0.9);
+			color: var(--miniplayer-duration-text-color);
 			font-size: 14px;
 		}
 	}
@@ -199,7 +206,7 @@ ion-range {
 						max-width: 50px;
 						min-width: 50px;
 
-						background-color:  var(--primary-color);
+						background-color:  var(--miniplayer-playbutton-background-color);
 
 						padding-left: 3px;
 
@@ -313,6 +320,9 @@ ion-range {
 		background-color: var(--miniplayer-background-color) !important;
 		border-top: 1px solid var(--miniplayer-border-color) !important;
 
+		right: 0px;
+		width: calc(100% - 250px);
+
 		.controls {
 			margin-right: 300px;
 			.titleAndButtons {
@@ -328,7 +338,7 @@ ion-range {
 
 					.button {
 						&.buttonPlay, &.buttonLoad, &.buttonPause {
-							background-color: var(--primary-color) !important;
+							background-color: var(--miniplayer-playbutton-background-color);
 						}
 						&.buttonSkipBackward, &.buttonSkipForward, &.buttonExpand {
 							width: 30px;
@@ -421,18 +431,23 @@ ion-range {
 		flex-direction: column;
 		align-items: center;
 		border-radius: 15px 15px 0px 0px;
-		/*background:  rgba(1,118,229,1);*/
 		z-Index: 9999;
 		overflow: auto;
-		background-color: var(--miniplayer-background-color) !important;
+		background-color: var(--miniplayer-fullscreen-background-color) !important;
+		/* background-color:  rgba(1,118,229,1) !important; */
 
 		.playerCoverContainer {
 			max-width: 400px;
+			max-height: 400px;
 			margin-bottom: 20px;
 
-			border: 2px solid #FFFFFF;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+
+			/*border: 2px solid #FFFFFF;*/
 			border-radius: 5px;
-			box-shadow: 0px 3px 11px -1px rgb(0 0 0 / 33%);
+
 
 			img {
 				width: 90vw !important;
@@ -526,8 +541,8 @@ ion-range {
 				width: 100% !important;
 				height: auto !important;
 
-				max-width: 600px !important;
-				max-height: 600px !important;
+				max-width: 400px !important;
+				max-height: 400px !important;
 			}
 		}
 		.episodeContent {
@@ -539,7 +554,9 @@ ion-range {
 
 		&.playing {
 			.playerCoverContainer {
-				transform: scale(1.02);
+				transform: scale(1.05);
+
+				box-shadow: 0px 3px 11px -1px rgb(0 0 0 / 33%);
 	
 				/*box-shadow: 0px 0px 39px -12px rgba(0,0,0,0.25);*/
 			}
@@ -615,7 +632,7 @@ ion-range {
 				}
 			}
 			.buttonPlay:hover, .buttonLoad:hover, .buttonPause:hover {
-				background-color: #1180e7;
+				background-color: var(--miniplayer-playbutton-background-color-hover) !important;
 				transform: scale(1.1);
 			}
 		}

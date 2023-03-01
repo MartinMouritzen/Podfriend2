@@ -1,6 +1,6 @@
 import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonButtons, IonMenuButton, IonBackButton, IonButton, IonIcon, IonModal, IonLabel } from "@ionic/react";
 
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState, useEffect, useCallback } from 'react';
 
 import AccountModal from "components/AccountModal/AccountModal";
 
@@ -16,6 +16,61 @@ import { personCircleOutline as notLoggedInIcon, personCircleSharp as loggedInIc
 
 import useStore from 'store/Store';
 
+function useHookWithRefCallback() {
+	const ref = useRef(null);
+	const setRef = useCallback((node) => {
+		if (ref.current) {
+			// Make sure to cleanup any events/references added to the last instance
+		}
+
+		if (node) {
+			var styles = node.shadowRoot.querySelectorAll(".customScrollStyle");
+
+			if (styles.length === 0) {
+				let el = document.createElement('style')
+				el.className = "customScrollStyle";
+				el.textContent = `::-webkit-scrollbar {
+					width: 8px;
+					height: 6px;
+					}
+					::-webkit-scrollbar-track {
+						background-color: transparent;
+					}
+					::-webkit-scrollbar-thumb {
+						background-color: #cacaca;
+						border-radius: 8px;
+					}
+					
+					::-webkit-scrollbar-thumb:hover {
+						background-color: #aaa;
+					}
+					.inner-scroll {
+						scrollbar-width: thin
+						scrollbar-color: #cacaca transparent;
+					}
+					::-webkit-scrollbar-track-piece:end {
+						margin-bottom: 60px;
+					}
+					@media (min-width: 670px) {
+						::-webkit-scrollbar-track-piece:end {
+							margin-bottom: 90px !important;
+						}
+					}`;
+				node.shadowRoot.appendChild(el);
+			}
+			// console.log(node.shadowRoot);
+
+			// Check if a node is actually passed. Otherwise node would be null.
+		// You can now do what you need to, addEventListeners, measure, etc.
+		}
+
+		// Save a reference to the node
+		ref.current = node;
+	}, [])
+
+	return [setRef]
+}
+
 const Page = ({ id = null, title = "Undefined", defaultHeader = true, showBackButton = true, className = "", children, contentRef = null }) => {
 	const { breakpoint, maxWidth, minWidth } = useBreakpoint(BREAKPOINTS, 'desktop');
 	const location = useLocation();
@@ -28,6 +83,25 @@ const Page = ({ id = null, title = "Undefined", defaultHeader = true, showBackBu
 
 	const random = Math.random();
 	const modalString = "open-account-modal-" + random;
+
+	const [ contentNodeRef ] = useHookWithRefCallback();
+
+	/*
+	useEffect(() => {
+		if (contentRef && contentRef.current) {
+			contentRef.current.getScrollElement()
+			.then((scrollElement) => {
+				console.log(scrollElement.tagName);
+				console.log(scrollElement);
+				console.log(scrollElement.nativeElement);
+
+				let el = document.createElement('style')
+				el.innerText = getStyle();
+				scrollElement.appendChild(el);
+			});
+		}
+	},[contentRef.current]);
+	*/
 
 	return (
 		<IonPage id={id} className={className}>
@@ -54,9 +128,9 @@ const Page = ({ id = null, title = "Undefined", defaultHeader = true, showBackBu
 					</IonButtons>
 				</IonToolbar>
 			</IonHeader>
-			<IonContent id="main" forceOverscroll={true} ref={contentRef}>
+			<IonContent id="main" forceOverscroll={true} ref={contentNodeRef}>
 				{ defaultHeader &&
-					<IonHeader collapse="condense" class="mainTitleHeader">
+					<IonHeader collapse="condense" className="mainTitleHeader">
 						<IonToolbar>
 							<IonTitle size="large">{title}</IonTitle>
 						</IonToolbar>
@@ -64,7 +138,7 @@ const Page = ({ id = null, title = "Undefined", defaultHeader = true, showBackBu
 				}
 
 				{children}
-				{ /* <div className="playerPagePadding" style={{ height: 60 }}></div> */ }
+				<div className="playerPagePadding" style={{ height: 60 }}></div>
 				<AccountModal trigger={modalString} />
 			</IonContent>
 			{ showBottomMenu &&

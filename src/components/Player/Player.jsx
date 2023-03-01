@@ -1,11 +1,10 @@
-import { IonMenu, IonTitle, IonSearchbar, IonHeader, IonContent, IonIcon, IonLabel, IonList, IonItem, IonToolbar, IonButtons, IonButton, IonRange, IonSegment, IonSegmentButton, IonSkeletonText } from '@ionic/react';
+import { IonMenu, IonTitle, IonSearchbar, IonHeader, IonContent, IonIcon, IonLabel, IonList, IonItem, IonToolbar, IonButtons, IonButton, IonRange, IonSegment, IonSegmentButton } from '@ionic/react';
 
 import useStore from 'store/Store';
 
 import { useEffect, useRef, useState } from 'react';
 
 import DraggablePane from 'components/UI/DraggablePane/DraggablePane';
-import PodcastImage from 'components/PodcastImage/PodcastImage';
 
 import TimeUtil from 'library/TimeUtil';
 
@@ -25,6 +24,7 @@ import SkipBackwardIcon from 'images/player/skip-backward.svg';
 import SkipForwardIcon from 'images/player/skip-forward.svg';
 
 import LoadingIcon from 'images/player/loading.png';
+import PlayerPodcastCoverArea from './PlayerPodcastCoverArea';
 
 
 const Player = ({ audioController }) => {
@@ -33,6 +33,8 @@ const Player = ({ audioController }) => {
 
 	const activePodcast = useStore((state) => state.activePodcast);
 	const activeEpisode = useStore((state) => state.activeEpisode);
+
+	const retrieveOriginalPodcastFeed = useStore((state) => state.retrieveOriginalPodcastFeed);
 
 	const fullscreen = useStore((state) => state.playerFullscreen);
 	const maximize = useStore((state) => state.playerMaximize);
@@ -73,11 +75,6 @@ const Player = ({ audioController }) => {
 	const [errorText,setErrorText] = useState(false);
 
 	const [errorRetries,setErrorRetries] = useState(0);
-
-	const defaultVibrantColor = 'rgba(41, 121, 255, 1)';
-	const defaultDarkVibrantColor = 'rgba(23,78,161,1)';
-	const [vibrantColor,setVibrantColor] = useState(defaultVibrantColor);
-	const [darkVibrantColor,setDarkVibrantColor] = useState(defaultDarkVibrantColor);
 
 	const [segmentVisible,setSegmentVisible] = useState('playing');
 
@@ -218,44 +215,24 @@ const Player = ({ audioController }) => {
 		setSubtitleFileURL(false);
 
 		changeActiveEpisode(activePodcast,activeEpisode);
+
+		retrieveOriginalPodcastFeed(activePodcast)
+		.then((feed) => {
+			console.log('new original feed in player');
+			console.log(feed);
+		});
 	},[activeEpisode.url]);
 
-	const podcastImageURL = activeEpisode.image ? activeEpisode.image : activePodcast.artworkUrl600 ? activePodcast.artworkUrl600 : activePodcast.image;
+	
 
-	const coverImageRef = useRef(null);
+	
 
-	const vibrantColorsLoaded = () => {
-		try {
-			var vibrant = new Vibrant(coverImageRef.current);
-			var swatches = vibrant.swatches();
+	
 
-			var useKey = 'DarkVibrant';
-			setDarkVibrantColor(`rgba(${swatches[useKey]['rgb'][0]},${swatches[useKey]['rgb'][1]},${swatches[useKey]['rgb'][2]},1`);
-			useKey = 'Vibrant';
-			setVibrantColor(`rgba(${swatches[useKey]['rgb'][0]},${swatches[useKey]['rgb'][1]},${swatches[useKey]['rgb'][2]},1`);
-		}
-		catch (exception) {
-			console.log('Vibrant exception');
-			console.log(exception);
-		}
-	};
 
-	useEffect(() => {
-		setDarkVibrantColor(defaultDarkVibrantColor);
-		setVibrantColor(defaultVibrantColor);
 
-		if (coverImageRef.current) {
-			coverImageRef.current.crossOrigin = 'anonymous';
-			if (coverImageRef.current.complete && coverImageRef.current.naturalHeight !== 0) {
-				vibrantColorsLoaded();
-			}
-			coverImageRef.current.addEventListener('load',() => {
-				vibrantColorsLoaded();
-			});
-		}
-	},[coverImageRef.current]);
-
-	var playerStyle = { backgroundColor: darkVibrantColor, borderTop: '1px solid ' + darkVibrantColor };
+	// var playerStyle = { backgroundColor: darkVibrantColor, borderTop: '1px solid ' + darkVibrantColor };
+	var playerStyle = {};
 
 	return (
 		<>
@@ -293,19 +270,10 @@ const Player = ({ audioController }) => {
 				{ (!fullscreen || segmentVisible === 'playing') &&
 					<div className="playerCoverContainer" onClick={maximize}>
 						{ activeEpisode &&
-							<PodcastImage
-								podcastPath={activePodcast.path}
-								width={600}
-								height={600}
-								coverWidth={50}
-								coverHeight={50}
-								imageErrorText={activePodcast.name}
-								fallBackImage={activePodcast.artworkUrl600 ? activePodcast.artworkUrl600 : activePodcast.image}
-								src={podcastImageURL}
-								className={''}
-								imageRef={coverImageRef}
-								loadingComponent={() => <IonSkeletonText animated={true} className="coverLoading" />}
+							<PlayerPodcastCoverArea 
+								audioController={audioController}
 							/>
+							
 						}
 					</div>
 				}
@@ -344,15 +312,15 @@ const Player = ({ audioController }) => {
 								<div className="button buttonSkipBackward" onClick={onSkipBackward}><SVG src={SkipBackwardIcon} /></div>
 								<div className="button buttonRewind" onClick={onBackward}><SVG src={RewindIcon} /></div>
 								{ streamDataLoading &&
-									<div className="button buttonLoad" onClick={onPauseClicked} style={{ backgroundColor: vibrantColor }} ><img src={LoadingIcon} /></div>
+									<div className="button buttonLoad" onClick={onPauseClicked} style={{ /* backgroundColor: vibrantColor */ }} ><img src={LoadingIcon} /></div>
 								}
 								{ streamDataLoading === false &&
 									<>
 									{ shouldPlay &&
-										<div className="button buttonPause" onClick={onPauseClicked} style={{ backgroundColor: vibrantColor }}><SVG src={PauseIcon} /></div>
+										<div className="button buttonPause" onClick={onPauseClicked} style={{ /* backgroundColor: vibrantColor */ }}><SVG src={PauseIcon} /></div>
 									}
 									{ shouldPlay === false &&
-										<div className="button buttonPlay" onClick={onPlayClicked} style={{ backgroundColor: vibrantColor }}><SVG src={PlayIcon} /></div>
+										<div className="button buttonPlay" onClick={onPlayClicked} style={{ /* backgroundColor: vibrantColor */ }}><SVG src={PlayIcon} /></div>
 									}
 									</>
 								}

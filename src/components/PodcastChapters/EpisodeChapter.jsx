@@ -9,10 +9,12 @@ const EpisodeChapter = ({ title, image, url, isActive, fadeOut }) => {
 		hue: 'blue'
 	});
 
+	return <img src={image} className={'chapter' + ' ' + (isActive ? 'activeChapter' : '')} />;
+
 	return (
 		<div
 			className={
-				'chapter' + ' ' + (isActive ? 'activeChapter' : '') + (fadeOut ? 'fadeOut' : '')}
+				'chapter' + ' ' + (isActive ? 'activeChapter' : '')}
 				style={{
 					backgroundColor: (!url && !image) ? chapterRandomColor : 'transparent'
 				}}

@@ -1,5 +1,4 @@
 .chapterScreen {
-	position: relative;
 	/*
 	width: 90vw;
 	height: 90vw;
@@ -18,9 +17,7 @@
 	height: 100%;
 }
 .chapter {
-	position: relative;
-
-	display: flex;
+	display: none !important;
 	flex-direction: column;
 
 	pointer-events: none;
@@ -30,6 +27,7 @@
 	opacity: 0;
 }
 .activeChapter {
+	display: flex !important;
 	opacity: 1;
 
 	pointer-events: all;

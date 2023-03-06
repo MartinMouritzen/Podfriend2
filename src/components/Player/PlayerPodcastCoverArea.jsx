@@ -120,27 +120,32 @@ const PlayerPodcastCoverArea = ({ audioController }) => {
 		}
 	};
 
+	const episodeCover = (
+		<PodcastImage
+				podcastPath={activePodcast.path}
+				width={600}
+				height={600}
+				coverWidth={50}
+				coverHeight={50}
+				imageErrorText={activePodcast.name}
+				fallBackImage={activePodcast.artworkUrl600 ? activePodcast.artworkUrl600 : activePodcast.image}
+				src={podcastImageURL}
+				className={''}
+				// imageRef={coverImageRef}
+				loadingComponent={() => <IonSkeletonText animated={true} className="coverLoading" />}
+			/>
+	);
+
 	return (
 		<>
 			{ (fullscreen && chapters !== false) &&
-				<EpisodeChapters audioController={audioController} chapters={chapters} progress={activeEpisode.currentTime} />
+				<EpisodeChapters audioController={audioController} chapters={chapters} progress={activeEpisode.currentTime} episodeCover={episodeCover} />
 			}
-			{ false &&
-				<PodcastImage
-					podcastPath={activePodcast.path}
-					width={600}
-					height={600}
-					coverWidth={50}
-					coverHeight={50}
-					imageErrorText={activePodcast.name}
-					fallBackImage={activePodcast.artworkUrl600 ? activePodcast.artworkUrl600 : activePodcast.image}
-					src={podcastImageURL}
-					className={''}
-					// imageRef={coverImageRef}
-					loadingComponent={() => <IonSkeletonText animated={true} className="coverLoading" />}
-				/>
+			{ (!fullscreen || chapters === false) &&
+				<>
+					{episodeCover}
+				</>
 			}
-			
 		</>
 	);
 }

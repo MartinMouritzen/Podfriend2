@@ -1,15 +1,36 @@
 import Page from "components/Page/Page";
 
+import { useRef } from 'react';
+
 import TrendingPodcasts from "components/Lists/TrendingPodcasts";
 import CategoryList from "components/Lists/CategoryList";
-import { IonButton, IonButtons, IonHeader, IonSearchbar, IonTitle, IonToolbar } from "@ionic/react";
+import { IonButton, IonButtons, IonHeader, IonSearchbar, IonTitle, IonToolbar, useIonRouter } from "@ionic/react";
+
+import useBreakpoint from 'use-breakpoint';
+import { BREAKPOINTS } from 'constants/breakpoints';
 
 const Home = ({  }) => {
+	const { breakpoint } = useBreakpoint(BREAKPOINTS, 'desktop');
+
+	const router = useIonRouter();
+	const searchBar = useRef(null);
+
+	const onSearch = (event) => {
+		event.preventDefault();
+		router.push("/search/" + searchBar.current.value)
+
+		return false;
+	};
+
 	return (
 		<Page id="home" title="Home" showBackButton={false}>
 			<IonHeader collapse="condense" class="mainTitleHeader">
 				<IonToolbar>
-					<IonSearchbar collapse={true} animated={true} show-clear-button="focus" inputmode="search" placeholder="Search podcasts"></IonSearchbar>
+					{ breakpoint !== 'desktop' &&
+						<form method="GET" onSubmit={onSearch}>
+							<IonSearchbar collapse={true} animated={true} show-clear-button="focus" inputmode="search" placeholder="Search podcasts" ref={searchBar}></IonSearchbar>
+						</form>
+					}
 				</IonToolbar>
 			</IonHeader>
 			<div className='section'>

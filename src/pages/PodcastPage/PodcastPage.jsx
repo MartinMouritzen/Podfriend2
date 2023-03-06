@@ -16,12 +16,18 @@ import LoadingRings from 'images/loading/loading-rings.svg';
 import followIcon from 'images/icons/plus-circle.svg';
 import playIcon from 'images/icons/play-circle.svg';
 import dotsIcon from 'images/icons/dots.svg';
-import { autoUpdater } from "electron";
+// import { autoUpdater } from "electron";
 
 import useDimensions from "react-use-dimensions";
 import EpisodeList from "./EpisodeList";
 import PodcastPersons from "./PodcastPersons";
 import RSSFeed from "library/RSSFeed";
+
+import {
+	earthSharp as websiteIcon,
+	micSharp as companyIcon,
+} from 'ionicons/icons';
+import LiveEpisodes from "./LiveEpisodes";
 
 const PodcastPage = ({ match }) => {
 	const [actionButtonsRef, { x, y, width: actionButtonsWidth }] = useDimensions();
@@ -47,11 +53,13 @@ const PodcastPage = ({ match }) => {
 	const [error,setError] = useState(false);
 	const [podcastData,setPodcastData] = useState(false);
 
-	const [location,setLocation] = useState(false);
-	const [showLocation,setShowLocation] = useState(false);
 	const [showReviews,setShowReviews] = useState(false);
 
+	const [location,setLocation] = useState(false);
+	const [showLocation,setShowLocation] = useState(false);
 	const [persons,setPersons] = useState(false);
+	const [liveItems,setLiveItems] = useState(false);
+	
 
 	const [actionSheetPresent] = useIonActionSheet();
 
@@ -62,7 +70,6 @@ const PodcastPage = ({ match }) => {
 		setPodcastIsFollowed(true);
 	};
 	const onUnfollowPodcast = () => {
-		console.log(podcastData);
 		unfollowPodcast(podcastData);
 		setPodcastIsFollowed(false);
 	};
@@ -91,7 +98,11 @@ const PodcastPage = ({ match }) => {
 		if (!podcastRSSData) {
 			setPersons(false);
 			setLocation(false);
+			setLiveItems(false);
 			return;
+		}
+		if (podcastRSSData.liveItems) {
+			setLiveItems(podcastRSSData.liveItems);
 		}
 		if (podcastRSSData.location) {
 			// console.log('Feed has location');
@@ -292,7 +303,17 @@ const PodcastPage = ({ match }) => {
 							/>
 						}
 					</div>
-					<div style={{ flex: 1 }}>
+					<div className="podcastHeaderContent">
+						{ (false && podcastState === 'loading') &&
+							<div className="author">
+								<IonSkeletonText animated={true} style={{ width: 250, height: 20 }}></IonSkeletonText>
+							</div>
+						}
+						{ (false && podcastState === 'loaded') &&
+							<div className="author">
+								{podcastData.author}
+							</div>
+						}
 						<IonHeader collapse="condense">
 							<IonToolbar>
 								<IonTitle size="large">
@@ -310,14 +331,7 @@ const PodcastPage = ({ match }) => {
 							</IonToolbar>
 						</IonHeader>
 						<div className="podcastInfo">
-							{ false && podcastState === 'loading' &&
-								<IonSkeletonText animated={true} style={{ width: 250, height: 20 }}></IonSkeletonText>
-							}
-							{ false && podcastState === 'loaded' &&
-								<div className="author">
-									{podcastData.author}
-								</div>
-							}
+							<ReviewStarsWithText rating={podcastData.review_totalScore} reviews={podcastData.review_totalCount} />
 							<div>
 								{ podcastState === 'loading' &&
 									<div className="description">
@@ -367,21 +381,33 @@ const PodcastPage = ({ match }) => {
 							</IonButton>
 							<IonButton id="moreButton" className="greyButton" onClick={() => {
 								actionSheetPresent({
+
 									buttons: [
-									{
-										text: 'Add season to playlist',
-										data: {
-										action: 'share',
+										{
+											text: 'Go to podcast website',
+											data: {
+												action: 'website'
+											}
 										},
-									},
-									{
-										text: 'Cancel',
-										role: 'cancel',
-										data: {
-										action: 'cancel',
+										{
+											text: 'Add season to playlist',
+											data: {
+												action: 'share',
+											},
 										},
-									},
+										{
+											text: 'Cancel',
+											role: 'cancel',
+											data: {
+												action: 'cancel',
+											},
+										},
 									],
+									onWillDismiss: ({ detail }) => {
+										if (detail?.data?.action === 'website') {
+											window.open(podcastData.link,"_blank");
+										}
+									},
 									onDidDismiss: ({ detail }) => {
 										console.log('pressed action sheet button');
 										console.log(detail);
@@ -391,7 +417,12 @@ const PodcastPage = ({ match }) => {
 						</div>
 					</div>
 				</div>
-				<EpisodeList podcastPath={podcastData.path} podcastData={podcastData} episodes={podcastData.episodes} />
+				<div>
+					{ liveItems &&
+						<LiveEpisodes liveItems={liveItems} />
+					}
+					<EpisodeList podcastPath={podcastData.path} podcastData={podcastData} episodes={podcastData.episodes} />
+				</div>
 
 			</div>
 			<div className="podcastExtraContent">

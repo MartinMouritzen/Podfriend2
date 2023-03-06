@@ -101,7 +101,12 @@ class WebAudioController extends AudioController {
 		if (this.browserShortcutsEnabled && 'mediaSession' in navigator) {
 			navigator.mediaSession.playbackState = "paused";
 		}
-		this.audioElement.pause();
+		try {
+			this.audioElement.pause();
+		}
+		catch (exception) {
+			console.log('Pause exception');
+		}
 		return Promise.resolve(true);
 	}
 	load() {

@@ -6,6 +6,10 @@
 	h1 {
 		margin-left: 20px;
 	}
+	a {
+		text-decoration: none;
+		color: unset;
+	}
 }
 .seasonSelect {
 	max-width: 160px;
@@ -43,12 +47,75 @@
 .episode {
 	align-items: flex-start;
 
+	h2 {
+		height: 26px;
+		display: flex;
+		align-items: center;
+
+		img {
+			margin-top: 0px;
+			margin-right: 6px;
+		}
+	}
+
 	img, ion-img, .coverLoading {
 		margin-top: 10px;
 
 	}
 	ion-label {
 		margin-left: 10px;
+	}
+	.playAndProgress {
+		display: flex;
+
+		margin-top: 10px;
+		align-items: center;
+
+		.playButton, .pauseButton {
+			background-color: var(--primary-color);
+			display: flex;
+			justify-content: center;
+			align-items: center;
+
+			padding: 3px;
+			margin-right: 10px;
+			border-radius: 50%;
+
+			ion-icon {
+				fill: #FFFFFF;
+			}
+			&.playButton {
+				ion-icon {
+					position: relative;
+					left: 1px;
+				}
+			}
+		}
+		.progress {
+			display: flex;
+			
+			align-items: center;
+		
+			font-size: 12px;
+			color: rgba(var(--ion-text-color-rgb, 0, 0, 0), 0.6);
+
+			ion-icon {
+				font-size: 16px;
+			}
+		
+			.episodeProgressBarOuter {
+				background-color: #CCCCCC;
+				height: 10px;
+				width: 100px;
+	
+				margin-right: 10px;
+		
+				.episodeProgressBarInner {
+					background-color: #0176e5; /* rgba(75,205,14,0.7); */
+					height: 10px;
+				}
+			}
+		}
 	}
 
 	.date {
@@ -70,30 +137,9 @@
 
 		color: rgba(0,0,0,0.8);
 	}
-	.progress {
-		margin-top: 10px;
-		display: flex;
-		
-		align-items: center;
-	
-		font-size: 12px;
-		color: rgba(var(--ion-text-color-rgb, 0, 0, 0), 0.4);
-	
-		.episodeProgressBarOuter {
-			background-color: #CCCCCC;
-			height: 10px;
-			width: 100px;
-
-			margin-right: 10px;
-	
-			.episodeProgressBarInner {
-				background-color: #0176e5; /* rgba(75,205,14,0.7); */
-				height: 10px;
-			}
-		}
-	}
 
 	&.selected {
+		/*
 		--ion-item-background: var(--primary-color);
 		color: #FFFFFF;
 
@@ -111,6 +157,7 @@
 				}
 			}
 		}
+		*/
 	}
 	.cover, .coverLoading {
 		width: 60px;

@@ -10,23 +10,48 @@ h3 {
 
 	padding-right: 20px;
 
-	.toolbar-title-large {
-		--background:  transparent;
+	.podcastHeaderContent {
+		flex: 1;
+		max-width: 400px;
 
-		margin-bottom: 10px;
-
-		max-width: 450px;
 		margin-left: auto;
 		margin-right: auto;
 
-		padding: 0px;
+		.author {
+			font-size: 16px;
+			color: #999999;
+			margin-bottom: 5px;
 
-		.title-large {
-			font-size: 20px;
-			font-family: Roboto;
+			ion-icon {
+				position: relative;
+				top: 2px;
+			}
+			a {
+				color: #999999;
+				text-decoration: none;
+			}
+		}
+		.toolbar-title-large {
+			--background:  transparent;
 
-			padding-inline: 0px;
-			position: static;
+			max-width: 400px;
+
+			margin-left: auto;
+			margin-right: auto;
+
+			padding: 0px;
+			padding-top: 0px !important;
+			--padding-start: 0px;
+
+			.title-large {
+				font-size: 36px;
+				font-family: Roboto;
+
+				padding-bottom: 0px;
+
+				padding-inline: 0px;
+				position: static;
+			}
 		}
 	}
 
@@ -38,7 +63,7 @@ h3 {
 		height: 90vw !important;
 
 		max-height: 400px;
-		margin-bottom: 20px;
+		margin-bottom: 10px;
 
 		.cover {
 			border-radius: 10px;
@@ -77,10 +102,7 @@ h3 {
 		}
 	}
 	.podcastInfo {
-		
-
-		.author {
-			font-size: 18px;
+		.starRating {
 			margin-bottom: 10px;
 		}
 		.reviews {
@@ -136,9 +158,54 @@ h3 {
 	margin-left: 20px;
 	margin-right: 20px;
 }
+.liveItem {
+	background-color: #FFFFFF;
+	margin-left: 10px;
+	margin-right: 40px;
+	margin-top: 20px;
+	border-radius: 10px;
+
+	box-shadow: rgb(0 0 0 / 25%) 0px 0px 0.125rem 0px, rgb(0 0 0 / 12%) 0px 0.125rem 0.125rem 0px;
+
+	.content {
+		padding: 20px;
+		padding-bottom: 0px;
+		.liveBadge {
+			display: inline-block;
+			background-color: var(--badge-color);
+			max-width: 300px;
+			padding: 5px;
+			padding-left: 15px;
+			padding-right: 15px;
+			color: #FFFFFF;
+			border-radius: 10px;
+		}
+		h2 {
+			margin-bottom: 0px;
+		}
+		.scheduleText {
+			margin-top: 10px;
+			margin-bottom: 10px;
+		}
+		.liveDate {
+			color: rgba(0,0,0,0.7);
+		}
+		.liveDate:first-letter {
+			text-transform: uppercase;
+		}
+	}
+	.actionBar {
+		/* background-color: rgba(60,60,60,0.1); */
+		padding: 8px;
+	}
+}
 
 
 @media (min-width: 670px) {
+	.podcastHeaderContent {
+		margin-left: 16px !important;
+		margin-right: 0px !important;
+	}
 	.podcastHeader {
 		flex-direction: row;
 
@@ -152,11 +219,11 @@ h3 {
 			}
 		}
 		.actionButtons {
-			margin-left: 16px;
+			margin-left: 0px;
 			margin-right: 0px;
 		}
 		.podcastInfo {
-			margin-left: 16px;
+			
 
 			.description {
 				margin-left: 0px;
@@ -177,16 +244,21 @@ h3 {
 }
 @media (min-width: 1024px) {
 	.podcastHeader {
+		.podcastHeaderContent {
+			margin-left: 30px !important;
+			max-width: 600px;
+		}
 		.toolbar-title-large {
-			margin-left: 35px;
+			margin-left: 0px !important;
+			margin-right: 0px !important;
 		}
 
 		.actionButtons {
-			margin-left: 35px;
+			margin-left: 0px;
 			margin-right: 0px;
 		}
 		.podcastInfo {
-			margin-left: 35px;
+			margin-left: 0px;
 
 			.description {
 				margin-left: 0px;
@@ -218,6 +290,11 @@ h3 {
 
 			padding-right: 0px;
 			margin-right: 30px;
+
+			.podcastHeaderContent {
+				margin-left: 10px !important;
+				margin-top: 16px;
+			}
 			
 
 			.coverHolder {

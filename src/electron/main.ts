@@ -15,6 +15,9 @@ import log from 'electron-log';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 
+// Disables the default media keys, which are not very reliable in an electron environment
+app.commandLine.appendSwitch('disable-features', 'HardwareMediaKeyHandling,MediaSessionService');
+
 class AppUpdater {
 	constructor() {
 		log.transports.file.level = 'info';

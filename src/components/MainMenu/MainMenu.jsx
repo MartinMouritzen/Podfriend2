@@ -40,7 +40,7 @@ const MainMenu = () => {
 			</IonHeader>
 			<IonContent className="menuContent">
 				<form method="GET" onSubmit={onSearch}>
-					<IonSearchbar type="search" placeholder="Search" ref={searchBar}></IonSearchbar>
+					<IonSearchbar type="search" placeholder="Search for podcasts" ref={searchBar}></IonSearchbar>
 				</form>
 
 				<div className="subHeader">

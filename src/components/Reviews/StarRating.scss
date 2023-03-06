@@ -1,28 +1,61 @@
 .starRating {
+	/* background-color: #f5f8ff; */
+	padding: 5px;
+	border-radius: 10px;
+
 	display: flex;
 	flex-direction: row;
 	align-items: center;
 }
+.rating {
+	margin-left: 20px;
+	margin-right: 20px;
+	font-size: 20px;
+	color: #999999;
+	font-weight: 400;
+	position: relative;
+	top: 1px;
+	display: none;
+}
 .reviewBasedOn {
-	color: #333333;
+	color: #999999;
 	margin-left: 10px;
-	font-size: 14px;
+	font-size: 16px;
+
+	position: relative;
+	top: px;
 }
 .stars {
 	display: flex;
 	flex-direction: row;
 	
 	align-items: center;
+
+	ion-icon {
+		font-size: 20px;
+	}
 }
 .starNormal, .starFilled {
 	font-size: inherit;
+
+	display: flex;
+	justify-content: center;
+	align-items: center;
+
+	svg {
+		width: 28px;
+		height: 28px;
+	}
 }
 .starNormal {
-	color: #75757e;
-	opacity: 0.8;
+	svg {
+		fill: #CCCCCC;
+	}
 } 
 .starFilled {
-	color: #ffcc48;
+	svg {
+		fill: #ffcc47;
+	}
 }
 /*
 @media (min-width: 1200px) {

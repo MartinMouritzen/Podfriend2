@@ -9,10 +9,17 @@
 	--primary-color-text: #FFFFFF;
 	--primary-color-dark: #00366B;
 
+	--ion-color-secondary: #f3f8ff;
+	--ion-color-secondary-contrast: #0f6fff;
+	--ion-color-secondary-shade: #dbeaff;
+	--ion-color-secondary-tint: #dbeaff;
+
 	--ion-color-success: #29bd73;
 
 	--list-grid-cover-size: 140px;
 	--list-scroll-cover-size: 175px;
+
+	--badge-color: #3554d1;
 
 	/*--miniplayer-background-color: rgba(23,78,161,0.9); */
 
@@ -120,12 +127,43 @@ ion-nav-link {
 	}
 }
 */
+.whiteShadowButton {
+	--background: #FFFFFF;
+	--background-hover: #D4D6DB;
+	--color: rgb(0 0 0 / 75%);
+	border-radius: 10px;
+	box-shadow: rgb(0 0 0 / 75%) 0px 0px 0.125rem 0px, rgb(0 0 0 / 12%) 0px 0.125rem 0.125rem 0px;
+
+	&:hover {
+		--color: rgb(0 0 0 / 95%);
+	}
+}
 .greyButton {
 	--background: #E4E6EB;
+	--background-hover: #D4D6DB;
+
+	--color: #333333;
 	
 	ion-icon {
-		color: blue;
+		color: rgb(0 0 0 / 75%);
 	}
+	&.outline {
+		--background: transparent;
+		--background-hover: #D4D6DB;
+		border: 1px solid #BBBBBB;
+		border-radius: 10px;
+
+		ion-icon {
+			color: #666666;
+		}
+		&:hover {
+			border: 1px solid #D4D6DB;
+			ion-icon {
+				color: #666666;
+			}
+		}
+	}
+
 }
 ion-split-pane {
 	--side-min-width: 250px !important;
@@ -313,6 +351,10 @@ ion-menu {
 .podcastGrid {
 	display: grid;
 	grid-template-columns: repeat(auto-fill, minmax(185px, 1fr));
+
+	a {
+		text-decoration: none;
+	}
 
 	/*
 	@media (min-width: 900px) {

@@ -14,6 +14,36 @@ import { v4 as uuidv4 } from 'uuid';
 
 export const createPodcastSlice = (set, get) => ({
 	/**********************************************************************************
+	* Continue listening and latest podcasts
+	***********************************************************************************/
+	continueListeningEpisodeListMaxSize: 50,
+	continueListeningEpisodeList: [],
+	addEpisodeToContinueListeningList: (podcast,episode) => {
+		var continueListeningEpisodeList = [...get().continueListeningEpisodeList];
+
+		console.log(continueListeningEpisodeList);
+
+		continueListeningEpisodeList.unshift({
+			podcast: podcast,
+			episode: episode
+		});
+
+		var alreadyExisted = false;
+		for(var i=continueListeningEpisodeList.length - 1;i>=1;i--) {
+			if (continueListeningEpisodeList[i]['episode'].guid == episode.guid) {
+				continueListeningEpisodeList.splice(i,1);
+				alreadyExisted = true;
+			}
+		}
+
+		if (!alreadyExisted && continueListeningEpisodeList.length > get().continueListeningEpisodeListMaxSize) {
+			continueListeningEpisodeList.pop();
+		}
+		set({
+			continueListeningEpisodeList: continueListeningEpisodeList
+		});
+	},
+	/**********************************************************************************
 	* Favorite settings
 	***********************************************************************************/
 	favoriteSortOrder: 'latest',
@@ -239,7 +269,7 @@ export const createPodcastSlice = (set, get) => ({
 	getEpisodeByUrl: (podcast,episodeUrl) => {
 		for (var i=0;i<podcast.episodes.length;i++) {
 			if (podcast.episodes[i].url == episodeUrl) {
-				console.log(podcast.episodes[i]);
+				// console.log(podcast.episodes[i]);
 				return podcast.episodes[i];
 			}
 		}

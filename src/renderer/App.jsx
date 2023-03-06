@@ -32,6 +32,7 @@ import Home from 'pages/Home/Home';
 import FavoritePage from 'pages/FavoritePage/FavoritePage';
 import DiscoverPage from 'pages/DiscoverPage/DiscoverPage';
 import PodcastPage from 'pages/PodcastPage/PodcastPage';
+import EpisodePage from 'pages/PodcastPage/EpisodePage';
 import SearchPage from 'pages/SearchPage/SearchPage';
 
 import useStore from 'store/Store';
@@ -73,10 +74,10 @@ export default function App({ platform, audioController }) {
 		<Route path="/collections/" render={(props) => <Home {...props} />} />,
 		<Route path="/wallet/" render={(props) => <Home {...props} />} />,
 		<Route path="/search/:searchQuery?" render={(props) => <SearchPage {...props} />} />,
-		<Route path="/podcast/:podcastPath/" render={(props) => <PodcastPage {...props} />} />,
-		<Route path="/podcast/:podcastPath/:episodeId" render={(props) => <PodcastPage {...props} />} />,
-		<Redirect exact from="/" to="home/" />,
-		<Redirect exact from="/index.html" to="home/" />
+		<Route exact={true} path="/podcast/:podcastPath/" render={(props) => <PodcastPage {...props} />} />,
+		<Route exact={true} path="/podcast/:podcastPath/:episodeId/" render={(props) => <EpisodePage {...props} />} />,
+		<Redirect exact={true} from="/" to="home/" />,
+		<Redirect exact={true} from="/index.html" to="home/" />
 	].map((Route, index) => ({ ...Route, key: index }));
 
 	return (

@@ -1,10 +1,16 @@
 import { useEffect, useState, useRef } from 'react';
 
-import { IonList, IonItem, IonLabel, IonSelect,IonSelectOption, IonImg, IonIcon, IonButton, IonHeader, IonToolbar, IonTitle, IonButtons, IonModal, IonContent, IonListHeader, IonSkeletonText } from '@ionic/react';
+import { Link } from 'react-router-dom';
+
+import { IonList, IonItem, IonLabel, IonSelect,IonSelectOption, IonImg, IonIcon, IonButton, IonHeader, IonToolbar, IonTitle, IonButtons, IonModal, IonContent, IonListHeader, IonSkeletonText, IonRouterLink } from '@ionic/react';
 
 import {
-	timeOutline as timeIcon
+	timeOutline as timeIcon,
+	play as playIcon,
+	pause as pauseIcon
 } from 'ionicons/icons';
+
+import AudioPlayingIcon from 'images/icons/audio-playing-light.gif';
 
 import { format, formatDistance } from 'date-fns';
 
@@ -240,6 +246,10 @@ const EpisodeItem = ({ podcastData, episode, selected, activeEpisode }) => {
 	const [episodeDescription,setEpisodeDescription] = useState(episode.description);
 
 	const playEpisode = useStore((state) => state.playEpisode);
+	const audioPlay = useStore((state) => state.audioPlay);
+	const audioPause = useStore((state) => state.audioPause);
+
+	const shouldPlay = useStore((state) => state.shouldPlay);
 
 	useEffect(() => {
 		setEpisodeTitle(DOMPurify.sanitize(episode.title,{
@@ -262,8 +272,21 @@ const EpisodeItem = ({ podcastData, episode, selected, activeEpisode }) => {
 	}
 
 	const onEpisodeSelect = (episode) => {
-		playEpisode(podcastData,episode.url);
+		// playEpisode(podcastData,episode.url);
 	};
+
+	const onPlay = (episode) => {
+		if (activeEpisode == episode) {
+			audioPlay();
+		}
+		else {
+			playEpisode(podcastData,episode.url);
+		}
+	};
+	const onPause = (episode) => {
+		audioPause();
+	};
+	
 
 	// var realEpisode = false;
 	// Find the "real" episode object.
@@ -274,11 +297,92 @@ const EpisodeItem = ({ podcastData, episode, selected, activeEpisode }) => {
 			}
 		}
 	}
+	
 
 	return (
 		<IonItem
 			key={episode.id}
-			onClick={() => { onEpisodeSelect(episode); }}
+//			onClick={() => { onEpisodeSelect(episode); }}
+			className={'episode' + (selected ? ' selected' : '')}
+		>
+			<PodcastImage
+				podcastPath={podcastData.path}
+				width={120}
+				height={120}
+				coverWidth={60}
+				coverHeight={60}
+				imageErrorText={episode.title}
+				src={episode.image ? episode.image : podcastData.artworkUrl600 ? podcastData.artworkUrl600 : podcastData.image}
+				fallBackImage={podcastData.artworkUrl600}
+				className={'cover'}
+				asBackground={true}
+				loadingComponent={() => <IonSkeletonText animated={true} className="coverLoading" />}
+			/>
+			<IonLabel className="ion-text-wrap">
+			<Link
+			to={{
+				pathname: `/podcast/${podcastData.path}/${encodeURIComponent(episode.guid)}`,
+				state: {
+					podcast: podcastData,
+					episode: episode
+				}
+			}}
+			key={episode.guid}
+		>
+				<p className="date">
+					{format(episode.date ? new Date(episode.date) : new Date(),'MMM d, yyyy')}
+					<span className='agoText'>({formatDistance(new Date(episode.date), new Date())} ago)</span>
+				</p>
+				<h2>
+					{ (selected && shouldPlay) &&
+						<img src={AudioPlayingIcon} /> 
+					}
+					{ episodeTitle }</h2>
+				<p className="description ">{episodeDescription}</p>
+				</Link>
+				<div className="playAndProgress">
+					<div>
+						{ ((activeEpisode != episode || !shouldPlay)) &&
+							<div className="playButton" onClick={(event) => { onPlay(episode); return false; }}><IonIcon icon={playIcon} /></div>
+						}
+						{ (shouldPlay && activeEpisode == episode) &&
+							<div className="pauseButton" onClick={(event) => { onPause(episode); return false;  }}><IonIcon icon={pauseIcon} /></div>
+						}
+					</div>
+					<div className="progress">
+						{ (!isNaN(minutesLeft) && progressPercentage > 0 && minutesLeft !== totalMinutes) &&
+							<div className="episodeProgressBarOuter">
+								<div className="episodeProgressBarInner" style={{ width: Math.round(progressPercentage) + '%' }}/>
+							</div>
+						}
+						{ (false && !isNaN(minutesLeft) && minutesLeft == totalMinutes) &&
+							<IonIcon icon={timeIcon} style={{ marginRight: '5px', position: 'relative', bottom: '1px' }}/> 
+						}
+
+						{ (!isNaN(minutesLeft) && minutesLeft == totalMinutes) && 
+							<span>{totalMinutes} minutes</span>
+						}
+						{ (!isNaN(minutesLeft) && minutesLeft != totalMinutes) && 
+							<span>{Math.round((episode.duration - episode.currentTime) / 60)} of {totalMinutes} minutes left</span>
+						}
+						{ isNaN(minutesLeft) &&
+							<span>&nbsp;</span>
+						}
+					</div>
+				</div>
+			</IonLabel>
+		</IonItem>
+	);
+
+	return (
+		<IonRouterLink
+			routerLink={`/podcast/${podcastData.path}/${encodeURIComponent(episode.guid)}`} state={{podcast: podcastData, episode: episode }}
+			routerDirection='forward'
+			key={episode.guid}
+			>
+		<IonItem
+			key={episode.id}
+//			onClick={() => { onEpisodeSelect(episode); }}
 			className={'episode' + (selected ? ' selected' : '')}
 		>
 			<PodcastImage
@@ -299,30 +403,45 @@ const EpisodeItem = ({ podcastData, episode, selected, activeEpisode }) => {
 					{format(episode.date ? new Date(episode.date) : new Date(),'MMM d, yyyy')}
 					<span className='agoText'>({formatDistance(new Date(episode.date), new Date())} ago)</span>
 				</p>
-				<h2>{ episodeTitle }</h2>
+				<h2>
+					{ (selected && shouldPlay) &&
+						<img src={AudioPlayingIcon} /> 
+					}
+					{ episodeTitle }</h2>
 				<p className="description ">{episodeDescription}</p>
-				<div className="progress">
-					{ (!isNaN(minutesLeft) && progressPercentage > 0 && minutesLeft !== totalMinutes) &&
-						<div className="episodeProgressBarOuter">
-							<div className="episodeProgressBarInner" style={{ width: Math.round(progressPercentage) + '%' }}/>
-						</div>
-					}
-					{ (!isNaN(minutesLeft) && minutesLeft == totalMinutes) &&
-						<IonIcon icon={timeIcon} style={{ marginRight: '5px', position: 'relative', bottom: '1px' }}/> 
-					}
+				<div className="playAndProgress">
+					<div>
+						{ ((activeEpisode != episode || !shouldPlay)) &&
+							<div className="playButton" onClick={(event) => { event.preventDefault(); event.stopPropagation(); onPlay(episode); return false; }}><IonIcon icon={playIcon} /></div>
+						}
+						{ (shouldPlay && activeEpisode == episode) &&
+							<div className="pauseButton" onClick={(event) => { event.preventDefault(); event.stopPropagation(); onPause(episode); return false;  }}><IonIcon icon={pauseIcon} /></div>
+						}
+					</div>
+					<div className="progress">
+						{ (!isNaN(minutesLeft) && progressPercentage > 0 && minutesLeft !== totalMinutes) &&
+							<div className="episodeProgressBarOuter">
+								<div className="episodeProgressBarInner" style={{ width: Math.round(progressPercentage) + '%' }}/>
+							</div>
+						}
+						{ (false && !isNaN(minutesLeft) && minutesLeft == totalMinutes) &&
+							<IonIcon icon={timeIcon} style={{ marginRight: '5px', position: 'relative', bottom: '1px' }}/> 
+						}
 
-					{ (!isNaN(minutesLeft) && minutesLeft == totalMinutes) && 
-						<span>{totalMinutes} minutes</span>
-					}
-					{ (!isNaN(minutesLeft) && minutesLeft != totalMinutes) && 
-						<span>{Math.round((episode.duration - episode.currentTime) / 60)} of {totalMinutes} minutes left</span>
-					}
-					{ isNaN(minutesLeft) &&
-						<span>&nbsp;</span>
-					}
+						{ (!isNaN(minutesLeft) && minutesLeft == totalMinutes) && 
+							<span>{totalMinutes} minutes</span>
+						}
+						{ (!isNaN(minutesLeft) && minutesLeft != totalMinutes) && 
+							<span>{Math.round((episode.duration - episode.currentTime) / 60)} of {totalMinutes} minutes left</span>
+						}
+						{ isNaN(minutesLeft) &&
+							<span>&nbsp;</span>
+						}
+					</div>
 				</div>
 			</IonLabel>
 		</IonItem>
+		</IonRouterLink>
 	);
 }
 

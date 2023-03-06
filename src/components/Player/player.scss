@@ -441,6 +441,8 @@ ion-range {
 			max-height: 400px;
 			margin-bottom: 20px;
 
+			width: 100%;
+
 			display: flex;
 			justify-content: center;
 			align-items: center;
@@ -611,7 +613,8 @@ ion-range {
 @media (min-width: 1024px) {
 	.player {
 		&.fullscreen {
-			max-width: calc(100% - 270px) !important;
+			max-width: calc(100% - 0px) !important;
+			width: 100%;
 		}
 		&.mini {
 			bottom: 0px !important;

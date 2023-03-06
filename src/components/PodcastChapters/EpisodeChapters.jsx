@@ -4,16 +4,9 @@ import EpisodeChapter from './EpisodeChapter.jsx';
 
 import './EpisodeChapters.scss';
 
- // import Swiper JS
- import { Swiper, SwiperSlide } from 'swiper/react';
- // import Swiper styles
- import 'swiper/css';
-
- // const swiper = new Swiper(...);
-
 var randomColor = require('randomcolor');
 
-const EpisodeChapters = ({ audioController, chapters, progress }) => {
+const EpisodeChapters = ({ audioController, chapters, progress, chapterImage }) => {
 	const [fadeOutChapter,setFadeoutChapter] = useState(false);
 	const [currentChapter,setCurrentChapter] = useState(false);
 
@@ -59,28 +52,13 @@ const EpisodeChapters = ({ audioController, chapters, progress }) => {
 
 	if (chapters && chapters.length > 0) {
 		return (
-			<Swiper
-				spaceBetween={50}
-				slidesPerView={3}
-				onSlideChange={() => console.log('slide change')}
-				onSwiper={(swiper) => console.log(swiper)}
-				>
-					{ chapters.map((chapter) => {
-						return (
-							<SwiperSlide>{chapter.title}</SwiperSlide>
-						);
-					})}
-
-			</Swiper>
-		);
-
-		return (
 			<div className='chapterScreen' style={{ backgroundColor: currentChapter ? '#FFFFFF' : 'transparent' }}>
 				{ chapters.map((chapter) => {
+					var chapterImage = chapter.img ? chapter.img : episodeCover;
+					const isActive = chapter === currentChapter;
 					return <EpisodeChapter
 						key={(chapter.startTime + ':' + chapter.title + ':' + chapter.img + ':' + chapter.url)}
-						startTime={chapter.startTime} fadeOut={chapter === fadeOutChapter} isActive={chapter === currentChapter} title={chapter.title} url={chapter.url} image={chapter.img} />
-					// return renderChapter(chapter)
+						startTime={chapter.startTime} fadeOut={chapter === fadeOutChapter} isActive={isActive} title={chapter.title} url={chapter.url} image={chapterImage} />;
 				} ) }
 			</div>
 		);

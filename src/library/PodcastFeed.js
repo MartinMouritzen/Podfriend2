@@ -112,6 +112,7 @@ class PodcastFeed {
 			rssFeed.pubDate = podcast['pubDate'];
 			rssFeed.lastBuildDate = podcast['lastBuildDate'];
 			rssFeed.location = podcast['podcast:location'] ? podcast['podcast:location'] : false;
+			rssFeed.liveItems = podcast['podcast:liveItem'] ? podcast['podcast:liveItem'] : false;
 	
 			rssFeed.imageUrl = podcast['image'] ? podcast['image']['url'] : false;
 			rssFeed.imageTitle = podcast['image'] ? podcast['image']['title'] : false;
@@ -158,6 +159,13 @@ class PodcastFeed {
 					rssFeed.persons = [ rssFeed.persons ];
 				}
 			}
+
+			if (rssFeed.liveItems) {
+				if (!Array.isArray(rssFeed.liveItems)) {
+					rssFeed.liveItems = [ rssFeed.liveItems ];
+				}
+			}
+
 
 			if (podcast.item) {
 				// If there's only one item, it will not be an array, so let's turn it into one.

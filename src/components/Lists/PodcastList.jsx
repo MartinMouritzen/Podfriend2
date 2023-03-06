@@ -1,6 +1,8 @@
 import { IonSlides, IonSlide, IonLabel, IonRouterLink, IonSkeletonText } from '@ionic/react';
 import PodcastImage from 'components/PodcastImage/PodcastImage';
 
+import { Link } from 'react-router-dom';
+
 const PodcastList = ({ podcasts, listType = 'scroll', filterString = '' }) => {
 	const onClick = () => {
 		console.log('yay');
@@ -32,7 +34,7 @@ const PodcastList = ({ podcasts, listType = 'scroll', filterString = '' }) => {
 				}
 
 				return (
-					<IonRouterLink routerLink={'/podcast/' + podcast.path} routerDirection='forward' className='podcastItemLink' key={podcast.guid}>
+					<Link to={'/podcast/' + podcast.path} className='podcastItemLink' key={podcast.guid}>
 						<div className="podcastItem">
 							<PodcastImage
 								podcastPath={podcast.path}
@@ -54,7 +56,7 @@ const PodcastList = ({ podcasts, listType = 'scroll', filterString = '' }) => {
 								</div>
 							</div>
 						</div>
-					</IonRouterLink>
+					</Link>
 				);
 			})}
 		</div>

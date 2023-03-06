@@ -39,6 +39,7 @@ export const createPlayerSlice = (set,get) => ({
 			shouldPlay: true,
 			loading: true
 		});
+		get().addEpisodeToContinueListeningList(podcast,episode);
 	},
 	audioPause: () => {
 		set({
@@ -75,6 +76,9 @@ export const createPlayerSlice = (set,get) => ({
 				backwardTime = 0;
 			}
 
+			audioController.setCurrentTime(backwardTime);
+			get().resetAudioSegmentTime();
+			/*
 			audioController.pause()
 			.then(() => {
 				return audioController.setCurrentTime(backwardTime);
@@ -85,6 +89,7 @@ export const createPlayerSlice = (set,get) => ({
 					get().resetAudioSegmentTime();
 				}
 			});
+			*/
 		}
 	},
 	audioForward: () => {
@@ -99,12 +104,20 @@ export const createPlayerSlice = (set,get) => ({
 				state.goToNextEpisode();
 			}
 			else {
-				audioController.pause();
 				audioController.setCurrentTime(currentTime + audioForwardIncrement);
-				if (state.shouldPlay) {
-					audioController.play();
-					state.resetAudioSegmentTime();
-				}
+				state.resetAudioSegmentTime();
+				/*
+				audioController.pause()
+				.then(() => {
+					return audioController.setCurrentTime(currentTime + audioForwardIncrement);
+				})
+				.then(() => {
+					if (state.shouldPlay) {
+						audioController.play();
+						state.resetAudioSegmentTime();
+					}
+				});
+				*/
 			}
 		}
 	},

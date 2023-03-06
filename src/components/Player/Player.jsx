@@ -91,10 +91,10 @@ const Player = ({ audioController }) => {
 		audioIsReady();
 	};
 	const onPlay = () => {
-
+		audioPlay();
 	};
 	const onPause = () => {
-
+		audioPause();
 	};
 	const onSeek = () => {
 
@@ -207,6 +207,15 @@ const Player = ({ audioController }) => {
 	useEffect(() => {
 		audioController.setAudioElement(audioElement.current);
 	},[audioElement]);
+
+	useEffect(() => {
+		if (audioElement.paused && shouldPlay) {
+			console.log('audio element is paused but should be playing');
+		}
+		if (!audioElement.paused && !shouldPlay) {
+			console.log('audio element is playing but should be paused');
+		}
+	},[audioElement?.paused]);
 
 	useEffect(() => {
 		setError(false);

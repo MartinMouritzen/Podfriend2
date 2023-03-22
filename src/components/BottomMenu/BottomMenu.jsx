@@ -54,7 +54,7 @@ const BottomMenu = ({ routes }) => {
 
 				<IonTabButton tab="search" href="/search/">
 					<IonIcon icon={searchIcon} />
-					<IonLabel>Discover</IonLabel>
+					<IonLabel>Search</IonLabel>
 				</IonTabButton>
 			</IonTabBar>
 	);

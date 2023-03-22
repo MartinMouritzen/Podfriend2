@@ -1,4 +1,4 @@
-import { IonMenu, IonTitle, IonSearchbar, IonHeader, IonContent, IonIcon, IonLabel, IonList, IonItem, IonToolbar, IonButtons, IonButton, IonRange, IonSegment, IonSegmentButton } from '@ionic/react';
+import { IonMenu, IonTitle, IonSearchbar, IonHeader, IonContent, IonIcon, IonLabel, IonList, IonItem, IonToolbar, IonButtons, IonButton, IonRange, IonSegment, IonSegmentButton, IonSkeletonText } from '@ionic/react';
 
 import useStore from 'store/Store';
 
@@ -25,9 +25,17 @@ import SkipForwardIcon from 'images/player/skip-forward.svg';
 
 import LoadingIcon from 'images/player/loading.png';
 import PlayerPodcastCoverArea from './PlayerPodcastCoverArea';
+import EpisodeSecondaryActionToolbar from './EpisodeSecondaryActionToolbar';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Pagination } from "swiper";
+import 'swiper/css';
+import "swiper/css/pagination";
+import ChapterList from 'components/Chapters/ChapterList';
+import PodcastImage from 'components/PodcastImage/PodcastImage';
+import TranscriptLiveArea from './Transcript/TranscriptLiveArea';
 
 
-const Player = ({ audioController }) => {
+const Player = ({ audioController, navigateToPath }) => {
 	const audioElement = useRef(null);
 	const scrollChild = useRef(null);
 
@@ -222,6 +230,7 @@ const Player = ({ audioController }) => {
 		setErrorText(false);
 		setErrorRetries(0);
 		setSubtitleFileURL(false);
+		setChapters(false);
 
 		changeActiveEpisode(activePodcast,activeEpisode);
 
@@ -232,13 +241,102 @@ const Player = ({ audioController }) => {
 		});
 	},[activeEpisode.url]);
 
+	const [rssFeedCurrentEpisode,setRssFeedCurrentEpisode] = useState(false);
 	
+	const loadChapters = async(url) => {
+		// console.log('loading chapters');
+		let result = false;
 
-	
+		try {
+			result = await fetch(url);
+		}
+		catch(exception) {
+			// console.error('Cors probably missing on chapters, using proxy');
+			url = 'https://www.podfriend.com/tmp/rssproxy.php?rssUrl=' + encodeURI(url);
 
-	
+			try {
+				result = await fetch(url);
+			}
+			catch(exception2) {
+				console.error('Proxy call to chapters failed.');
+				console.error(exception2);
+			}
+		}
+		try {
+			let resultJson = await result.json();
 
+			try {
+				if (resultJson.chapters && resultJson.chapters.length > 0) {
+					var finalChapters = resultJson.chapters;
+					console.log(finalChapters);
+					for (var i=0;i<finalChapters.length;i++) {
+						if (finalChapters[i + 1]) {
+							finalChapters[i].endTime = finalChapters[i + 1].startTime;
+						}
+					}
+					setChapters(finalChapters);
+				}
+			}
+			catch(exception) {
+				console.error('Exception getting chapters from: ' + url);
+				console.error(exception);
+			}
+		}
+		catch(exception) {
+			console.error('Exception parsing chapters');
+			console.error(exception);
+			console.error(url);
+			console.error(result);
+		}
+	};
 
+	useEffect(() => {
+		setRssFeedCurrentEpisode(false);
+
+		if (activePodcast.rssFeedContents) {
+			var foundEpisode = false;
+
+			for(var i=0;i<activePodcast.rssFeedContents.items.length;i++) {
+				if (activeEpisode.guid == activePodcast.rssFeedContents.items[i].guid) {
+					foundEpisode = true;
+					setRssFeedCurrentEpisode(activePodcast.rssFeedContents.items[i]);
+					break;
+				}
+			}
+		}
+	},[activeEpisode.url]);
+
+	useEffect(() => {
+		if (rssFeedCurrentEpisode && rssFeedCurrentEpisode.chaptersUrl) {
+			loadChapters(rssFeedCurrentEpisode.chaptersUrl);
+		}
+	},[rssFeedCurrentEpisode]);
+
+	useEffect(() => {
+		var foundChapter = false;
+
+		if (activeEpisode.currentTime > 0) {
+			// First we walk through to find the active chapter
+			for(var i=0;i<chapters.length;i++) {
+				if (chapters[i].startTime <= activeEpisode.currentTime) {
+					// Let's make sure we get the latest chapter
+					if (!foundChapter || foundChapter.startTime < chapters[i].startTime) {
+						foundChapter = chapters[i];
+					}
+				}
+			}
+		}
+		if (foundChapter != currentChapter) {
+			setCurrentChapter(foundChapter);
+		}
+	},[chapters,Math.round(activeEpisode.currentTime)]);
+
+	const navigateToPodcast = () => {
+		navigateToPath('/podcast/' + activePodcast.path + '/');
+		if (fullscreen) {
+			minimize();
+		}
+	};
 
 	// var playerStyle = { backgroundColor: darkVibrantColor, borderTop: '1px solid ' + darkVibrantColor };
 	var playerStyle = {};
@@ -264,6 +362,7 @@ const Player = ({ audioController }) => {
 						<source src={addUserAgentToUrl(activeEpisode.url) + generateTimeHash()} type={activeEpisode.type ? activeEpisode.type : 'audio/mpeg'} />
 					</audio>
 				}
+				{ /*
 				<div className="segmentContainer" style={{ display: (fullscreen ? 'block' : 'none') }}>
 					<IonSegment value={segmentVisible} onIonChange={(e) => { setSegmentVisible(e.detail.value); console.log(e.detail.value); }} onClick={(event) => { event.preventDefault(); event.stopPropagation(); }}>
 						<IonSegmentButton value="playing">
@@ -276,7 +375,71 @@ const Player = ({ audioController }) => {
 						</IonSegmentButton>
 					</IonSegment>
 				</div>
-				{ (!fullscreen || segmentVisible === 'playing') &&
+				*/ }
+
+				{ fullscreen &&
+					<>
+						<div className="podcastInfo">
+							<div className="episodeTitle">
+								{activeEpisode.title}
+							</div>
+							<div className="podcastName">
+								<>{activePodcast.name}</>
+							</div>
+						</div>
+						<div className="swipeableContent" style={{ width: '100vw' }}>
+							<Swiper
+								cssMode={true}
+								spaceBetween={0}
+								slidesPerView={1}
+								onSlideChange={() => console.log('slide change')}
+								onSwiper={(swiper) => console.log(swiper)}
+								pagination={true}
+								modules={[Pagination]}
+							>
+								<SwiperSlide>
+									<div className="swipeContents playingCoverArea">
+										<div className="playerCoverContainer" onClick={maximize}>
+											{ activeEpisode &&
+												<PlayerPodcastCoverArea 
+													audioController={audioController}
+													chapters={chapters}
+													currentChapter={currentChapter}
+												/>
+												
+											}
+										</div>
+										{ currentChapter &&
+											<>
+												<div className="chapterPlayingTitle">
+													{currentChapter.title}
+												</div>
+												<div className="chapterPlayingPeriod">
+													{TimeUtil.fancyTimeFormat(currentChapter.startTime)} - {TimeUtil.fancyTimeFormat(currentChapter.endTime)}
+												</div>
+											</>
+										}
+									</div>
+								</SwiperSlide>
+								{ chapters &&
+									<SwiperSlide>
+										<div className="swipeContents">
+											<ChapterList
+												chapters={chapters}
+												currentChapter={currentChapter}
+											/>
+										</div>
+									</SwiperSlide>
+								}
+							</Swiper>
+						</div>
+						<TranscriptLiveArea />
+						<div style={{ color: '#000000', padding: 10 }}>
+							Comments
+						</div>
+					</>
+				}
+				{ !fullscreen &&
 					<div className="playerCoverContainer" onClick={maximize}>
 						{ activeEpisode &&
 							<PlayerPodcastCoverArea 
@@ -286,14 +449,9 @@ const Player = ({ audioController }) => {
 						}
 					</div>
 				}
-				{ (fullscreen && segmentVisible === 'transcript') &&
-					<div>
-						TRANSCRIPT
-					</div>
-				}
 				<div className="controls">
 					<div className='titleAndButtons'>
-						{ (!fullscreen || segmentVisible === 'playing') &&
+						{ !fullscreen &&
 							<div className="podcastInfo">
 								<div className="episodeTitle">
 									{activeEpisode.title}
@@ -335,15 +493,32 @@ const Player = ({ audioController }) => {
 								}
 								<div className="button buttonForward" onClick={onForward}><SVG src={ForwardIcon} /></div>
 								<div className="button buttonSkipForward" onClick={onSkipForward}><SVG src={SkipForwardIcon} /></div>
+								{ !fullscreen &&
+									<div className="button navigateToPodcastButton" onClick={navigateToPodcast}>
+										<PodcastImage
+											podcastPath={activePodcast.path}
+											width={120}
+											height={120}
+											coverWidth={30}
+											coverHeight={30}
+											imageErrorText={activePodcast.name}
+											fallBackImage={activePodcast.artworkUrl600 ? activePodcast.artworkUrl600 : activePodcast.image}
+											src={activePodcast.artworkUrl600 ? activePodcast.artworkUrl600 : activePodcast.image}
+											className={'podcastThumbnail'}
+											loadingComponent={() => <IonSkeletonText animated={true} className="coverLoading" />}
+										/>
+									</div>
+								}
 							</div>
 						</div>
 					</div>
 				</div>
 				{ fullscreen &&
+					<EpisodeSecondaryActionToolbar activePodcast={activePodcast} activeEpisode={activeEpisode} navigateToPodcast={navigateToPodcast} />
+				}
+				{ (false && fullscreen) &&
 					<div className="episodeContent">
-						{ (!fullscreen || segmentVisible === 'playing') &&
-							<EpisodeList podcastPath={activePodcast.path} podcastData={activePodcast} episodes={activePodcast.episodes} />
-						}
+
 						Feed here, which includes Boostogram comments, boosts and other timeline events for the episode<br /><br />
 						For example &quot;Martin streamed 543 sats to the show.&quot; if only one friend streamed, and &quot;4 Friends streamed to this show&quot; if more than eg. 2 or 3 did it.
 

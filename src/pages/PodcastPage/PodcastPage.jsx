@@ -3,6 +3,8 @@ import Page from "components/Page/Page";
 import PodcastImage from "components/PodcastImage/PodcastImage";
 import { useState, useEffect, useRef } from "react";
 
+import { useLocation } from "react-router";
+
 import './PodcastPage.scss';
 
 import { ReviewStarsWithText } from "components/Reviews/StarRating";
@@ -55,15 +57,14 @@ const PodcastPage = ({ match }) => {
 
 	const [showReviews,setShowReviews] = useState(false);
 
-	const [location,setLocation] = useState(false);
-	const [showLocation,setShowLocation] = useState(false);
+	const [podcastLocation,setPodcastLocation] = useState(false);
+	const [showPodcastLocation,setShowPodcastLocation] = useState(false);
 	const [persons,setPersons] = useState(false);
 	const [liveItems,setLiveItems] = useState(false);
 	
+	const location = useLocation();
 
 	const [actionSheetPresent] = useIonActionSheet();
-
-	const podcastPane = useRef(null);
 
 	const onFollowPodcast = () => {
 		followPodcast(podcastData);
@@ -79,9 +80,10 @@ const PodcastPage = ({ match }) => {
 	},[podcastData.url]);
 
 	useEffect(() => {
-		if (activePodcast.path === podcastPath) {
+		if (activePodcast.path == podcastPath) {
 			setPodcastData(activePodcast);
-			setPodcastState('loaded');
+			// setPodcastState('loaded');
+			// console.log(activePodcast);
 		}
 	},[activePodcast]);
 
@@ -96,8 +98,9 @@ const PodcastPage = ({ match }) => {
 		console.log(podcastRSSData);
 
 		if (!podcastRSSData) {
+			console.log('No podcastRSData');
 			setPersons(false);
-			setLocation(false);
+			setPodcastLocation(false);
 			setLiveItems(false);
 			return;
 		}
@@ -107,10 +110,10 @@ const PodcastPage = ({ match }) => {
 		if (podcastRSSData.location) {
 			// console.log('Feed has location');
 			// console.log(podcastRSSData.location);
-			setLocation(podcastRSSData.location);
+			setPodcastLocation(podcastRSSData.location);
 		}
 		else {
-			setLocation(false);
+			setPodcastLocation(false);
 		}
 		if (podcastRSSData.persons) {
 			// console.log('Feed has persons');
@@ -123,48 +126,72 @@ const PodcastPage = ({ match }) => {
 		}
 	},[podcastRSSData]);
 
-	const loadPodcast = async (podcastPath) => {
-		setPodcastState('loading');
-		setPodcastData(false);
+	const refreshPodcast = () => {
+		return retrievePodcastFromServer(podcastPath,podcastData)
+		.then((podcastDataFromServer) => {
+			setPodcastData(podcastDataFromServer);
+			setPodcastState('loaded');
+		})
+		.catch((error) => {
+			console.log('Error2 fetching podcast in PodcastPage::fetchPodcast: ' + error);
+			console.log('We should not dispatch a redux error if this is an abort.');
+			console.log(error);
+
+			setPodcastState('error');
+		});
+	}
+	const loadPodcast = async (podcastPath,ignoreCache = false) => {
+		/*
+		if (location?.state?.podcast) {
+			console.log('We have a podcast in state');
+			console.log(location.state.podcast);
+			setPodcastData(location.state.podcast);
+			setPodcastState('loaded');
+		}
+		else {
+			*/
+			setPodcastState('loading');
+			setPodcastData(false);
+		// }
+
+		console.log('Loading podcast');
 
 		try {
 			if (activePodcast.path === podcastPath) {
 				setPodcastData(activePodcast);
-				setPodcastState('loaded');
+				// setPodcastState('loaded');
 			}
-			else {
-				getPodcastFromCache(podcastPath)
-				.then((podcastCache) => {
-					console.log('PodcastCache: ');
-					console.log(podcastPath);
-					console.log(podcastCache);
-					if (podcastCache) {
-						setPodcastData(podcastCache);
+			getPodcastFromCache(podcastPath)
+			.then((podcastCache) => {
+				console.log('Podcast cache');
+				console.log(podcastCache);
+				if (podcastCache) {
+					setPodcastData(podcastCache);
+					setPodcastState('loaded');
+				}
+				var shouldUpdate = shouldPodcastUpdate(podcastCache);
+		
+				if (shouldUpdate) {
+					console.log('Podcast should update');
+					retrievePodcastFromServer(podcastPath,podcastCache)
+					.then((podcastDataFromServer) => {
+						setPodcastData(podcastDataFromServer);
 						setPodcastState('loaded');
-					}
-					var shouldUpdate = shouldPodcastUpdate(podcastCache);
-			
-					if (shouldUpdate) {
-						retrievePodcastFromServer(podcastPath,podcastCache)
-						.then((podcastDataFromServer) => {
-							setPodcastData(podcastDataFromServer);
-							setPodcastState('loaded');
-						})
-						.catch((error) => {
-							console.log('Error2 fetching podcast in PodcastPage::fetchPodcast: ' + error);
-							console.log('We should not dispatch a redux error if this is an abort.');
-							console.log(error);
-							
-							throw error;
-						});
-					}
-				})
-				.catch((exception) => {
-					setPodcastState('error');
-					console.log('Error in getPodcast (2)');
-					console.log(exception);
-				});
-			}
+					})
+					.catch((error) => {
+						console.log('Error2 fetching podcast in PodcastPage::fetchPodcast: ' + error);
+						console.log('We should not dispatch a redux error if this is an abort.');
+						console.log(error);
+						
+						setPodcastState('error');
+					});
+				}
+			})
+			.catch((exception) => {
+				setPodcastState('error');
+				console.log('Error in getPodcast (2)');
+				console.log(exception);
+			});
 		}
 		catch (exception) {
 			setPodcastState('error');
@@ -184,19 +211,37 @@ const PodcastPage = ({ match }) => {
 		}
 	},[podcastState]);
 
+	const scrollableContentRef = useRef(null);
+	const setScrollableContentRef = (ref) => {
+		scrollableContentRef.current = ref;
+	};
+
 	useEffect(() => {
 		// Scroll to the top when podcast changes. Otherwise we risk weird behaviour if the user scrolled on a previous podcast page
-		setTimeout(() => {
-			if (podcastPane && podcastPane.current && podcastPane.current.scrollToTop) {
-				podcastPane.current.scrollToTop(0);
-			}
-		},50);
+		if (scrollableContentRef) {
+			setTimeout(() => {
+				// console.log(scrollableContentRef);
+				// console.log(scrollableContentRef.current);
+				if (scrollableContentRef && scrollableContentRef.current) {
+					scrollableContentRef.current.scrollToTop(0);
+				}
+			},50);
+		}
+		const intervalId = setInterval(() => {
+			console.log('Doing 10 minute podcast refresh');
+			doRefresh();
+		},600000);
+
 		setPodcastState('loading');
 		setPodcastData(false);
 		setPodcastRSSData(false);
 		setError(false);
 		loadPodcast(podcastPath);
 		setPodcastIsFollowed(isPodcastFollowed(podcastPath));
+
+		return () => {
+			clearInterval(intervalId);
+		};
 	},[podcastPath]);
 
 	/*
@@ -223,56 +268,37 @@ const PodcastPage = ({ match }) => {
 	*/
 
 	function doRefresh(event) {
+
 		console.log('Begin async operation');
-	  
+		/*	  
 		setTimeout(() => {
 		  console.log('Async operation has ended');
 		  event.detail.complete();
 		}, 2000);
+		*/
+
+		var startTime = new Date();
+		refreshPodcast()
+		.then(() => {
+			var endTime = new Date();
+			var timeDifference = endTime - startTime;
+			
+			var minimumTimeToDisplayLoading = 2500;
+			var remainingTime = 0;
+			
+			if (timeDifference < minimumTimeToDisplayLoading) {
+				remainingTime = minimumTimeToDisplayLoading - timeDifference;
+			}
+			setTimeout(() => {
+				if (event && event.detail && event.detail.complete) {
+					event.detail.complete();
+				}
+			},remainingTime);
+		});
 	}
 
-
-	useEffect(() => {
-		/*
-		let seasonCount = 0;
-		let rawSeasons = [];
-		let trailers = [];
-
-		if (Array.isArray(podcastData.episodes)) {
-			podcastData.episodes.forEach((episode,index) => {
-				var seasonNumber = 0;
-
-				var episodeSeason = parseInt(episode.season);
-
-				if (episode.episodeType === 'trailer') {
-					trailers.push(episode);
-				}
-				else {
-					if (Number.isInteger(episodeSeason)) {
-						seasonNumber = episodeSeason;
-					}
-					if (!Array.isArray(rawSeasons[seasonNumber])) {
-						rawSeasons[seasonNumber] = [];
-					}
-					rawSeasons[seasonNumber].push(episode);
-				}
-			});
-			let seasonNumbers = Object.keys(rawSeasons);
-			seasonCount = rawSeasons.length;
-
-			// If it's a seasonal podcast, we want to sort old to new
-			if (seasonCount > 1) {
-				setPodcastSeasonType('season');
-			}
-			else {
-				setPodcastSeasonType('episodic');
-			}
-		}
-		*/
-	},[podcastData.episodes]);
-
 	return (
-		<Page defaultHeader={false} title={podcastData ? podcastData.name : 'Loading...'} className="podcastPage" contentRef={podcastPane}>
+		<Page defaultHeader={false} title={podcastData ? podcastData.name : 'Loading...'} className="podcastPage" setScrollableContentRef={setScrollableContentRef}>
 			<IonRefresher slot="fixed" onIonRefresh={doRefresh}>
 				<IonRefresherContent>
 				</IonRefresherContent>
@@ -341,7 +367,7 @@ const PodcastPage = ({ match }) => {
 										<IonSkeletonText animated={true} style={{ width: '100%', height: 20 }}></IonSkeletonText>
 									</div>
 								}
-								{ podcastState === 'loaded' &&
+								{ (podcastState === 'loaded' && podcastData.description) &&
 									<div className="description">
 										<ReadMoreReact
 											text={podcastData.description}
@@ -381,7 +407,6 @@ const PodcastPage = ({ match }) => {
 							</IonButton>
 							<IonButton id="moreButton" className="greyButton" onClick={() => {
 								actionSheetPresent({
-
 									buttons: [
 										{
 											text: 'Go to podcast website',
@@ -419,9 +444,19 @@ const PodcastPage = ({ match }) => {
 				</div>
 				<div>
 					{ liveItems &&
-						<LiveEpisodes liveItems={liveItems} />
+						<LiveEpisodes podcastData={podcastData} liveItems={liveItems} />
 					}
-					<EpisodeList podcastPath={podcastData.path} podcastData={podcastData} episodes={podcastData.episodes} />
+					{ podcastState === 'loaded' &&
+						<EpisodeList podcastPath={podcastData.path} podcastData={podcastData} episodes={podcastData.episodes} />
+					}
+					{ podcastState === 'loading' &&
+						<div className="episodeListOuter">
+							<IonSkeletonText animated={true} style={{ width: '400px', height: '100px' }} className="episode"></IonSkeletonText>
+							<IonSkeletonText animated={true} style={{ width: '400px', height: '100px' }} className="episode"></IonSkeletonText>
+							<IonSkeletonText animated={true} style={{ width: '400px', height: '100px' }} className="episode"></IonSkeletonText>
+							<IonSkeletonText animated={true} style={{ width: '400px', height: '100px' }} className="episode"></IonSkeletonText>
+						</div>
+					}
 				</div>
 
 			</div>

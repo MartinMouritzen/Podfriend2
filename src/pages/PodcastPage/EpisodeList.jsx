@@ -1,27 +1,14 @@
 import { useEffect, useState, useRef } from 'react';
 
-import { Link } from 'react-router-dom';
-
 import { IonList, IonItem, IonLabel, IonSelect,IonSelectOption, IonImg, IonIcon, IonButton, IonHeader, IonToolbar, IonTitle, IonButtons, IonModal, IonContent, IonListHeader, IonSkeletonText, IonRouterLink } from '@ionic/react';
-
-import {
-	timeOutline as timeIcon,
-	play as playIcon,
-	pause as pauseIcon
-} from 'ionicons/icons';
-
-import AudioPlayingIcon from 'images/icons/audio-playing-light.gif';
-
-import { format, formatDistance } from 'date-fns';
 
 import useStore from 'store/Store';
 
 import './EpisodeList.scss';
-import PodcastImage from 'components/PodcastImage/PodcastImage';
 
-import DOMPurify from 'dompurify';
+import EpisodeItem from './EpisodeItem';
 
-const EpisodeList = ({ podcastData, podcastPath, episodes, showNumberOfEpisodes = 3, inset = false }) => {
+const EpisodeList = ({ podcastData, podcastPath, episodes, showNumberOfEpisodes = 4, inset = false }) => {
 	const [selectedSeason,setSelectedSeason] = useState(0);
 	const [selectedSortOrder,setSelectedSortOrder] = useState('new');
 	const [sortedEpisodes,setSortedEpisodes] = useState([]);
@@ -34,14 +21,23 @@ const EpisodeList = ({ podcastData, podcastPath, episodes, showNumberOfEpisodes 
 	const activePodcast = useStore((state) => state.activePodcast);
 	const activeEpisode = useStore((state) => state.activeEpisode);
 
-	if (activePodcast.guid === podcastData.guid) {
+	/*
+	if (activePodcast.path == podcastData.path) {
 		podcastData = activePodcast;
 	}
+	*/
 
 	useEffect(() => {
+		console.log(podcastData);
+		console.log(podcastData.receivedFromServer);
+
 		let seasonCount = 0;
 		let rawSeasons = [];
 		let trailers = [];
+
+		setSeasons([]);
+		setTrailers([]);
+		setSortedEpisodes([]);
 
 		if (Array.isArray(episodes)) {
 			episodes.forEach((episode,index) => {
@@ -66,7 +62,7 @@ const EpisodeList = ({ podcastData, podcastPath, episodes, showNumberOfEpisodes 
 			seasonCount = rawSeasons.length;
 			setSeasons(rawSeasons);
 			setSelectedSeason(podcastData.configSelectedSeason ? podcastData.configSelectedSeason : seasonNumbers[seasonNumbers.length - 1]);
-			console.log('setSelectedSeason: ' + podcastData.configSelectedSeason ? podcastData.configSelectedSeason : seasonNumbers[seasonNumbers.length - 1]);
+			console.log(`setSelectedSeason: ${podcastData.configSelectedSeason ? podcastData.configSelectedSeason : seasonNumbers[seasonNumbers.length - 1]}`);
 		}
 		
 		if (podcastData.configSelectedSortOrder) {
@@ -84,7 +80,7 @@ const EpisodeList = ({ podcastData, podcastPath, episodes, showNumberOfEpisodes 
 				setSelectedSortOrder('new');
 			}
 		}
-	},[podcastPath]);
+	},[podcastData.path,podcastData.receivedFromServerText]);
 
 	useEffect(() => {
 		if (!seasons[selectedSeason]) {
@@ -95,11 +91,14 @@ const EpisodeList = ({ podcastData, podcastPath, episodes, showNumberOfEpisodes 
 	},[seasons,selectedSeason,selectedSortOrder]);
 
 	const onSeasonChange = (event) => {
+		console.log(event);
 		updatePodcastConfig({
 			guid: podcastData.guid,
 			podcastPath: podcastData.path,
 			season: event.detail.value
 		});
+		console.log(event.detail.value);
+		console.trace();
 		setSelectedSeason(event.detail.value);
 	};
 
@@ -109,6 +108,7 @@ const EpisodeList = ({ podcastData, podcastPath, episodes, showNumberOfEpisodes 
 			podcastPath: podcastData.path,
 			sortOrder: event.detail.value
 		});
+		console.log(event.detail.value);
 		setSelectedSortOrder(event.detail.value);
 	};
 
@@ -120,8 +120,7 @@ const EpisodeList = ({ podcastData, podcastPath, episodes, showNumberOfEpisodes 
 					<IonSelect
 						className="seasonSelect"
 						interface="action-sheet"
-						selectedText={"Season " + selectedSeason}
-						value={selectedSeason}
+						selectedText={selectedSeason === 0 ? "Bonus material" : "Season " + selectedSeason}
 						onIonChange={onSeasonChange}
 					>
 						<IonItem>
@@ -169,8 +168,9 @@ const EpisodeList = ({ podcastData, podcastPath, episodes, showNumberOfEpisodes 
 * Actual list of episdoes
 ************************************************/
 const EpisodeListInner = ({ podcastData, seasons, selectedSeason, sortedEpisodes, showNumberOfEpisodes, episodeCountShowMoreTrigger, inset = false }) => {
-	const activePodcast = useStore((state) => state.activePodcast);
+	// const activePodcast = useStore((state) => state.activePodcast);
 	const activeEpisode = useStore((state) => state.activeEpisode);
+	const shouldPlay = useStore((state) => state.shouldPlay);
 
 	return (
 		<IonList lines="full" inset={inset} className="episodeList">
@@ -183,9 +183,33 @@ const EpisodeListInner = ({ podcastData, seasons, selectedSeason, sortedEpisodes
 					if (sortedEpisodes.length > episodeCountShowMoreTrigger && showNumberOfEpisodes > 0 && shownEpisodes > showNumberOfEpisodes) {
 						return;
 					}
-					const isSelected = activePodcast.url === podcastData.url && activeEpisode.id == episode.id;
 
-					return <EpisodeItem key={episode.url} podcastData={podcastData} episode={episode} selected={isSelected} activeEpisode={activeEpisode} />
+					// var realEpisode = false;
+					// Find the "real" episode object.
+					if (podcastData && podcastData.episodes) {
+						for (var i=0;i<podcastData.episodes.length;i++) {
+							if (podcastData.episodes[i].url == episode.url) {
+								episode = podcastData.episodes[i];
+							}
+						}
+					}
+
+					return <EpisodeItem
+						key={episode.guid ? episode.guid : episode.url}
+						id={episode.id}
+						guid={episode.guid}
+						title={episode.title}
+						description={episode.description}
+						image={episode.image}
+						currentTime={episode.currentTime}
+						duration={episode.duration}
+						url={episode.url}
+						podcastData={podcastData}
+						episode={activeEpisode.url === episode.url ? activeEpisode : episode}
+						shouldPlay={shouldPlay}
+						selected={activeEpisode.url === episode.url}
+						isActiveEpisode={activeEpisode.url === episode.url}
+					/>;
 				})
 			}
 		})}
@@ -199,6 +223,7 @@ const AllEpisodesModal = ({ podcastData, trigger, seasons, selectedSeason, sorte
 	const page = useRef(null);
 	const modal = useRef(null);
 	const [presentingElement, setPresentingElement] = useState(null);
+	const shouldPlay = useStore((state) => state.shouldPlay);
 	
 	useEffect(() => {
 		setPresentingElement(page.current);
@@ -215,234 +240,42 @@ const AllEpisodesModal = ({ podcastData, trigger, seasons, selectedSeason, sorte
 		<IonModal ref={modal} trigger={trigger} presentingElement={presentingElement} canDismiss={true} onDidDismiss={onDismiss}>
 			<IonHeader>
 				<IonToolbar>
-					<IonTitle>Episodes</IonTitle>
+					<IonTitle>{podcastData.name} episodes</IonTitle>
 					<IonButtons slot="end">
 						<IonButton onClick={() => dismiss()}>Close</IonButton>
 					</IonButtons>
 				</IonToolbar>
 			</IonHeader>
 			<IonContent className="greyPage">
-				<IonList inset={true}>
+				<IonList inset={true} className="episodeList">
 					<IonListHeader>Episodes for {podcastData.name}</IonListHeader>
 					{ seasons.map((episodes,seasonIndex) => {
 						if (selectedSeason == seasonIndex && sortedEpisodes) {
 							return sortedEpisodes.map((episode,episodeIndex) => {
 								const isSelected = activePodcast.url === podcastData.url && activeEpisode.id == episode.id;
-								return <EpisodeItem key={episode.id} podcastData={podcastData} episode={episode} selected={isSelected} />
+								return <EpisodeItem
+									key={episode.guid ? episode.guid : episode.url}
+									id={episode.id}
+									guid={episode.guid}
+									title={episode.title}
+									description={episode.description}
+									image={episode.image}
+									currentTime={episode.currentTime}
+									duration={episode.duration}
+									url={episode.url}
+									podcastData={podcastData}
+									episode={activeEpisode.url === episode.url ? activeEpisode : episode}
+									shouldPlay={shouldPlay}
+									selected={activeEpisode.url === episode.url}
+									isActiveEpisode={activeEpisode.url === episode.url}
+								/>;
 							})
 						}
 					})}
 				</IonList>
 			</IonContent>
 		</IonModal>
-
 	);
 };
-/************************************************
-* Episode item 
-************************************************/
-const EpisodeItem = ({ podcastData, episode, selected, activeEpisode }) => {
-	const [episodeTitle,setEpisodeTitle] = useState(episode.title);
-	const [episodeDescription,setEpisodeDescription] = useState(episode.description);
-
-	const playEpisode = useStore((state) => state.playEpisode);
-	const audioPlay = useStore((state) => state.audioPlay);
-	const audioPause = useStore((state) => state.audioPause);
-
-	const shouldPlay = useStore((state) => state.shouldPlay);
-
-	useEffect(() => {
-		setEpisodeTitle(DOMPurify.sanitize(episode.title,{
-			ALLOWED_TAGS: []
-		}));
-		setEpisodeDescription(DOMPurify.sanitize(episode.description,{
-			ALLOWED_TAGS: ['i','em']
-		}));
-	},[episode.title, episode.description]);
-
-	var totalMinutes = Math.round(episode.duration / 60);
-	var minutesLeft = episode.currentTime ? Math.round((episode.duration - episode.currentTime) / 60) : totalMinutes;
-	
-	var progressPercentage = episode.currentTime ? (100 * episode.currentTime) / episode.duration : 0;
-	if (progressPercentage > 100) {
-		progressPercentage = 100;
-	}
-	else if (isNaN(progressPercentage)) {
-		progressPercentage = 0;
-	}
-
-	const onEpisodeSelect = (episode) => {
-		// playEpisode(podcastData,episode.url);
-	};
-
-	const onPlay = (episode) => {
-		if (activeEpisode == episode) {
-			audioPlay();
-		}
-		else {
-			playEpisode(podcastData,episode.url);
-		}
-	};
-	const onPause = (episode) => {
-		audioPause();
-	};
-	
-
-	// var realEpisode = false;
-	// Find the "real" episode object.
-	if (podcastData && podcastData.episodes) {
-		for (var i=0;i<podcastData.episodes.length;i++) {
-			if (podcastData.episodes[i].url == episode.url) {
-				episode = podcastData.episodes[i];
-			}
-		}
-	}
-	
-
-	return (
-		<IonItem
-			key={episode.id}
-//			onClick={() => { onEpisodeSelect(episode); }}
-			className={'episode' + (selected ? ' selected' : '')}
-		>
-			<PodcastImage
-				podcastPath={podcastData.path}
-				width={120}
-				height={120}
-				coverWidth={60}
-				coverHeight={60}
-				imageErrorText={episode.title}
-				src={episode.image ? episode.image : podcastData.artworkUrl600 ? podcastData.artworkUrl600 : podcastData.image}
-				fallBackImage={podcastData.artworkUrl600}
-				className={'cover'}
-				asBackground={true}
-				loadingComponent={() => <IonSkeletonText animated={true} className="coverLoading" />}
-			/>
-			<IonLabel className="ion-text-wrap">
-			<Link
-			to={{
-				pathname: `/podcast/${podcastData.path}/${encodeURIComponent(episode.guid)}`,
-				state: {
-					podcast: podcastData,
-					episode: episode
-				}
-			}}
-			key={episode.guid}
-		>
-				<p className="date">
-					{format(episode.date ? new Date(episode.date) : new Date(),'MMM d, yyyy')}
-					<span className='agoText'>({formatDistance(new Date(episode.date), new Date())} ago)</span>
-				</p>
-				<h2>
-					{ (selected && shouldPlay) &&
-						<img src={AudioPlayingIcon} /> 
-					}
-					{ episodeTitle }</h2>
-				<p className="description ">{episodeDescription}</p>
-				</Link>
-				<div className="playAndProgress">
-					<div>
-						{ ((activeEpisode != episode || !shouldPlay)) &&
-							<div className="playButton" onClick={(event) => { onPlay(episode); return false; }}><IonIcon icon={playIcon} /></div>
-						}
-						{ (shouldPlay && activeEpisode == episode) &&
-							<div className="pauseButton" onClick={(event) => { onPause(episode); return false;  }}><IonIcon icon={pauseIcon} /></div>
-						}
-					</div>
-					<div className="progress">
-						{ (!isNaN(minutesLeft) && progressPercentage > 0 && minutesLeft !== totalMinutes) &&
-							<div className="episodeProgressBarOuter">
-								<div className="episodeProgressBarInner" style={{ width: Math.round(progressPercentage) + '%' }}/>
-							</div>
-						}
-						{ (false && !isNaN(minutesLeft) && minutesLeft == totalMinutes) &&
-							<IonIcon icon={timeIcon} style={{ marginRight: '5px', position: 'relative', bottom: '1px' }}/> 
-						}
-
-						{ (!isNaN(minutesLeft) && minutesLeft == totalMinutes) && 
-							<span>{totalMinutes} minutes</span>
-						}
-						{ (!isNaN(minutesLeft) && minutesLeft != totalMinutes) && 
-							<span>{Math.round((episode.duration - episode.currentTime) / 60)} of {totalMinutes} minutes left</span>
-						}
-						{ isNaN(minutesLeft) &&
-							<span>&nbsp;</span>
-						}
-					</div>
-				</div>
-			</IonLabel>
-		</IonItem>
-	);
-
-	return (
-		<IonRouterLink
-			routerLink={`/podcast/${podcastData.path}/${encodeURIComponent(episode.guid)}`} state={{podcast: podcastData, episode: episode }}
-			routerDirection='forward'
-			key={episode.guid}
-			>
-		<IonItem
-			key={episode.id}
-//			onClick={() => { onEpisodeSelect(episode); }}
-			className={'episode' + (selected ? ' selected' : '')}
-		>
-			<PodcastImage
-				podcastPath={podcastData.path}
-				width={120}
-				height={120}
-				coverWidth={60}
-				coverHeight={60}
-				imageErrorText={episode.title}
-				src={episode.image ? episode.image : podcastData.artworkUrl600 ? podcastData.artworkUrl600 : podcastData.image}
-				fallBackImage={podcastData.artworkUrl600}
-				className={'cover'}
-				asBackground={true}
-				loadingComponent={() => <IonSkeletonText animated={true} className="coverLoading" />}
-			/>
-			<IonLabel className="ion-text-wrap">
-				<p className="date">
-					{format(episode.date ? new Date(episode.date) : new Date(),'MMM d, yyyy')}
-					<span className='agoText'>({formatDistance(new Date(episode.date), new Date())} ago)</span>
-				</p>
-				<h2>
-					{ (selected && shouldPlay) &&
-						<img src={AudioPlayingIcon} /> 
-					}
-					{ episodeTitle }</h2>
-				<p className="description ">{episodeDescription}</p>
-				<div className="playAndProgress">
-					<div>
-						{ ((activeEpisode != episode || !shouldPlay)) &&
-							<div className="playButton" onClick={(event) => { event.preventDefault(); event.stopPropagation(); onPlay(episode); return false; }}><IonIcon icon={playIcon} /></div>
-						}
-						{ (shouldPlay && activeEpisode == episode) &&
-							<div className="pauseButton" onClick={(event) => { event.preventDefault(); event.stopPropagation(); onPause(episode); return false;  }}><IonIcon icon={pauseIcon} /></div>
-						}
-					</div>
-					<div className="progress">
-						{ (!isNaN(minutesLeft) && progressPercentage > 0 && minutesLeft !== totalMinutes) &&
-							<div className="episodeProgressBarOuter">
-								<div className="episodeProgressBarInner" style={{ width: Math.round(progressPercentage) + '%' }}/>
-							</div>
-						}
-						{ (false && !isNaN(minutesLeft) && minutesLeft == totalMinutes) &&
-							<IonIcon icon={timeIcon} style={{ marginRight: '5px', position: 'relative', bottom: '1px' }}/> 
-						}
-
-						{ (!isNaN(minutesLeft) && minutesLeft == totalMinutes) && 
-							<span>{totalMinutes} minutes</span>
-						}
-						{ (!isNaN(minutesLeft) && minutesLeft != totalMinutes) && 
-							<span>{Math.round((episode.duration - episode.currentTime) / 60)} of {totalMinutes} minutes left</span>
-						}
-						{ isNaN(minutesLeft) &&
-							<span>&nbsp;</span>
-						}
-					</div>
-				</div>
-			</IonLabel>
-		</IonItem>
-		</IonRouterLink>
-	);
-}
 
 export default EpisodeList;

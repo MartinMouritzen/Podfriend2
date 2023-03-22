@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, memo } from 'react';
 
 var randomColor = require('randomcolor');
 
@@ -45,4 +45,11 @@ const EpisodeChapter = ({ title, image, url, isActive, fadeOut }) => {
 	);
 };
 
-export default EpisodeChapter;
+function chapterShouldCache(prevEpisode,nextEpisode) {
+	if (nextEpisode.isActive != prevEpisode.isActive) { return false; }
+	
+	return true;
+}
+
+// export default EpisodeChapter;
+export default memo(EpisodeChapter, chapterShouldCache);

@@ -62,5 +62,42 @@ class TimeUtil {
 		timeUnits.push(('' + s).padStart(2,'0'));
 		return timeUnits.join(':');
 	}
+	static fancyTimeFormat(duration) {
+		// Hours, minutes and seconds
+		var hrs = ~~(duration / 3600);
+		var mins = ~~((duration % 3600) / 60);
+		var secs = ~~duration % 60;
+	
+		// Output like "1:01" or "4:03:59" or "123:03:59"
+		var ret = "";
+	
+		if (hrs > 0) {
+			ret += "" + hrs + ":" + (mins < 10 ? "0" : "");
+		}
+	
+		ret += "" + mins + ":" + (secs < 10 ? "0" : "");
+		ret += "" + secs;
+		return ret;
+	}
+	static fancyTimeLeft(duration) {
+		// Hours, minutes and seconds
+		var hrs = ~~(duration / 3600);
+		var mins = ~~((duration % 3600) / 60);
+		var secs = ~~duration % 60;
+	
+		// Output like "1:01" or "4:03:59" or "123:03:59"
+		var ret = "";
+	
+		if (hrs > 0) {
+			ret += "" + hrs + " h " + (mins < 10 ? "0" : "");
+		}
+		if (mins > 0) {
+			ret += "" + mins + " min ";
+		}
+		if (hrs == 0 && mins == 0) {
+			ret += "" + secs + " seconds";
+		}
+		return ret;
+	}
 }
 module.exports = TimeUtil;

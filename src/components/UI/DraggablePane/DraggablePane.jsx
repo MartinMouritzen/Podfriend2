@@ -70,7 +70,6 @@ const DraggablePane = ({ onHide = false, onOpen = false, open = false, children,
 			// elementRef.current.scrollTop = startDragScrollOffsetY;
 		},
 		onDrag: ({ down, initial: [ix,iy], movement: [mx, my], direction: velocity }) => {
-			console.log('dragging');
 			let dragValues = { height: heightWithoutDrag };
 			
 			if (my === 0) {

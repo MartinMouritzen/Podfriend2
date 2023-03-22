@@ -23,15 +23,45 @@ export const createPlayerSlice = (set,get) => ({
 	/**********************************************************************************
 	* Audio functions
 	***********************************************************************************/
-	playEpisode: (podcast,episodeUrl) => {
+	playEpisode: async (podcast,episodeUrl,live = false, podcastPath = false) => {
+		// console.log(podcast);
+		// console.log(episodeUrl);
 		episodeUrl = episodeUrl.url ? episodeUrl.url : episodeUrl;
 
-		let episode = get().getEpisodeByUrl(podcast,episodeUrl);
-		if (episode.listened) {
-			episode.listened = false;
-			episode.currentTime = 0;
+		if (!podcast) {
+			podcast = await get().getPodcast(podcastPath);
+		}
 
-			// Todo, update online here too.
+		const activePodcast = get().activePodcast;
+
+		if (podcast.path === activePodcast.path) {
+			podcast = structuredClone(activePodcast);;
+		}
+		let episode = false;
+
+		if (live) {
+			console.log(live);
+			episode = {
+				title: live.title,
+				url: live.enclosure?.url,
+				chat: live.chat,
+				image: (live['itunes:image'] && live['itunes:image'].href) ? live['itunes:image'].href : live['podcast:images'] ? live['podcast:images'].srcset : false,
+				guid: live.guid['#text'] ? live.guid['#text'] : live.guid,
+				live: true
+			};
+		}
+		else {
+			episode = get().getEpisodeByUrl(podcast,episodeUrl);
+			if (!episode) {
+				console.log('Episode not found?');
+				console.log(episodeUrl);
+				console.log(podcast);
+				return;
+			}
+			if (episode.listened) {
+				episode.currentTime = 0;
+				// Todo, update online here too.
+			}
 		}
 		set({
 			activePodcast: podcast,
@@ -65,6 +95,13 @@ export const createPlayerSlice = (set,get) => ({
 	},
 	audioBackwardIncrement: 10,
 	audioForwardIncrement: 30,
+	audioSetCurrentTime: (currentTime) => {
+		var audioController = get().audioController;
+		if (audioController) {
+			audioController.setCurrentTime(currentTime);
+			get().resetAudioSegmentTime();
+		}
+	},
 	audioBackward: () => {
 		var audioController = get().audioController;
 
@@ -147,7 +184,7 @@ export const createPlayerSlice = (set,get) => ({
 			}
 		}
 		else {
-			for(var i=activePodcast.episodes.length - 1;i>0;i--) {
+			for(var i=activePodcast.episodes.length - 1;i>=0;i--) {
 				if (nextEpisodeIsAfterCurrent) {
 					if (activePodcast.episodes[i].episodeType !== 'trailer') {
 						foundNextEpisode = true;

@@ -6,19 +6,18 @@ import './EpisodeChapters.scss';
 
 var randomColor = require('randomcolor');
 
-const EpisodeChapters = ({ audioController, chapters, progress, chapterImage }) => {
+const EpisodeChapters = ({ audioController, chapters, progress, episodeCover, currentChapter }) => {
 	const [fadeOutChapter,setFadeoutChapter] = useState(false);
-	const [currentChapter,setCurrentChapter] = useState(false);
-
-	useEffect(() => {
-		setCurrentChapter(false);
-	},[]);
+	const [activeChapter,setActiveChapter] = useState(false);
 
 	useEffect(() => {
 		if (!currentChapter) {
 			return;
 		}
-
+		if (activeChapter !== currentChapter) {
+			setFadeoutChapter(activeChapter);
+		}
+		setActiveChapter(currentChapter);
 		if (currentChapter.img && audioController) {
 			audioController.setCoverImage(currentChapter.img);
 		}
@@ -28,8 +27,9 @@ const EpisodeChapters = ({ audioController, chapters, progress, chapterImage }) 
 
 		// console.log('new current Chapter: ');
 		// console.log(currentChapter);
-	},[currentChapter]);
+	},[currentChapter.startTime]);
 
+	/*
 	useEffect(() => {
 		var foundChapter = false;
 
@@ -49,18 +49,51 @@ const EpisodeChapters = ({ audioController, chapters, progress, chapterImage }) 
 			setCurrentChapter(foundChapter);
 		}
 	},[chapters,progress]);
+	*/
 
+/*
+	if (chapters && chapters.length > 0) {
+		if (currentChapter) {
+			return (
+				<EpisodeChapter
+					key={(currentChapter.startTime + ':' + currentChapter.title + ':' + currentChapter.img + ':' + currentChapter.url)}
+					startTime={currentChapter.startTime}
+					fadeOut={currentChapter === fadeOutChapter}
+					isActive={true}
+					title={currentChapter.title}
+					url={currentChapter.url}
+					image={currentChapter.img}
+				/>
+			);
+		}
+		else {
+			return episodeCover;
+		}
+	}
+	else {
+		return null;
+	}
+	*/
 	if (chapters && chapters.length > 0) {
 		return (
-			<div className='chapterScreen' style={{ backgroundColor: currentChapter ? '#FFFFFF' : 'transparent' }}>
+			<>
 				{ chapters.map((chapter) => {
 					var chapterImage = chapter.img ? chapter.img : episodeCover;
-					const isActive = chapter === currentChapter;
-					return <EpisodeChapter
-						key={(chapter.startTime + ':' + chapter.title + ':' + chapter.img + ':' + chapter.url)}
-						startTime={chapter.startTime} fadeOut={chapter === fadeOutChapter} isActive={isActive} title={chapter.title} url={chapter.url} image={chapterImage} />;
-				} ) }
-			</div>
+					const isActive = chapter.startTime === activeChapter.startTime;
+
+						return (
+							<EpisodeChapter
+								key={(chapter.startTime + ':' + chapter.title + ':' + chapter.img + ':' + chapter.url)}
+								startTime={chapter.startTime}
+								fadeOut={chapter === fadeOutChapter}
+								isActive={isActive}
+								title={chapter.title}
+								url={chapter.url}
+								image={chapterImage}
+							/>
+						);
+				})}
+			</>
 		);
 	}
 	else {

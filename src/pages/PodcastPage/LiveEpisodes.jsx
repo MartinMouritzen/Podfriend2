@@ -1,22 +1,43 @@
+import useStore from 'store/Store';
+
 import { IonButton, IonIcon, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle } from "@ionic/react";
 
 import playIcon from 'images/icons/play-circle.svg';
 import dotsIcon from 'images/icons/dots.svg';
 
+import {
+	pauseCircleSharp as pauseIcon
+} from 'ionicons/icons';
+
 import { format, formatDistance, formatRelative } from 'date-fns';
 
-const LiveItem = ({ liveItem }) => {
+const LiveItem = ({ podcastData, liveItem }) => {
 	const startDate = liveItem.start ? new Date(liveItem.start) : false;
 	const endDate = liveItem.end ? new Date(liveItem.end) : false;
 	const now = new Date();
 
+	const playEpisode = useStore((state) => state.playEpisode);
+	const activeEpisode = useStore((state) => state.activeEpisode);
+	const audioPause = useStore((state) => state.audioPause);
+	const audioPlay = useStore((state) => state.audioPlay);
+	const shouldPlay = useStore((state) => state.shouldPlay);
+
+	const playLiveEpisode = () => {
+		playEpisode(podcastData,liveItem.enclosure.url,liveItem);
+	};
+
 	const formatEpisodeStatusText = () => {
 		if (!liveItem.status || liveItem.status != 'ended') {
 			if (startDate && endDate && (startDate < now && endDate > now)) {
-				return "Live!";
+				return "Live now!";
 			}
 			else {
-				return 'Upcoming live episode';
+				if (endDate && endDate < now) {
+					return "Latest live episode";
+				}
+				else {
+					return 'Upcoming live episode';
+				}
 			}
 		}
 		if (liveItem.status === 'ended') {
@@ -52,16 +73,30 @@ const LiveItem = ({ liveItem }) => {
 				</div>
 			</div>
 			<div className="actionBar">
-				<IonButton fill="clear">
-					<IonIcon slot="start" icon={playIcon}></IonIcon>
-					Listen to episode
-				</IonButton>
+				{ (activeEpisode.guid === liveItem?.guid['#text'] && shouldPlay) &&
+					<IonButton fill="clear" onClick={audioPause}>
+						<IonIcon slot="start" icon={pauseIcon}></IonIcon>
+						Pause episode
+					</IonButton>
+				}
+				{ (activeEpisode.guid === liveItem?.guid['#text'] && !shouldPlay) &&
+					<IonButton fill="clear" onClick={audioPlay}>
+						<IonIcon slot="start" icon={playIcon}></IonIcon>
+						Play
+					</IonButton>
+				}
+				{ activeEpisode?.guid != liveItem?.guid['#text'] &&
+					<IonButton fill="clear" onClick={playLiveEpisode}>
+						<IonIcon slot="start" icon={playIcon}></IonIcon>
+						Tune in
+					</IonButton>
+				}
 				<IonButton color="secondary" fill="solid" style={{ float: 'right' }}><IonIcon slot="start" icon={dotsIcon}></IonIcon> Options</IonButton>
 			</div>
 		</div>
 	);
 };
-const LiveEpisodes = ({ liveItems }) => {
+const LiveEpisodes = ({ podcastData, liveItems }) => {
 	/*
 	return (
 		<div>
@@ -85,7 +120,7 @@ const LiveEpisodes = ({ liveItems }) => {
 		<div>
 			{ liveItems.map((liveItem) => {
 				return (
-					<LiveItem liveItem={liveItem} key={liveItem.title + ':' + liveItem.startDate} />
+					<LiveItem podcastData={podcastData} liveItem={liveItem} key={liveItem.title + ':' + liveItem.startDate} />
 				);
 			})}
 		</div>

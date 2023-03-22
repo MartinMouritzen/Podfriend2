@@ -6,6 +6,8 @@
 	h1 {
 		margin-left: 20px;
 	}
+}
+.episodeList {
 	a {
 		text-decoration: none;
 		color: unset;
@@ -13,6 +15,10 @@
 }
 .seasonSelect {
 	max-width: 160px;
+
+	@media (min-width: 340px) {
+		max-width: 300px;
+	}
 
 
 	&::part(text), &::part(placeholder) {
@@ -48,7 +54,7 @@
 	align-items: flex-start;
 
 	h2 {
-		height: 26px;
+		min-height: 26px;
 		display: flex;
 		align-items: center;
 
@@ -127,7 +133,7 @@
 	}
 	.description {
 		display: -webkit-box;
-		-webkit-line-clamp: 3;
+		-webkit-line-clamp: 2;
 		-webkit-box-orient: vertical; 
 		text-overflow: ellipsis;
 		overflow: hidden;
@@ -139,6 +145,9 @@
 	}
 
 	&.selected {
+		h2 {
+			
+		}
 		/*
 		--ion-item-background: var(--primary-color);
 		color: #FFFFFF;

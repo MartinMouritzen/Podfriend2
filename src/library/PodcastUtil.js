@@ -37,6 +37,7 @@ class PodcastUtil {
 				// setPodcastSeasonType('episodic');
 				podcastSeasonType = 'episodic';
 			}
+			console.log(rawSeasons);
 			return {
 				seasonCount: seasonCount,
 				seasons: rawSeasons,

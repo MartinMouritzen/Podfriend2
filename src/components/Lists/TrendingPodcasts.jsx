@@ -1,7 +1,7 @@
 import useStore from 'store/Store';
 import PodcastList from './PodcastList';
 
-const TrendingPodcasts = () => {
+const TrendingPodcasts = ({ backButtonText = false }) => {
 	const refreshTrendingPodcasts = useStore((state) => state.refreshTrendingPodcasts);
 	const trendingPodcasts = useStore((state) => state.trendingPodcasts);
 
@@ -9,7 +9,7 @@ const TrendingPodcasts = () => {
 
 	return (
 		<div>
-			<PodcastList podcasts={trendingPodcasts} />
+			<PodcastList backButtonText={backButtonText} podcasts={trendingPodcasts} />
 		</div>
 	);
 };

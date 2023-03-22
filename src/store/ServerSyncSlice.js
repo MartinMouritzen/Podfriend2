@@ -19,10 +19,10 @@ export const createServerSyncSlice = (set,get) => ({
 		})
 		.then((response) => {
 			if (response.podcasts) {
-				console.log(response.podcasts);
+				// console.log(response.podcasts);
 			}
 			if (response.episodes) {
-				console.log(response.episodes);
+				// console.log(response.episodes);
 			}
 			set({
 				syncingPodcastState: false

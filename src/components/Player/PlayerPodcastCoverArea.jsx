@@ -6,39 +6,15 @@ import PodcastImage from 'components/PodcastImage/PodcastImage';
 import { IonSkeletonText } from '@ionic/react';
 import EpisodeChapters from 'components/PodcastChapters/EpisodeChapters';
 
-const PlayerPodcastCoverArea = ({ audioController }) => {
+const PlayerPodcastCoverArea = ({ audioController, chapters = false, currentChapter = false }) => {
 	const activePodcast = useStore((state) => state.activePodcast);
 	const activeEpisode = useStore((state) => state.activeEpisode);
-
-	const [rssFeedCurrentEpisode,setRssFeedCurrentEpisode] = useState(false);
-	const [chapters,setChapters] = useState(false);
-	const [subtitleFileURL,setSubtitleFileURL] = useState(false);
 
 	const fullscreen = useStore((state) => state.playerFullscreen);
 
 	const podcastImageURL = activeEpisode.image ? activeEpisode.image : activePodcast.artworkUrl600 ? activePodcast.artworkUrl600 : activePodcast.image;
 
-	useEffect(() => {
-		setRssFeedCurrentEpisode(false);
 
-		if (activePodcast.rssFeedContents) {
-			var foundEpisode = false;
-
-			for(var i=0;i<activePodcast.rssFeedContents.items.length;i++) {
-				if (activeEpisode.guid == activePodcast.rssFeedContents.items[i].guid) {
-					foundEpisode = true;
-					setRssFeedCurrentEpisode(activePodcast.rssFeedContents.items[i]);
-					break;
-				}
-			}
-		}
-	},[activeEpisode]);
-
-	useEffect(() => {
-		if (rssFeedCurrentEpisode && rssFeedCurrentEpisode.chaptersUrl) {
-			loadChapters(rssFeedCurrentEpisode.chaptersUrl);
-		}
-	},[rssFeedCurrentEpisode]);
 
 	/*
 	const defaultVibrantColor = 'rgba(41, 121, 255, 1)';
@@ -80,45 +56,7 @@ const PlayerPodcastCoverArea = ({ audioController }) => {
 	},[coverImageRef.current]);
 	*/
 
-	const loadChapters = async(url) => {
-		// console.log('loading chapters');
-		let result = false;
 
-		try {
-			result = await fetch(url);
-		}
-		catch(exception) {
-			// console.error('Cors probably missing on chapters, using proxy');
-			url = 'https://www.podfriend.com/tmp/rssproxy.php?rssUrl=' + encodeURI(url);
-
-			try {
-				result = await fetch(url);
-			}
-			catch(exception2) {
-				console.error('Proxy call to chapters failed.');
-				console.error(exception2);
-			}
-		}
-		try {
-			let resultJson = await result.json();
-
-			try {
-				if (resultJson.chapters && resultJson.chapters.length > 0) {
-					setChapters(resultJson.chapters);
-				}
-			}
-			catch(exception) {
-				console.error('Exception getting chapters from: ' + url);
-				console.error(exception);
-			}
-		}
-		catch(exception) {
-			console.error('Exception parsing chapters');
-			console.error(exception);
-			console.error(url);
-			console.error(result);
-		}
-	};
 
 	const episodeCover = (
 		<PodcastImage
@@ -136,17 +74,28 @@ const PlayerPodcastCoverArea = ({ audioController }) => {
 			/>
 	);
 
-	return (
-		<>
-			{ (fullscreen && chapters !== false) &&
-				<EpisodeChapters audioController={audioController} chapters={chapters} progress={activeEpisode.currentTime} episodeCover={episodeCover} />
-			}
-			{ (!fullscreen || chapters === false) &&
-				<>
-					{episodeCover}
-				</>
-			}
-		</>
-	);
+	if (!fullscreen || chapters === false) {
+		return episodeCover;
+	}
+	else {
+		return (
+			<div className="chapters">
+				<PodcastImage
+					podcastPath={activePodcast.path}
+					width={600}
+					height={600}
+					imageErrorText={activePodcast.name}
+					fallBackImage={activePodcast.artworkUrl600 ? activePodcast.artworkUrl600 : activePodcast.image}
+					src={podcastImageURL}
+					className={'chapter'}
+					// imageRef={coverImageRef}
+					loadingComponent={() => <IonSkeletonText animated={true} className="coverLoading" />}
+				/>
+				{ (fullscreen && chapters !== false) &&
+					<EpisodeChapters audioController={audioController} chapters={chapters} progress={activeEpisode.currentTime} currentChapter={currentChapter} />
+				}
+			</div>
+		);
+	}
 }
 export default PlayerPodcastCoverArea;

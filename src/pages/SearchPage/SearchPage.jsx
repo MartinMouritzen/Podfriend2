@@ -61,7 +61,7 @@ const SearchPage = ({ match }) => {
 	};
 
 	return (
-		<Page title="Search" defaultHeader={false}>
+		<Page title="Search" defaultHeader={false} showBackButton={match.params.searchQuery ? true : false}>
 			<IonHeader collapse="condense" class="mainTitleHeader">
 				<IonToolbar>
 					<IonTitle size="large">Search</IonTitle>
@@ -87,7 +87,7 @@ const SearchPage = ({ match }) => {
 						</div>
 					}
 					{ results && results.length > 0 &&
-						<PodcastList podcasts={results} listType='list' />
+						<PodcastList backButtonText="Search" podcasts={results} listType='list' />
 					}
 				</div>
 			}

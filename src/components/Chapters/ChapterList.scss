@@ -1,0 +1,25 @@
+.chapterList {
+	ion-thumbnail {
+		width: 36px;
+		height: 36px;
+
+		img {
+			border-radius: 5px;
+		}
+	}
+	.chapterTitle {
+		font-size: 15px;
+	}
+	.timeMarker {
+		color: #888888;
+		font-size: 15px;
+	}
+	.currentChapter {
+		--background: var(--primary-color);
+		color: #FFFFFF;
+
+		.timeMarker {
+			color: #DDDDDD;
+		}
+	}
+}

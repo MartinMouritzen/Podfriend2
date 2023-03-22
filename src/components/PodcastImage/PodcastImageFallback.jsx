@@ -15,18 +15,20 @@ const PodcastImageFallback = ({ podcastId, podcastPath, imageSource, imageErrorT
 
 	useEffect(() => {
 		if (isError) {
-			var randColorgen = randomColorGen({
-				seed: podcastPath ? podcastPath : imageSource,
-				luminosity: 'bright'
-			});
+			if (podcastPath || imageSource) {
+				var randColorgen = randomColorGen({
+					seed: podcastPath ? podcastPath : imageSource,
+					luminosity: 'bright'
+				});
 
-			var randColor2gen = randomColorGen({
-				seed: podcastPath ? podcastPath : imageSource,
-				luminosity: 'light'
-			});
+				var randColor2gen = randomColorGen({
+					seed: podcastPath ? podcastPath : imageSource,
+					luminosity: 'light'
+				});
 
-			setRandomColor(randColorgen);
-			setRandomColor2(randColor2gen);
+				setRandomColor(randColorgen);
+				setRandomColor2(randColor2gen);
+			}
 			setFontColor('#000000');
 		}
 		

@@ -49,7 +49,7 @@ const FavoritePage = () => {
 	useEffect(() => {
 		console.log('change sorting order');
 		sortFavoritePodcasts();
-	},[followedPodcasts,favoriteSortOrder]);
+	},[followedPodcasts.length,favoriteSortOrder]);
 	
 
 	const showFavoriteSortMenu = () => {
@@ -94,7 +94,7 @@ const FavoritePage = () => {
 	}
 
 	return (
-		<Page title="Favorites" defaultHeader={false}>
+		<Page title="Favorites" defaultHeader={false} showBackButton={false}>
 			<IonHeader collapse="condense" class="mainTitleHeader">
 				<IonToolbar>
 					<IonTitle size="large">Favorites</IonTitle>
@@ -110,7 +110,7 @@ const FavoritePage = () => {
 				<div style={{ paddingLeft: '16px', paddingRight: '16px' }}>
 					<h2>Favorite podcasts sorted by {favoriteSortOrder === 'alphabetical_az' ? 'alphabetical order' : favoriteSortOrder}</h2>
 				</div>
-				<PodcastList podcasts={orderedFollowedPodcasts} listType='grid' filterString={filterString} />
+				<PodcastList backButtonText="Favorites" podcasts={orderedFollowedPodcasts} listType='grid' filterString={filterString} />
 			</div>
 		</Page>
 	);

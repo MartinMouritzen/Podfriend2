@@ -2,8 +2,9 @@ import { IonSlides, IonSlide, IonLabel, IonRouterLink, IonSkeletonText } from '@
 import PodcastImage from 'components/PodcastImage/PodcastImage';
 
 import { Link } from 'react-router-dom';
+import CoverCarousel from './CoverCarousel';
 
-const PodcastList = ({ podcasts, listType = 'scroll', filterString = '' }) => {
+const PodcastList = ({ podcasts, listType = 'scroll', filterString = '', backButtonText = false }) => {
 	const onClick = () => {
 		console.log('yay');
 	};
@@ -16,6 +17,16 @@ const PodcastList = ({ podcasts, listType = 'scroll', filterString = '' }) => {
 		slidesOffsetBefore: 20,
 		ionSlideTap: onClick
 	};
+
+	if (listType === 'scroll') {
+		return (
+			<CoverCarousel
+				type="podcasts"
+				podcasts={podcasts}
+				backButtonText={backButtonText}
+			/>
+		);
+	}
 
 	return (
 		<div className={'podcastGrid ' + listType}>
@@ -34,7 +45,17 @@ const PodcastList = ({ podcasts, listType = 'scroll', filterString = '' }) => {
 				}
 
 				return (
-					<Link to={'/podcast/' + podcast.path} className='podcastItemLink' key={podcast.guid}>
+					<Link
+						to={{
+							pathname: '/podcast/' + podcast.path,
+							state: {
+								podcast: podcast,
+								backButtonText: backButtonText ? backButtonText : false
+							}
+						}}
+						className='podcastItemLink'
+						key={podcast.guid}
+					>
 						<div className="podcastItem">
 							<PodcastImage
 								podcastPath={podcast.path}

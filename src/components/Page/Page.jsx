@@ -10,20 +10,27 @@ import BottomMenu from "components/BottomMenu/BottomMenu";
 
 import { BREAKPOINTS } from 'constants/breakpoints';
 
-import {useHistory,useLocation} from "react-router";
+import { useLocation } from "react-router";
 
 import { personCircleOutline as notLoggedInIcon, personCircleSharp as loggedInIcon } from 'ionicons/icons';
 
 import useStore from 'store/Store';
 
-function useHookWithRefCallback() {
+function useHookWithRefCallback(setScrollableContentRef = false) {
 	const ref = useRef(null);
 	const setRef = useCallback((node) => {
 		if (ref.current) {
 			// Make sure to cleanup any events/references added to the last instance
+			
+
 		}
 
 		if (node) {
+			if (setScrollableContentRef) {
+				setScrollableContentRef(node);
+				// node.scrollToTop();
+			}
+
 			var styles = node.shadowRoot.querySelectorAll(".customScrollStyle");
 
 			if (styles.length === 0) {
@@ -67,14 +74,18 @@ function useHookWithRefCallback() {
 		// Save a reference to the node
 		ref.current = node;
 	}, [])
-
 	return [setRef]
 }
 
-const Page = ({ id = null, title = "Undefined", defaultHeader = true, showBackButton = true, className = "", children, contentRef = null }) => {
+const Page = ({ id = null, title = "Undefined", defaultHeader = true, defaultHref = '/home/', showBackButton = true, backButtonText = "back", className = "", children, setScrollableContentRef = false }) => {
 	const { breakpoint, maxWidth, minWidth } = useBreakpoint(BREAKPOINTS, 'desktop');
 	const location = useLocation();
-	const history = useHistory();
+
+	if (location.state && location.state.backButtonText) {
+		if (backButtonText === 'back') {
+			backButtonText = location.state.backButtonText;
+		}
+	}
 
 	const showBottomMenu = breakpoint !== 'desktop';
 
@@ -84,7 +95,7 @@ const Page = ({ id = null, title = "Undefined", defaultHeader = true, showBackBu
 	const random = Math.random();
 	const modalString = "open-account-modal-" + random;
 
-	const [ contentNodeRef ] = useHookWithRefCallback();
+	const [ contentNodeRef ] = useHookWithRefCallback(setScrollableContentRef);
 
 	/*
 	useEffect(() => {
@@ -109,7 +120,7 @@ const Page = ({ id = null, title = "Undefined", defaultHeader = true, showBackBu
 				<IonToolbar className="mainToolbar">
 					<IonButtons slot="start" className="ionButtons">
 						{ showBackButton &&
-							<IonBackButton defaultHref={'/home/'} />
+							<IonBackButton defaultHref={defaultHref} text={backButtonText} />
 						}
 					</IonButtons>
 					<IonTitle>{title}</IonTitle>
@@ -138,7 +149,7 @@ const Page = ({ id = null, title = "Undefined", defaultHeader = true, showBackBu
 				}
 
 				{children}
-				<div className="playerPagePadding" style={{ height: 60 }}></div>
+				<div className="playerPagePadding" style={{ height: 90 }}></div>
 				<AccountModal trigger={modalString} />
 			</IonContent>
 			{ showBottomMenu &&

@@ -34,6 +34,7 @@ import DiscoverPage from 'pages/DiscoverPage/DiscoverPage';
 import PodcastPage from 'pages/PodcastPage/PodcastPage';
 import EpisodePage from 'pages/PodcastPage/EpisodePage';
 import SearchPage from 'pages/SearchPage/SearchPage';
+import WalletPage from 'pages/WalletPage/WalletPage';
 
 import useStore from 'store/Store';
 
@@ -57,14 +58,27 @@ export default function App({ platform, audioController }) {
 
 	const showSplitPane = breakpoint === 'desktop';
 
+	const isLoggedIn = useStore((state) => state.isLoggedIn);
 	const setAudioController = useStore((state) => state.setAudioController);
 	const synchronizePodcasts = useStore((state) => state.synchronizePodcasts);
 
 	useEffect(() => {
 		setAudioController(audioController);
-		synchronizePodcasts();
+		if (isLoggedIn) {
+			synchronizePodcasts();
+		}
 		console.log('App loaded');
 	},[]);
+
+	const router = useRef(false);
+	const navigateToPath = (path) => {
+		if (router.current && router.current.history) {
+			event.preventDefault();
+			router.current.history.push(path);
+		}
+
+		return false;
+	};
 
 	const routes = [
 		<Route path="/home/" exact={true} render={(props) => <Home {...props} />} />,
@@ -72,10 +86,10 @@ export default function App({ platform, audioController }) {
 		<Route path="/favorites/" render={(props) => <FavoritePage {...props} />} />,
 		<Route path="/playlist/" render={(props) => <Home {...props} />} />,
 		<Route path="/collections/" render={(props) => <Home {...props} />} />,
-		<Route path="/wallet/" render={(props) => <Home {...props} />} />,
+		<Route path="/wallet/" render={(props) => <WalletPage {...props} />} />,
 		<Route path="/search/:searchQuery?" render={(props) => <SearchPage {...props} />} />,
 		<Route exact={true} path="/podcast/:podcastPath/" render={(props) => <PodcastPage {...props} />} />,
-		<Route exact={true} path="/podcast/:podcastPath/:episodeId/" render={(props) => <EpisodePage {...props} />} />,
+		<Route exact={true} path="/podcast/:podcastPath/episode/:episodeId/" render={(props) => <EpisodePage {...props} />} />,
 		<Redirect exact={true} from="/" to="home/" />,
 		<Redirect exact={true} from="/index.html" to="home/" />
 	].map((Route, index) => ({ ...Route, key: index }));
@@ -86,9 +100,9 @@ export default function App({ platform, audioController }) {
 				{ platform === 'desktop' &&
 					<DesktopHeader />
 				}
-				<Player audioController={audioController} />
+				<Player audioController={audioController} navigateToPath={navigateToPath} />
 				<div className="menuShadow" style={{ display: 'none' }}>&nbsp;</div>
-				<IonReactRouter>
+				<IonReactRouter ref={router}>
 					<IonSplitPane contentId="main" when={showSplitPane}>
 						<MainMenu />
 						<IonRouterOutlet id="main">

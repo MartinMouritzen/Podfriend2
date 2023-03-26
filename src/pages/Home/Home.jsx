@@ -17,7 +17,7 @@ import LatestEpisodes from 'components/Lists/LatestEpisodes';
 const Home = ({  }) => {
 	const { breakpoint } = useBreakpoint(BREAKPOINTS, 'desktop');
 
-	const isLoggedIn = useStore((state) => state.isLoggedIn);
+	const loggedIn = useStore((state) => state.loggedIn);
 
 	const router = useIonRouter();
 	const searchBar = useRef(null);
@@ -41,7 +41,7 @@ const Home = ({  }) => {
 					</IonToolbar>
 				</IonHeader>
 			}
-			{ isLoggedIn &&
+			{ loggedIn &&
 				<div className='section noPadding'>
 					<div className='sectionInner'>
 						<div className='sectionSubTitle'>Continue</div>
@@ -52,7 +52,7 @@ const Home = ({  }) => {
 					</div>
 				</div>
 			}
-			{ isLoggedIn &&
+			{ loggedIn &&
 				<div className='section'>
 					<div className='sectionInner'>
 						<div className='sectionSubTitle'>Latest</div>

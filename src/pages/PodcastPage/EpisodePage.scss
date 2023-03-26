@@ -1,0 +1,116 @@
+.episodePage {
+	.episodePageContent {
+		@media (min-width: 678px) {
+			display: flex;
+			flex-direction: row;
+			gap: 20px;
+		}
+
+		flex: 1;
+		padding-left: 10px;
+		padding-right: 10px;
+
+
+		ion-list {
+			margin-inline-start: 0px;
+		}
+
+
+		.episodeHeader {
+
+			display: flex;
+			justify-content: start;
+			align-items: center;
+
+			@media (min-width: 678px) {
+				align-items: start;
+				min-width: 400px;
+			}
+
+			flex-direction: column;
+
+			overflow: hidden;
+
+			gap: 10px;
+
+			padding-bottom: 10px;
+
+			.playerCoverContainer {
+				display: flex;
+				justify-content: center;
+				align-items: center;
+
+				flex: 1;
+
+				transition: all 0.2s;
+	
+				max-width: 400px;
+				max-height: 400px;
+	
+				width: 100%;
+				height: calc(100% - 120px);
+
+				@media (min-width: 678px) {
+					min-width: 300px;
+				}
+
+
+				/*border: 2px solid #FFFFFF;*/
+				border-radius: 5px;
+
+				.chapters {
+					justify-content: center;
+					align-items: start;
+				}
+
+				img, .coverLoading {
+					width: auto !important;
+					max-width: 100%;
+					height: auto !important;
+					max-height: 100% !important;
+					transition: all 0.4s;
+
+
+					border-radius: 5px;
+				}
+			}
+		}
+		.episodeContents {
+			margin-left: auto;
+			margin-right: auto;
+			max-width: 400px;
+
+			@media (min-width: 678px) {
+				margin-left: 0px;
+				margin-right: 0px;
+				max-width: 600px;
+
+
+
+			}
+
+			.episodeHeaderText {
+				width: 100%;
+				max-width: 400px;
+	
+				flex: 2;
+	
+				max-height: 100px;
+	
+	
+				ion-toolbar {
+					padding-top: 0px;
+				}
+	
+				.title-large {
+					position: static;
+					font-size: 26px;
+					padding: 0px;
+				}
+			}
+			.description {
+				padding: 5px;
+			}
+		}
+	}
+}

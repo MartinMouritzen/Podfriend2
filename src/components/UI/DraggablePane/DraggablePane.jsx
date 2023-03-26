@@ -65,11 +65,20 @@ const DraggablePane = ({ onHide = false, onOpen = false, open = false, children,
 	},[heightWithoutDrag]);
 
 	const bind = useGesture({
-		onDragStart: ({}) => {
+		onDragStart: (event) => {
+			// We don't want the user dragging the player if there's a modal showing
+			if (event._dragTarget && event._dragTarget.tagName && (event._dragTarget.tagName.toLowerCase() == 'ion-modal' || event._dragTarget.tagName.toLowerCase() == 'ion-backdrop')) {
+				return;
+			}
 			setStartDragScrollOffsetY(elementRef.current.scrollTop);
 			// elementRef.current.scrollTop = startDragScrollOffsetY;
 		},
-		onDrag: ({ down, initial: [ix,iy], movement: [mx, my], direction: velocity }) => {
+		onDrag: ({ event, down, initial: [ix,iy], movement: [mx, my], direction: velocity }) => {
+			// We don't want the user dragging the player if there's a modal showing
+			if (event && event.target && event.target.tagName && event.target.tagName.toLowerCase() == 'ion-modal') {
+				return;
+			}
+
 			let dragValues = { height: heightWithoutDrag };
 			
 			if (my === 0) {

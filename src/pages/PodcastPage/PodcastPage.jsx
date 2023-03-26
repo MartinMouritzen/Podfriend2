@@ -85,7 +85,7 @@ const PodcastPage = ({ match }) => {
 			// setPodcastState('loaded');
 			// console.log(activePodcast);
 		}
-	},[activePodcast]);
+	},[activePodcast.path]);
 
 	// console.log(podcastData.rssFeedContents);
 
@@ -124,7 +124,7 @@ const PodcastPage = ({ match }) => {
 			console.log('Feed doesn\'t have persons');
 			setPersons(false);
 		}
-	},[podcastRSSData]);
+	},[JSON.stringify(podcastRSSData)]);
 
 	const refreshPodcast = () => {
 		return retrievePodcastFromServer(podcastPath,podcastData)
@@ -234,6 +234,7 @@ const PodcastPage = ({ match }) => {
 
 		setPodcastState('loading');
 		setPodcastData(false);
+		console.log('unsetting podcast RSS data');
 		setPodcastRSSData(false);
 		setError(false);
 		loadPodcast(podcastPath);

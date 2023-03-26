@@ -19,9 +19,9 @@ const ChapterList = ({ chapters, currentChapter = false }) => {
 			<IonListHeader>
 				<IonLabel>Chapters</IonLabel>
 			</IonListHeader>
-			{ chapters.map((chapter) => {
+			{ chapters.map((chapter,index) => {
 				return (
-				<IonItem detail={true} onClick={() => { audioSetCurrentTime(chapter.startTime) }} className={currentChapter === chapter ? 'currentChapter' : ''}>
+				<IonItem key={'chapter' + index} detail={true} onClick={() => { audioSetCurrentTime(chapter.startTime) }} className={currentChapter === chapter ? 'currentChapter' : ''}>
 					{ chapter.img &&
 						<IonThumbnail slot="start" className="chapterListThumbnail">
 							<img src={chapter.img} />

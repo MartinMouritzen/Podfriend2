@@ -47,6 +47,8 @@ const ContinueListening = ({ backButtonText = false }) => {
 	return (
 		<Swiper
 			slidesPerView='auto'
+			slidesPerGroup={1}
+			slidesPerGroupAuto={true}
 			spaceBetween={10}
 			slidesOffsetBefore={10}
 			slidesOffsetAfter={10}
@@ -87,7 +89,7 @@ const ContinueListening = ({ backButtonText = false }) => {
 								{ podcastData.episode.listenedPercentage &&
 									<div className="episodeProgressBarInner" style={{ width: Math.round(podcastData.episode.listenedPercentage) + '%' }}/>
 								}
-								</div>
+							</div>
 							<div className='podcastInfo'>
 								<div className='title'>
 									{podcastData.episode.title}

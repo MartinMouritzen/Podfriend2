@@ -89,7 +89,7 @@ export default function App({ platform, audioController }) {
 		<Route path="/wallet/" render={(props) => <WalletPage {...props} />} />,
 		<Route path="/search/:searchQuery?" render={(props) => <SearchPage {...props} />} />,
 		<Route exact={true} path="/podcast/:podcastPath/" render={(props) => <PodcastPage {...props} />} />,
-		<Route exact={true} path="/podcast/:podcastPath/episode/:episodeId/" render={(props) => <EpisodePage {...props} />} />,
+		<Route exact={true} path="/podcast/:podcastPath/episode/:episodeId/" render={(props) => <EpisodePage audioController={audioController} navigateToPath={navigateToPath} {...props} />} />,
 		<Redirect exact={true} from="/" to="home/" />,
 		<Redirect exact={true} from="/index.html" to="home/" />
 	].map((Route, index) => ({ ...Route, key: index }));

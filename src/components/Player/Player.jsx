@@ -1,6 +1,9 @@
-import { IonMenu, IonTitle, IonSearchbar, IonHeader, IonContent, IonIcon, IonLabel, IonList, IonItem, IonToolbar, IonButtons, IonButton, IonRange, IonSegment, IonSegmentButton, IonSkeletonText } from '@ionic/react';
+import { IonMenu, IonTitle, IonSearchbar, IonHeader, IonContent, IonIcon, IonLabel, IonList, IonItem, IonToolbar, IonButtons, IonButton, IonRange, IonSegment, IonSegmentButton, IonSkeletonText, IonChip, IonListHeader } from '@ionic/react';
 
 import useStore from 'store/Store';
+
+import { BREAKPOINTS } from 'constants/breakpoints';
+import useBreakpoint from 'use-breakpoint';
 
 import { useEffect, useRef, useState } from 'react';
 
@@ -30,12 +33,16 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination } from "swiper";
 import 'swiper/css';
 import "swiper/css/pagination";
+
 import ChapterList from 'components/Chapters/ChapterList';
 import PodcastImage from 'components/PodcastImage/PodcastImage';
 import TranscriptLiveArea from './Transcript/TranscriptLiveArea';
+import PodcastUtil from 'library/PodcastUtil';
 
 
 const Player = ({ audioController, navigateToPath }) => {
+	const { breakpoint } = useBreakpoint(BREAKPOINTS, 'desktop');
+
 	const audioElement = useRef(null);
 	const scrollChild = useRef(null);
 
@@ -74,6 +81,8 @@ const Player = ({ audioController, navigateToPath }) => {
 	const [isVideo,setIsVideo] = useState(false);
 
 	const [chapters,setChapters] = useState(false);
+	const [transcriptData,setTranscriptData] = useState(false);
+
 	const [chaptersLoading,setChaptersLoading] = useState(true);
 	const [currentChapter,setCurrentChapter] = useState(false);
 
@@ -229,7 +238,8 @@ const Player = ({ audioController, navigateToPath }) => {
 		setError(false);
 		setErrorText(false);
 		setErrorRetries(0);
-		setSubtitleFileURL(false);
+		console.log('Unsetting transcript data');
+		setTranscriptData(false);
 		setChapters(false);
 
 		changeActiveEpisode(activePodcast,activeEpisode);
@@ -243,53 +253,7 @@ const Player = ({ audioController, navigateToPath }) => {
 
 	const [rssFeedCurrentEpisode,setRssFeedCurrentEpisode] = useState(false);
 	
-	const loadChapters = async(url) => {
-		// console.log('loading chapters');
-		let result = false;
-
-		try {
-			result = await fetch(url);
-		}
-		catch(exception) {
-			// console.error('Cors probably missing on chapters, using proxy');
-			url = 'https://www.podfriend.com/tmp/rssproxy.php?rssUrl=' + encodeURI(url);
-
-			try {
-				result = await fetch(url);
-			}
-			catch(exception2) {
-				console.error('Proxy call to chapters failed.');
-				console.error(exception2);
-			}
-		}
-		try {
-			let resultJson = await result.json();
-
-			try {
-				if (resultJson.chapters && resultJson.chapters.length > 0) {
-					var finalChapters = resultJson.chapters;
-					console.log(finalChapters);
-					for (var i=0;i<finalChapters.length;i++) {
-						if (finalChapters[i + 1]) {
-							finalChapters[i].endTime = finalChapters[i + 1].startTime;
-						}
-					}
-					setChapters(finalChapters);
-				}
-			}
-			catch(exception) {
-				console.error('Exception getting chapters from: ' + url);
-				console.error(exception);
-			}
-		}
-		catch(exception) {
-			console.error('Exception parsing chapters');
-			console.error(exception);
-			console.error(url);
-			console.error(result);
-		}
-	};
-
+	
 	useEffect(() => {
 		setRssFeedCurrentEpisode(false);
 
@@ -299,18 +263,55 @@ const Player = ({ audioController, navigateToPath }) => {
 			for(var i=0;i<activePodcast.rssFeedContents.items.length;i++) {
 				if (activeEpisode.guid == activePodcast.rssFeedContents.items[i].guid) {
 					foundEpisode = true;
+					console.log(activePodcast.rssFeedContents.items[i]);
 					setRssFeedCurrentEpisode(activePodcast.rssFeedContents.items[i]);
 					break;
 				}
 			}
 		}
-	},[activeEpisode.url]);
+	},[JSON.stringify(activePodcast.rssFeedContents)]);
 
 	useEffect(() => {
 		if (rssFeedCurrentEpisode && rssFeedCurrentEpisode.chaptersUrl) {
-			loadChapters(rssFeedCurrentEpisode.chaptersUrl);
+			PodcastUtil.loadChapters(rssFeedCurrentEpisode.chaptersUrl)
+			.then((chapters) => {
+				setChapters(chapters);
+			});
 		}
-	},[rssFeedCurrentEpisode]);
+		console.log(rssFeedCurrentEpisode);
+		if (rssFeedCurrentEpisode && rssFeedCurrentEpisode.transcriptUrl) {
+			var useTranscript = false;
+			if (Array.isArray(rssFeedCurrentEpisode.transcript)) {
+				for(var i=0;i<rssFeedCurrentEpisode.transcript.length;i++) {
+					if (rssFeedCurrentEpisode.transcript[i].type == 'application/srt' || rssFeedCurrentEpisode.transcript[i].type == 'text/srt') {
+						useTranscript = rssFeedCurrentEpisode.transcript[i];
+					}
+				}
+				if (!useTranscript) {
+					useTranscript = rssFeedCurrentEpisode.transcript[0];
+				}
+			}
+			else {
+				if (rssFeedCurrentEpisode.transcript.url && rssFeedCurrentEpisode.transcript.type) {
+					useTranscript = {
+						url: rssFeedCurrentEpisode.transcript.url,
+						type: rssFeedCurrentEpisode.transcript.type
+					}
+				}
+				else {
+					useTranscript = {
+						url: rssFeedCurrentEpisode.transcriptUrl,
+						type: 'text/plain'
+					}
+				}
+			}
+			PodcastUtil.loadTranscript(useTranscript.url,useTranscript.type)
+			.then((transcriptData) => {
+				console.log(transcriptData);
+				setTranscriptData(transcriptData);
+			});
+		}
+	},[JSON.stringify(rssFeedCurrentEpisode)]);
 
 	useEffect(() => {
 		var foundChapter = false;
@@ -329,7 +330,7 @@ const Player = ({ audioController, navigateToPath }) => {
 		if (foundChapter != currentChapter) {
 			setCurrentChapter(foundChapter);
 		}
-	},[chapters,Math.round(activeEpisode.currentTime)]);
+	},[JSON.stringify(chapters),Math.round(activeEpisode.currentTime)]);
 
 	const navigateToPodcast = () => {
 		navigateToPath('/podcast/' + activePodcast.path + '/');
@@ -362,96 +363,36 @@ const Player = ({ audioController, navigateToPath }) => {
 						<source src={addUserAgentToUrl(activeEpisode.url) + generateTimeHash()} type={activeEpisode.type ? activeEpisode.type : 'audio/mpeg'} />
 					</audio>
 				}
-				{ /*
-				<div className="segmentContainer" style={{ display: (fullscreen ? 'block' : 'none') }}>
-					<IonSegment value={segmentVisible} onIonChange={(e) => { setSegmentVisible(e.detail.value); console.log(e.detail.value); }} onClick={(event) => { event.preventDefault(); event.stopPropagation(); }}>
-						<IonSegmentButton value="playing">
-							<IonLabel>
-								Playing
-							</IonLabel>
-						</IonSegmentButton>
-						<IonSegmentButton value="transcript">
-							<IonLabel>Transcript</IonLabel>
-						</IonSegmentButton>
-					</IonSegment>
-				</div>
-				*/ }
-
-				{ fullscreen &&
-					<>
-						<div className="podcastInfo">
-							<div className="episodeTitle">
-								{activeEpisode.title}
-							</div>
-							<div className="podcastName">
-								<>{activePodcast.name}</>
-							</div>
-						</div>
-						<div className="swipeableContent" style={{ width: '100vw' }}>
-							<Swiper
-								cssMode={true}
-								spaceBetween={0}
-								slidesPerView={1}
-								onSlideChange={() => console.log('slide change')}
-								onSwiper={(swiper) => console.log(swiper)}
-								pagination={true}
-								modules={[Pagination]}
-							>
-								<SwiperSlide>
-									<div className="swipeContents playingCoverArea">
-										<div className="playerCoverContainer" onClick={maximize}>
-											{ activeEpisode &&
-												<PlayerPodcastCoverArea 
-													audioController={audioController}
-													chapters={chapters}
-													currentChapter={currentChapter}
-												/>
-												
-											}
-										</div>
-										{ currentChapter &&
-											<>
-												<div className="chapterPlayingTitle">
-													{currentChapter.title}
-												</div>
-												<div className="chapterPlayingPeriod">
-													{TimeUtil.fancyTimeFormat(currentChapter.startTime)} - {TimeUtil.fancyTimeFormat(currentChapter.endTime)}
-												</div>
-											</>
-										}
-									</div>
-								</SwiperSlide>
-								{ chapters &&
-									<SwiperSlide>
-										<div className="swipeContents">
-											<ChapterList
-												chapters={chapters}
-												currentChapter={currentChapter}
-											/>
-										</div>
-									</SwiperSlide>
-								}
-							</Swiper>
-						</div>
-						<TranscriptLiveArea />
-						<div style={{ color: '#000000', padding: 10 }}>
-							Comments
-						</div>
-					</>
-				}
-				{ !fullscreen &&
-					<div className="playerCoverContainer" onClick={maximize}>
-						{ activeEpisode &&
-							<PlayerPodcastCoverArea 
-								audioController={audioController}
-							/>
-							
-						}
+				<div className="mainPlayerComponents">
+					<div className="segmentContainer" style={{ display: (fullscreen ? 'block' : 'none') }}>
+						<IonSegment value={segmentVisible} onIonChange={(e) => { setSegmentVisible(e.detail.value); console.log(e.detail.value); }} onClick={(event) => { event.preventDefault(); event.stopPropagation(); }}>
+							<IonSegmentButton value="playing">
+								<IonLabel>
+									Playing
+								</IonLabel>
+							</IonSegmentButton>
+							<IonSegmentButton value="chapters">
+								<IonLabel>Chapters</IonLabel>
+							</IonSegmentButton>
+							<IonSegmentButton value="info">
+								<IonLabel>Info</IonLabel>
+							</IonSegmentButton>
+							<IonSegmentButton value="chat">
+								<IonLabel>Chat</IonLabel>
+							</IonSegmentButton>
+						</IonSegment>
 					</div>
-				}
-				<div className="controls">
-					<div className='titleAndButtons'>
-						{ !fullscreen &&
+
+					{ fullscreen &&
+						<>
+							{ false && 
+								<div>
+									<IonChip>Now playing</IonChip>
+									<IonChip>Info</IonChip>
+									<IonChip>Chat</IonChip>
+									<IonChip>Chapters</IonChip>
+								</div>
+							}
 							<div className="podcastInfo">
 								<div className="episodeTitle">
 									{activeEpisode.title}
@@ -460,55 +401,141 @@ const Player = ({ audioController, navigateToPath }) => {
 									<>{activePodcast.name}</>
 								</div>
 							</div>
-						}
-						<div className="progressAndControls">
-							<div className="progressBar">
-								<div className="progressText">
-									{TimeUtil.formatPrettyDurationText(activeEpisode.currentTime)}
-								</div>
-								<ProgressBar
-									progress={activeEpisode.currentTime}
-									duration={activeEpisode.duration}
-									onProgressSliderChange={onProgressSliderChange}
-								/>
-								<div className="durationText" title={TimeUtil.formatPrettyDurationText(activeEpisode.duration - activeEpisode.progress) + ' left.'}>
-									{TimeUtil.formatPrettyDurationText(activeEpisode.duration)}
-								</div>
+							<div className="swipeableContent" style={{ width: '100vw' }}>
+								<Swiper
+									cssMode={true}
+									spaceBetween={0}
+									slidesPerView={1}
+									pagination={{
+										clickable: true,
+									}}
+									modules={[Pagination]}
+								>
+									<SwiperSlide>
+										<div className="swipeContents playingCoverArea">
+											<div className="playerCoverContainer" onClick={maximize}>
+												{ activeEpisode &&
+													<PlayerPodcastCoverArea 
+														podcast={activePodcast}
+														episode={activeEpisode}
+														audioController={audioController}
+														chapters={chapters}
+														currentChapter={currentChapter}
+													/>
+													
+												}
+											</div>
+											{ currentChapter &&
+												<>
+													<div className="chapterPlayingTitle">
+														{currentChapter.title}
+													</div>
+													<div className="chapterPlayingPeriod">
+														{TimeUtil.fancyTimeFormat(currentChapter.startTime)} - {TimeUtil.fancyTimeFormat(currentChapter.endTime)}
+													</div>
+												</>
+											}
+										</div>
+									</SwiperSlide>
+									{ chapters &&
+										<SwiperSlide>
+											<div className="swipeContents">
+												<ChapterList
+													chapters={chapters}
+													currentChapter={currentChapter}
+												/>
+											</div>
+										</SwiperSlide>
+									}
+								</Swiper>
 							</div>
-							<div className="playerControls">
-								<div className="button buttonSkipBackward" onClick={onSkipBackward}><SVG src={SkipBackwardIcon} /></div>
-								<div className="button buttonRewind" onClick={onBackward}><SVG src={RewindIcon} /></div>
-								{ streamDataLoading &&
-									<div className="button buttonLoad" onClick={onPauseClicked} style={{ /* backgroundColor: vibrantColor */ }} ><img src={LoadingIcon} /></div>
-								}
-								{ streamDataLoading === false &&
-									<>
-									{ shouldPlay &&
-										<div className="button buttonPause" onClick={onPauseClicked} style={{ /* backgroundColor: vibrantColor */ }}><SVG src={PauseIcon} /></div>
-									}
-									{ shouldPlay === false &&
-										<div className="button buttonPlay" onClick={onPlayClicked} style={{ /* backgroundColor: vibrantColor */ }}><SVG src={PlayIcon} /></div>
-									}
-									</>
-								}
-								<div className="button buttonForward" onClick={onForward}><SVG src={ForwardIcon} /></div>
-								<div className="button buttonSkipForward" onClick={onSkipForward}><SVG src={SkipForwardIcon} /></div>
-								{ !fullscreen &&
-									<div className="button navigateToPodcastButton" onClick={navigateToPodcast}>
-										<PodcastImage
-											podcastPath={activePodcast.path}
-											width={120}
-											height={120}
-											coverWidth={30}
-											coverHeight={30}
-											imageErrorText={activePodcast.name}
-											fallBackImage={activePodcast.artworkUrl600 ? activePodcast.artworkUrl600 : activePodcast.image}
-											src={activePodcast.artworkUrl600 ? activePodcast.artworkUrl600 : activePodcast.image}
-											className={'podcastThumbnail'}
-											loadingComponent={() => <IonSkeletonText animated={true} className="coverLoading" />}
-										/>
+							<TranscriptLiveArea transcriptData={transcriptData} currentTime={activeEpisode.currentTime} podcast={activePodcast} chapters={chapters} setCurrentTime={setCurrentTime} />
+							<div style={{ color: '#000000', padding: 10 }}>
+								Comments
+							</div>
+						</>
+					}
+					{ !fullscreen &&
+						<div className="playerCoverContainer" onClick={maximize}>
+							{ activeEpisode &&
+								<PodcastImage
+									podcastPath={activePodcast.path}
+									width={600}
+									height={600}
+									coverWidth={50}
+									coverHeight={50}
+									imageErrorText={activePodcast.name}
+									fallBackImage={activePodcast.artworkUrl600 ? activePodcast.artworkUrl600 : activePodcast.image}
+									src={activeEpisode.image ? activeEpisode.image : activePodcast.artworkUrl600 ? activePodcast.artworkUrl600 : activePodcast.image}
+									className={''}
+									// imageRef={coverImageRef}
+									loadingComponent={() => <IonSkeletonText animated={true} className="coverLoading" />}
+								/>
+								
+							}
+						</div>
+					}
+					<div className="controls">
+						<div className='titleAndButtons'>
+							{ !fullscreen &&
+								<div className="podcastInfo">
+									<div className="episodeTitle">
+										{activeEpisode.title}
 									</div>
-								}
+									<div className="podcastName">
+										<>{activePodcast.name}</>
+									</div>
+								</div>
+							}
+							<div className="progressAndControls">
+								<div className="progressBar">
+									<div className="progressText">
+										{TimeUtil.formatPrettyDurationText(activeEpisode.currentTime)}
+									</div>
+									<ProgressBar
+										progress={activeEpisode.currentTime}
+										duration={activeEpisode.duration}
+										onProgressSliderChange={onProgressSliderChange}
+									/>
+									<div className="durationText" title={TimeUtil.formatPrettyDurationText(activeEpisode.duration - activeEpisode.progress) + ' left.'}>
+										{TimeUtil.formatPrettyDurationText(activeEpisode.duration)}
+									</div>
+								</div>
+								<div className="playerControls">
+									<div className="button buttonSkipBackward" onClick={onSkipBackward}><SVG src={SkipBackwardIcon} /></div>
+									<div className="button buttonRewind" onClick={onBackward}><SVG src={RewindIcon} /></div>
+									{ streamDataLoading &&
+										<div className="button buttonLoad" onClick={onPauseClicked} style={{ /* backgroundColor: vibrantColor */ }} ><img src={LoadingIcon} /></div>
+									}
+									{ streamDataLoading === false &&
+										<>
+										{ shouldPlay &&
+											<div className="button buttonPause" onClick={onPauseClicked} style={{ /* backgroundColor: vibrantColor */ }}><SVG src={PauseIcon} /></div>
+										}
+										{ shouldPlay === false &&
+											<div className="button buttonPlay" onClick={onPlayClicked} style={{ /* backgroundColor: vibrantColor */ }}><SVG src={PlayIcon} /></div>
+										}
+										</>
+									}
+									<div className="button buttonForward" onClick={onForward}><SVG src={ForwardIcon} /></div>
+									<div className="button buttonSkipForward" onClick={onSkipForward}><SVG src={SkipForwardIcon} /></div>
+									{ !fullscreen &&
+										<div className="button navigateToPodcastButton" onClick={navigateToPodcast}>
+											<PodcastImage
+												podcastPath={activePodcast.path}
+												width={120}
+												height={120}
+												coverWidth={30}
+												coverHeight={30}
+												imageErrorText={activePodcast.name}
+												fallBackImage={activePodcast.artworkUrl600 ? activePodcast.artworkUrl600 : activePodcast.image}
+												src={activePodcast.artworkUrl600 ? activePodcast.artworkUrl600 : activePodcast.image}
+												className={'podcastThumbnail'}
+												loadingComponent={() => <IonSkeletonText animated={true} className="coverLoading" />}
+											/>
+										</div>
+									}
+								</div>
 							</div>
 						</div>
 					</div>
@@ -516,9 +543,12 @@ const Player = ({ audioController, navigateToPath }) => {
 				{ fullscreen &&
 					<EpisodeSecondaryActionToolbar activePodcast={activePodcast} activeEpisode={activeEpisode} navigateToPodcast={navigateToPodcast} />
 				}
-				{ (false && fullscreen) &&
+				{ fullscreen &&
 					<div className="episodeContent">
-
+						<IonList>
+							<IonListHeader>Coming up</IonListHeader>
+							<IonList>Episode</IonList>
+						</IonList>
 						Feed here, which includes Boostogram comments, boosts and other timeline events for the episode<br /><br />
 						For example &quot;Martin streamed 543 sats to the show.&quot; if only one friend streamed, and &quot;4 Friends streamed to this show&quot; if more than eg. 2 or 3 did it.
 

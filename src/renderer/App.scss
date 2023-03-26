@@ -7,6 +7,7 @@
 	--ion-toolbar-background: #ffffff;
 	--primary-color: #0176e5;
 	--primary-color-text: #FFFFFF;
+	--primary-color-light: #3d95e8;
 	--primary-color-dark: #00366B;
 
 	--ion-color-secondary: #f3f8ff;
@@ -96,6 +97,9 @@ a {
 }
 p {
 	margin-bottom: 0px;
+}
+ion-modal::part(backdrop) {
+	
 }
 ion-nav-link {
 	ion-icon {
@@ -304,6 +308,9 @@ ion-menu {
 		}
 	}
 }
+.smoothScroll * {
+	scroll-behavior: smooth;
+}
 .platform_desktop {
 	.mainToolbar {
 		--padding-end: 150px;
@@ -337,7 +344,7 @@ ion-menu {
 	position: relative;
 	background-color: #f0f0f0;
 
-	padding-bottom: 25px;
+	padding-bottom: 0px;
 
 	&.noPadding {
 		padding-bottom: 0px;
@@ -445,7 +452,7 @@ ion-menu {
 		.episodeProgressBarOuter {
 			position: absolute;
 
-			bottom: 90px;
+			top: 205px;
 			left: 5px;
 
 			border-radius: 0px 0px 5px 5px;
@@ -506,7 +513,7 @@ ion-menu {
 	}
 	.swiper-wrapper {
 		padding-top: 15px;
-		padding-bottom: 30px;
+		padding-bottom: 45px;
 	}
 	@media (any-hover: none) {
 		&.list {
@@ -675,7 +682,6 @@ ion-menu {
 			display: flex;
 			justify-content: start;
 			align-items: center;
-			padding-top: 7px;
 		}
 		.podcastItem:hover {
 			transform: scale(1.1);

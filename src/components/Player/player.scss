@@ -40,8 +40,32 @@
 		}
 	}
 
+	&.fullscreen {
+		.mainPlayerComponents {
+			display: flex;
+			flex-direction: column;
+
+			justify-content: center;
+			align-items: center;
+			
+			max-height: calc(100% - 100px);
+
+			flex: 1;
+		}
+	}
+	&.mini {
+		.mainPlayerComponents {
+			display: flex;
+			flex-direction: row;
+
+
+
+			flex: 1;
+		}
+	}
 	.segmentContainer {
 		margin-bottom: 10px;
+		height: 32px;
 
 		ion-segment {
 			--background: #dddddf;
@@ -501,9 +525,6 @@
 			color: #000000;
 			text-align: center;
 		}
-		.playerCoverContainer {
-			
-		}
 		.swipeableContent {
 			backdrop-filter: blur(3.5px);
 			-webkit-backdrop-filter: blur(3.5px);
@@ -563,23 +584,35 @@
 			max-height: 400px;
 			margin-bottom: 10px;
 
-			width: 100%;
-
 			display: flex;
 			justify-content: center;
 			align-items: center;
 
-			/*border: 2px solid #FFFFFF;*/
 			border-radius: 5px;
 
-/*
-			img {
-				width: 90vw !important;
-				height: 90vw !important;
-				max-width: 400px;
-				max-height: 400px;
+			margin-left: auto;
+			margin-right: auto;
+
+			width: calc(100vw - 50px) !important;
+			height: calc(100vw - 50px) !important;
+			max-width: min(400px,40vh);
+			/*max-height: min(400px,40vh);*/
+			max-height: calc(100% - 60px);
+
+			img, .coverLoading {
+				width: auto !important;
+				height: 100% !important;
+				max-width: unset;
+
+				
+				/*
+				width: calc(100vw - 50px) !important;
+				height: auto !important;
+
+				max-width: 400px !important;
+				max-height: min(400px,40vh) !important;
+				*/
 			}
-*/
 		}
 		.dragHandle {
 			display: block;
@@ -669,29 +702,6 @@
 			flex-direction: column;
 			flex: 1;
 		}
-		.playerCoverContainer {
-			margin-left: auto;
-			margin-right: auto;
-
-			width: calc(100vw - 50px) !important;
-			height: calc(100vw - 50px) !important;
-			max-width: min(400px,40vh);
-			max-height: min(400px,40vh);
-
-			img, .coverLoading {
-				width: auto !important;
-				height: 100% !important;
-
-				
-				/*
-				width: calc(100vw - 50px) !important;
-				height: auto !important;
-
-				max-width: 400px !important;
-				max-height: min(400px,40vh) !important;
-				*/
-			}
-		}
 		.episodeContent {
 			background-color: #FFFFFF;
 			color: #000000;
@@ -703,7 +713,10 @@
 			.playerCoverContainer {
 				transform: scale(1.05);
 
-				box-shadow: 0px 3px 11px -1px rgb(0 0 0 / 63%);
+				img {
+					transition: all 0.2s;
+					box-shadow: 0px 3px 11px -1px rgb(0 0 0 / 23%);
+				}
 	
 				/*box-shadow: 0px 0px 39px -12px rgba(0,0,0,0.25);*/
 			}

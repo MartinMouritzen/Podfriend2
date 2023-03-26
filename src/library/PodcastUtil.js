@@ -1,6 +1,97 @@
+import { convertFile, determineFormat } from 'transcriptator';
+
 class PodcastUtil {
+	/**
+	*
+	**/
+	static __fetchTranscript(transcriptUrl,type) {
+		return fetch(transcriptUrl)
+		.catch((exception) => {
+			console.log('CORS on transcript file. Falling back to Proxy.');
+			return fetch('https://www.podfriend.com/tmp/rssproxy.php?rssUrl=' + encodeURI(subtitleFile));
+		})
+		.then((result) => {
+			if (type === 'application/json') {
+				return result.json();
+			}
+			return result.text();
+		})
+		.then((result) => {
+			if (type === 'application/srt' || type === 'text/srt') {
+				return result;
+			}
+			else {
+				return result;
+			}
+		})
+		.catch((error) => {
+			console.log('Error getting transcript file');
+			console.log(error);
+		});
+	}
+	/**
+	*
+	**/
+	static async loadTranscript(transcriptUrl,transcriptInfo) {
+		return this.__fetchTranscript(transcriptUrl,transcriptInfo.type)
+		.then((transcriptData) => {
+			var format = determineFormat(transcriptData);
+			var segments = convertFile(transcriptData,format);
+			return segments;
+		});
+	}
+	/**
+	*
+	**/
+	static async loadChapters(url) {
+		// console.log('loading chapters');
+		let result = false;
+
+		try {
+			result = await fetch(url);
+		}
+		catch(exception) {
+			// console.error('Cors probably missing on chapters, using proxy');
+			url = 'https://www.podfriend.com/tmp/rssproxy.php?rssUrl=' + encodeURI(url);
+
+			try {
+				result = await fetch(url);
+			}
+			catch(exception2) {
+				console.error('Proxy call to chapters failed.');
+				console.error(exception2);
+			}
+		}
+		try {
+			let resultJson = await result.json();
+
+			try {
+				if (resultJson.chapters && resultJson.chapters.length > 0) {
+					var finalChapters = resultJson.chapters;
+					for (var i=0;i<finalChapters.length;i++) {
+						if (finalChapters[i + 1]) {
+							finalChapters[i].endTime = finalChapters[i + 1].startTime;
+						}
+					}
+					return finalChapters;
+				}
+			}
+			catch(exception) {
+				console.error('Exception getting chapters from: ' + url);
+				console.error(exception);
+			}
+		}
+		catch(exception) {
+			console.error('Exception parsing chapters');
+			console.error(exception);
+			console.error(url);
+			console.error(result);
+		}
+	};
+	/**
+	*
+	**/
 	static parseEpisodes(episodes) {
-		console.log(episodes);
 		if (Array.isArray(episodes)) {
 			let seasonCount = 0;
 			let rawSeasons = [];
@@ -37,7 +128,7 @@ class PodcastUtil {
 				// setPodcastSeasonType('episodic');
 				podcastSeasonType = 'episodic';
 			}
-			console.log(rawSeasons);
+			// console.log(rawSeasons);
 			return {
 				seasonCount: seasonCount,
 				seasons: rawSeasons,

@@ -6,13 +6,16 @@ import PodcastImage from 'components/PodcastImage/PodcastImage';
 import { IonSkeletonText } from '@ionic/react';
 import EpisodeChapters from 'components/PodcastChapters/EpisodeChapters';
 
-const PlayerPodcastCoverArea = ({ audioController, chapters = false, currentChapter = false }) => {
-	const activePodcast = useStore((state) => state.activePodcast);
-	const activeEpisode = useStore((state) => state.activeEpisode);
+const PlayerPodcastCoverArea = ({ audioController, chapters = false, currentChapter = false, podcast, episode }) => {
+	if (!podcast || !episode) {
+		return (
+			<div className='chapers'>
+				<IonSkeletonText className={'chapter'} />
+			</div>
+		);
+	}
 
-	const fullscreen = useStore((state) => state.playerFullscreen);
-
-	const podcastImageURL = activeEpisode.image ? activeEpisode.image : activePodcast.artworkUrl600 ? activePodcast.artworkUrl600 : activePodcast.image;
+	const podcastImageURL = episode.image ? episode.image : podcast.artworkUrl600 ? podcast.artworkUrl600 : podcast.image;
 
 
 
@@ -58,44 +61,26 @@ const PlayerPodcastCoverArea = ({ audioController, chapters = false, currentChap
 
 
 
-	const episodeCover = (
-		<PodcastImage
-				podcastPath={activePodcast.path}
+
+	return (
+		<div className="chapters">
+			<PodcastImage
+				podcastPath={podcast.path}
 				width={600}
 				height={600}
-				coverWidth={50}
-				coverHeight={50}
-				imageErrorText={activePodcast.name}
-				fallBackImage={activePodcast.artworkUrl600 ? activePodcast.artworkUrl600 : activePodcast.image}
+				coverWidth={400}
+				coverHeight={400}
+				imageErrorText={podcast.name}
+				fallBackImage={podcast.artworkUrl600 ? podcast.artworkUrl600 : podcast.image}
 				src={podcastImageURL}
 				className={''}
 				// imageRef={coverImageRef}
 				loadingComponent={() => <IonSkeletonText animated={true} className="coverLoading" />}
 			/>
+			{ chapters !== false &&
+				<EpisodeChapters audioController={audioController} chapters={chapters} progress={episode.currentTime} currentChapter={currentChapter} />
+			}
+		</div>
 	);
-
-	if (!fullscreen || chapters === false) {
-		return episodeCover;
-	}
-	else {
-		return (
-			<div className="chapters">
-				<PodcastImage
-					podcastPath={activePodcast.path}
-					width={600}
-					height={600}
-					imageErrorText={activePodcast.name}
-					fallBackImage={activePodcast.artworkUrl600 ? activePodcast.artworkUrl600 : activePodcast.image}
-					src={podcastImageURL}
-					className={'chapter'}
-					// imageRef={coverImageRef}
-					loadingComponent={() => <IonSkeletonText animated={true} className="coverLoading" />}
-				/>
-				{ (fullscreen && chapters !== false) &&
-					<EpisodeChapters audioController={audioController} chapters={chapters} progress={activeEpisode.currentTime} currentChapter={currentChapter} />
-				}
-			</div>
-		);
-	}
 }
 export default PlayerPodcastCoverArea;

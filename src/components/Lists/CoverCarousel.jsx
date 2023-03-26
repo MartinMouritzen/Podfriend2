@@ -20,6 +20,8 @@ const CoverCarousel = ({ type, podcasts, backButtonText }) => {
 	return (
 		<Swiper
 			slidesPerView='auto'
+			slidesPerGroup={1}
+			slidesPerGroupAuto={true}
 			spaceBetween={10}
 			slidesOffsetBefore={10}
 			slidesOffsetAfter={10}

@@ -17,7 +17,6 @@ const AccountModal = ({ trigger, canDismiss = true }) => {
 	const loggedIn = useStore((state) => state.loggedIn);
 	
 	useEffect(() => {
-		console.log('accountmodal');
 		setPresentingElement(page.current);
 	}, []);
 

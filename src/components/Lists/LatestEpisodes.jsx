@@ -48,6 +48,10 @@ const LatestEpisodes = ({ backButtonText = false }) => {
 		retrieveLatestEpisodes()
 		.then((episodes) => {
 			setLatestEpisodes(episodes);
+		})
+		.catch((exception) => {
+			console.log('exception in latestEpisodes');
+			console.log(exception);
 		});
 	},[]);
 

@@ -35,6 +35,7 @@ ipcMain.on('ipc-example', async (event, arg) => {
 	console.log(msgTemplate(arg));
 	event.reply('ipc-example', msgTemplate('pong'));
 });
+
 ipcMain.on('windowMaximizeRequested', (e) => {
 	if (mainWindow?.isMaximized()) {
 		mainWindow?.unmaximize();

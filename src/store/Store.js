@@ -5,8 +5,6 @@ import produce from 'immer';
 
 import { persist, createJSONStorage } from 'zustand/middleware';
 
-console.log(createJSONStorage);
-
 import { createPodcastSlice } from './PodcastSlice';
 import { createPlayerSlice } from './PlayerSlice';
 import { createUserSlice } from './UserSlice';
@@ -22,15 +20,12 @@ import { get, set, del } from 'idb-keyval' // can use anything: IndexedDB, Ionic
 // Custom storage object
 const storage = {
   getItem: async (name) => {
-    console.log(name, 'has been retrieved')
     return (await get(name)) || null
   },
   setItem: async (name, value) => {
-    console.log(name, 'with value', value, 'has been saved')
     await set(name, value)
   },
   removeItem: async (name) => {
-    console.log(name, 'has been deleted')
     await del(name)
   },
 }
@@ -73,14 +68,14 @@ const useStore = create(persist((...a) => ({
 	...createServerSyncSlice(...a)
 }),{
 	name: 'podfriend-v1',
-	// storage: createJSONStorage(() => { return storage; }),
+	storage: createJSONStorage(() => { return storage; }),
 	// Define what parts we do not want persisted
 	partialize: (state) => {
 		let newState = {...state};
 		delete newState.audioController;
+		delete newState.desktop;
 		delete newState.shouldPlay;
 		delete newState.playerFullscreen;
-		delete newState.audioController;
 
 		return newState;
 	}

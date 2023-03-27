@@ -6,8 +6,6 @@ import './App.scss';
 import { IonApp, IonRouterOutlet, IonSplitPane, setupIonicReact, IonMenu, IonTabs, IonTab, IonTabBar, IonTabButton, IonIcon, IonLabel, IonBadge, IonGrid, IonRow, IonHeader, IonToolbar } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
 
-import WindowFrame from 'components/WindowFrame/WindowFrame';
-
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
 
@@ -53,18 +51,23 @@ setupIonicReact({
 
 /* import MenuShadow from 'images/layout/menushadow.png'; */
 
-export default function App({ platform, audioController }) {
+export default function App({ platform, audioController, desktop = false }) {
 	const { breakpoint } = useBreakpoint(BREAKPOINTS, 'desktop');
 
 	const showSplitPane = breakpoint === 'desktop';
 
-	const isLoggedIn = useStore((state) => state.isLoggedIn);
+	const loggedIn = useStore((state) => state.loggedIn);
 	const setAudioController = useStore((state) => state.setAudioController);
+	const setDesktop = useStore((state) => state.setDesktop);
 	const synchronizePodcasts = useStore((state) => state.synchronizePodcasts);
+
+	const authToken = useStore((state) => state.authToken);
+	const authenticateUser = useStore((state) => state.authenticateUser);
 
 	useEffect(() => {
 		setAudioController(audioController);
-		if (isLoggedIn) {
+		setDesktop(desktop);
+		if (loggedIn) {
 			synchronizePodcasts();
 		}
 		console.log('App loaded');
@@ -79,6 +82,10 @@ export default function App({ platform, audioController }) {
 
 		return false;
 	};
+
+	useEffect(() => {
+		authenticateUser();
+	},[authToken]);
 
 	const routes = [
 		<Route path="/home/" exact={true} render={(props) => <Home {...props} />} />,

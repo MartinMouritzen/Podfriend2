@@ -27,9 +27,7 @@ const AccountModal = ({ trigger, canDismiss = true }) => {
 	const [creatingUser,setCreatingUser] = useState(false);
 
 	useEffect(() => {
-		if (!loggedIn) {
-			setCreatingUser(true);
-		}
+		setCreatingUser(loggedIn === false);
 	},[loggedIn]);
 
 	const onDismiss = () => {

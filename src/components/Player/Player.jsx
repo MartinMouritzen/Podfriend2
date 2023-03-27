@@ -371,15 +371,19 @@ const Player = ({ audioController, navigateToPath }) => {
 									Playing
 								</IonLabel>
 							</IonSegmentButton>
-							<IonSegmentButton value="chapters">
-								<IonLabel>Chapters</IonLabel>
-							</IonSegmentButton>
+							{ chapters &&
+								<IonSegmentButton value="chapters">
+									<IonLabel>Chapters</IonLabel>
+								</IonSegmentButton>
+							}
 							<IonSegmentButton value="info">
 								<IonLabel>Info</IonLabel>
 							</IonSegmentButton>
-							<IonSegmentButton value="chat">
-								<IonLabel>Chat</IonLabel>
-							</IonSegmentButton>
+							{ false &&
+								<IonSegmentButton value="chat">
+									<IonLabel>Chat</IonLabel>
+								</IonSegmentButton>
+							}
 						</IonSegment>
 					</div>
 
@@ -449,10 +453,14 @@ const Player = ({ audioController, navigateToPath }) => {
 									}
 								</Swiper>
 							</div>
-							<TranscriptLiveArea transcriptData={transcriptData} currentTime={activeEpisode.currentTime} podcast={activePodcast} chapters={chapters} setCurrentTime={setCurrentTime} />
-							<div style={{ color: '#000000', padding: 10 }}>
-								Comments
-							</div>
+							{ transcriptData &&
+								<TranscriptLiveArea rssFeedCurrentEpisode={rssFeedCurrentEpisode} transcriptData={transcriptData} currentTime={activeEpisode.currentTime} podcast={activePodcast} chapters={chapters} setCurrentTime={setCurrentTime} />
+							}
+							{ false &&
+								<div style={{ color: '#000000', padding: 10 }}>
+									Comments
+								</div>
+							}
 						</>
 					}
 					{ !fullscreen &&

@@ -19,6 +19,8 @@
 
 	font-size: 12px;
 
+	margin-bottom: 20px;
+
 	.liveSegment {
 		flex: 1;
 
@@ -74,9 +76,61 @@
 	}
 }
 .transcript {
+	padding-top: 10px;
+
+	.transcriptChapter {
+		margin-bottom: 20px;
+
+		background-color: #f0f0f0;
+
+		gap: 20px;
+
+		padding: 20px;
+
+		font-size: 26px;
+
+		.transcriptChapterInner {
+			margin-left: auto;
+			margin-right: auto;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+
+			flex-direction: column;
+
+			max-width: 600px;
+			gap: 10px;
+
+			.chapterImage {
+				max-height: 60px;
+				img {
+					width: auto;
+					height: 60px;
+					max-width: 60px;
+
+					border-radius: 5px;
+				}
+			}
+			.chapterTitle {
+				text-align: center;
+				.chapterLabel {
+					margin-top: 5px;
+					font-size: 14px;
+					text-transform: uppercase;
+					color: rgba(0,0,0,0.7);
+				}
+
+			}
+		}
+
+	}
 	.segmentContainer {
 		display: flex;
 		gap: 10px;
+
+		margin-top: 10px;
+		margin-left: 20px;
+		margin-right: 20px;
 
 		&.active {
 			.avatar {

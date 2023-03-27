@@ -1,4 +1,4 @@
-import { IonHeader, IonToolbar, IonTitle, IonSkeletonText, IonButton, IonIcon, IonRefresher, IonRefresherContent, useIonActionSheet, IonItem } from "@ionic/react";
+import { IonHeader, IonToolbar, IonTitle, IonSkeletonText, IonButton, IonIcon, IonRefresher, IonRefresherContent, useIonActionSheet, IonItem, IonChip } from "@ionic/react";
 import Page from "components/Page/Page";
 import PodcastImage from "components/PodcastImage/PodcastImage";
 import { useState, useEffect, useRef } from "react";
@@ -76,7 +76,7 @@ const PodcastPage = ({ match }) => {
 	};
 
 	useEffect(() => {
-		console.log('time to get live RSS data');
+		// console.log('time to get live RSS data');
 	},[podcastData.url]);
 
 	useEffect(() => {
@@ -209,7 +209,7 @@ const PodcastPage = ({ match }) => {
 				setPodcastRSSData(feed);
 			});
 		}
-	},[podcastState]);
+	},[podcastData.receivedFromServerText]);
 
 	const scrollableContentRef = useRef(null);
 	const setScrollableContentRef = (ref) => {
@@ -299,7 +299,7 @@ const PodcastPage = ({ match }) => {
 	}
 
 	return (
-		<Page defaultHeader={false} title={podcastData ? podcastData.name : 'Loading...'} className="podcastPage" setScrollableContentRef={setScrollableContentRef}>
+		<Page defaultHeader={false} title={podcastData ? podcastData.name : 'Loading...'} className="podcastPage greyPage" setScrollableContentRef={setScrollableContentRef}>
 			<IonRefresher slot="fixed" onIonRefresh={doRefresh}>
 				<IonRefresherContent>
 				</IonRefresherContent>
@@ -440,6 +440,13 @@ const PodcastPage = ({ match }) => {
 									},
 								})
 							}}><IonIcon icon={dotsIcon}></IonIcon></IonButton>
+						</div>
+						<div>
+							{ podcastData.categories && Object.keys(podcastData.categories).map((keyName, keyIndex) => {
+								return (
+									<IonChip key={'chip' + keyName}>{podcastData.categories[keyName]}</IonChip>
+								);
+							} ) }
 						</div>
 					</div>
 				</div>

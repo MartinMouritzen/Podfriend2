@@ -21,6 +21,8 @@ export const createUserSlice = (set,get) => ({
         formData.append('password', password);
         formData.append('email', email);
 
+		console.log('Logging in user');
+
 		return fetch(url, {
 			method: 'POST',
 			headers: {

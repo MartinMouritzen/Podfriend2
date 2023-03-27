@@ -59,7 +59,21 @@ document.addEventListener('mouseup',onMouseUp);
 const audioController = new WebAudioController();
 audioController.browserShortcutsEnabled = false;
 
-root.render(<App platform="desktop" audioController={audioController} />);
+const desktop = {
+	maximize: () => {
+		console.log('supposed to maximize');
+	},
+	minimize: () => {
+		console.log('supposed to minimize');
+	},
+	closeApplication: () => {
+		console.log('supposed to exit');
+	}
+};
+
+root.render(<App platform="desktop" audioController={audioController} desktop={desktop} />);
+
+
 
 if (window.electron) {
 	// calling IPC exposed from preload script

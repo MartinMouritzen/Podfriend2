@@ -199,6 +199,8 @@ class PodcastFeed {
 						enclosureUrl: episode.enclosure ? episode.enclosure.url : '',
 						duration: this.__convertDurationToSeconds(episode['itunes:duration']),
 						transcript: episode['podcast:transcript'],
+						value: episode['podcast:value'],
+						persons: episode['podcast:person'] ? Array.isArray(episode['podcast:person']) ? episode['podcast:person'] : [episode['podcast:person']] : false,
 						location: episode['podcast:location'] ? episode['podcast:location'] : false,
 						transcriptUrl: episode['podcast:transcript'] ? Array.isArray(episode['podcast:transcript']) ? episode['podcast:transcript'][0]['url'] : episode['podcast:transcript']['url'] : false,
 						chaptersUrl: episode['podcast:chapters'] ? episode['podcast:chapters']['url'] : '',

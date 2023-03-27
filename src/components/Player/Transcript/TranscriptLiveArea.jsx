@@ -16,13 +16,15 @@ import { set } from 'date-fns';
 import TranscriptSegment from './TranscriptSegment';
 
 import useStore from 'store/Store';
+import ChapterSegment from './ChapterSegment';
 
-const TranscriptLiveArea = ({ transcriptData, currentTime, podcast, setCurrentTime, chapters }) => {
+const TranscriptLiveArea = ({ transcriptData, rssFeedCurrentEpisode, currentTime, podcast, setCurrentTime, chapters }) => {
 	const page = useRef(null);
 	const modal = useRef(null);
 	const contentNodeRef = useRef(null);
 	const [presentingElement, setPresentingElement] = useState(null);
 	const [persons,setPersons] = useState(podcast?.rssFeedContents?.persons);
+	const [episodePersons,setEpisodePersons] = useState(rssFeedCurrentEpisode?.persons);
 	const [speakers,setSpeakers] = useState(false);
 	const [segments,setSegments] = useState(false);
 	const [searchQuery,setSearchQuery] = useState('');
@@ -53,6 +55,13 @@ const TranscriptLiveArea = ({ transcriptData, currentTime, podcast, setCurrentTi
 	},[JSON.stringify(podcast?.rssFeedContents?.persons)]);
 
 	useEffect(() => {
+		setEpisodePersons(false);
+		if (rssFeedCurrentEpisode && rssFeedCurrentEpisode.persons) {
+			setEpisodePersons(rssFeedCurrentEpisode.persons);
+		}
+	},[JSON.stringify(rssFeedCurrentEpisode?.persons)]);
+
+	useEffect(() => {
 		setSegments(false);
 		var newSegments = [];
 		var currentSegment = false;
@@ -71,11 +80,17 @@ const TranscriptLiveArea = ({ transcriptData, currentTime, podcast, setCurrentTi
 					addedSpeaker = true;
 					var avatar = false;
 					var role = false;
-					if (persons) {
+					if (persons || episodePersons) {
 						for(var x=0;x<persons.length;x++) {
 							if (persons[x]["#text"] == segment.speaker) {
 								avatar = persons[x].img;
 								role = persons[x].role;
+							}
+						}
+						for(var x=0;x<episodePersons.length;x++) {
+							if (episodePersons[x]["#text"] == segment.speaker) {
+								avatar = episodePersons[x].img;
+								role = episodePersons[x].role;
 							}
 						}
 					}
@@ -113,23 +128,41 @@ const TranscriptLiveArea = ({ transcriptData, currentTime, podcast, setCurrentTi
 			if (!currentSegment) {
 				currentSegment = {
 					speaker: segment.speaker,
-					startTime: segment.startTime,
-					endTime: segment.endTime,
+					startTime: parseFloat(segment.startTime),
+					endTime: parseFloat(segment.endTime),
 					lines: []
 				};
 			}
 			currentSpeaker = segment.speaker;
 
 			if (segment.endTime > currentSegment.endTime) {
-				currentSegment.endTime = segment.endTime;
+				currentSegment.endTime = parseFloat(segment.endTime);
 			}
 			currentSegment.lines.push(segment);
+		}
+		if (chapters) {
+			chapters.forEach((chapter) => {
+				newSegments.push(chapter);					
+			});
 		}
 		newSegments.push(currentSegment);
 
 		if (addedSpeaker) {
 			setSpeakers(newSpeakers);
 		}
+
+		const compareSegments = (a,b) => {
+			if (a.startTime < b.startTime ){
+				return -1;
+			}
+			if ( a.startTime > b.startTime ){
+				return 1;
+			}
+			return 0;
+		};
+		
+		newSegments.sort(compareSegments);
+
 		setSegments(newSegments);
 
 	},[JSON.stringify(transcriptData.length)]);
@@ -165,28 +198,30 @@ const TranscriptLiveArea = ({ transcriptData, currentTime, podcast, setCurrentTi
 			<div className="transcriptLiveArea" onClick={openModal}>
 				{ segments && segments.map((segment,index) => {
 					if (segment.startTime <= currentTime && segment.endTime > currentTime) {
-						return segment.lines.map((line,lineIndex) => {
-							var lineIsActive = line.startTime <= currentTime && line.endTime > currentTime;
-							if (lineIsActive) {
-								return (
-									<div key={'liveline' + lineIndex} className="liveSegment" style={{ backgroundColor: (speakers ? speakers[segment.speaker].color : '#EEEEEE' )}}>
-										<div>
-											{ (speakers && speakers[segment.speaker].avatar) &&
-												<div className="avatar" style={{ backgroundColor: speakers[segment.speaker].color }}>
-													<img src={speakers[segment.speaker].avatar} className="avatarImage"  />
-												</div>
-											}
-											{ (speakers && !speakers[segment.speaker].avatar) &&
-												<div className="avatar" style={{ backgroundColor: speakers[segment.speaker].color }}>
-													{speakers[segment.speaker].initials}
-												</div>
-											}
+						if (segment.lines) {
+							return segment.lines.map((line,lineIndex) => {
+								var lineIsActive = line.startTime <= currentTime && line.endTime > currentTime;
+								if (lineIsActive) {
+									return (
+										<div key={'liveline' + lineIndex} className="liveSegment" style={{ backgroundColor: (speakers ? speakers[segment.speaker].color : '#EEEEEE' )}}>
+											<div>
+												{ (speakers && speakers[segment.speaker].avatar) &&
+													<div className="avatar" style={{ backgroundColor: speakers[segment.speaker].color }}>
+														<img src={speakers[segment.speaker].avatar} className="avatarImage"  />
+													</div>
+												}
+												{ (speakers && !speakers[segment.speaker].avatar) &&
+													<div className="avatar" style={{ backgroundColor: speakers[segment.speaker].color }}>
+														{speakers[segment.speaker].initials}
+													</div>
+												}
+											</div>
+											{line.body}
 										</div>
-										{line.body}
-									</div>
-								);
-							}
-						});
+									);
+								}
+							});
+						}
 					}
 				} ) }
 			</div>
@@ -206,29 +241,36 @@ const TranscriptLiveArea = ({ transcriptData, currentTime, podcast, setCurrentTi
 						<IonSearchbar onIonChange={onSearch} ref={searchBar} placeholder="Search Transcript" />
 					</IonToolbar>
 				</IonHeader>
-				<IonContent className="smoothScroll ion-padding" ref={contentNodeRef}>
+				<IonContent className="smoothScroll" ref={contentNodeRef}>
 					<div className="transcript">
 						{ segments && segments.map((segment,index) => {
 							var segmentIsActive = segment.startTime <= currentTime && segment.endTime > currentTime;
 							
-							var returnSegment = (
-								<TranscriptSegment
-									key={'segment' + index}
-									avatar={speakers ? speakers[segment.speaker].avatar : false}
-									initials={speakers ? speakers[segment.speaker].initials : false}
-									color={speakers ? speakers[segment.speaker].color : false}
-									speakerName={speakers ? speakers[segment.speaker].name : false}
-									position={speakers ? speakers[segment.speaker].position : false}
-									currentTime={currentTime}
-									startTime={segment.startTime}
-									endTime={segment.endTime}
-									isActive={segmentIsActive}
-									lines={segment.lines}
-									setCurrentTime={setCurrentTime}
-									scrollToElement={scrollToElement}
-									searchQuery={searchQuery}
-								/>
-							);
+							if (segment.title) {
+								return (
+									<ChapterSegment segment={segment} />
+								);
+							}
+							else {
+								var returnSegment = (
+									<TranscriptSegment
+										key={'segment' + index}
+										avatar={speakers ? speakers[segment.speaker].avatar : false}
+										initials={speakers ? speakers[segment.speaker].initials : false}
+										color={speakers ? speakers[segment.speaker].color : false}
+										speakerName={speakers ? speakers[segment.speaker].name : false}
+										position={speakers ? speakers[segment.speaker].position : false}
+										currentTime={currentTime}
+										startTime={segment.startTime}
+										endTime={segment.endTime}
+										isActive={segmentIsActive}
+										lines={segment.lines}
+										setCurrentTime={setCurrentTime}
+										scrollToElement={scrollToElement}
+										searchQuery={searchQuery}
+									/>
+								);
+							}
 
 							/*
 							var returnSegment = (

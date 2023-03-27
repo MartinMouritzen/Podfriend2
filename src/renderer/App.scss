@@ -131,9 +131,9 @@ ion-content {
 	}
 }
 .greyPage {
-	--background: #f0f2f5;
+	--background: var(--grey-page-background);
 	ion-content {
-		--background: #f0f2f5;
+		--background: var(--grey-page-background);
 	}
 }
 .playerPagePadding {

@@ -18,9 +18,9 @@
 	--ion-color-success: #29bd73;
 
 	--list-grid-cover-size: 140px;
-	--list-scroll-cover-size: 175px;
+	--list-scroll-cover-size: 210px;
 
-	--grey-page-background: #f0f2f5;
+	--grey-page-background: #f6f8f5;
 
 	--badge-color: #3554d1;
 
@@ -612,6 +612,38 @@ ion-menu {
 				width: calc(var(--list-scroll-cover-size)) !important;
 				height: calc(var(--list-scroll-cover-size)) !important;
 				
+				display: flex;
+
+				.fallBack1 {
+					background-image:  repeating-radial-gradient( circle at 0 0, transparent 0, #e5e5f7 10px ), repeating-linear-gradient( rgba(0,0,0,0.1), rgba(255,255,255,0.5) );
+				}
+				.fallBack2 {
+					background-image:  linear-gradient(135deg, rgba(0,0,0,0.1) 25%, transparent 25%), linear-gradient(225deg, rgba(0,0,0,0.1) 25%, transparent 25%), linear-gradient(45deg, rgba(0,0,0,0.1) 25%, transparent 25%), linear-gradient(315deg, rgba(0,0,0,0.2) 25%, rgba(255,255,255,0.1) 25%);
+					background-position:  10px 0, 10px 0, 0 0, 0 0;
+					background-size: 10px 10px;
+					background-repeat: repeat;
+				}
+				.fallBack3 {
+					background-image:  linear-gradient(135deg, rgba(0,0,0,0.1) 25%, transparent 25%), linear-gradient(225deg, rgba(0,0,0,0.1) 25%, transparent 25%), linear-gradient(45deg, rgba(0,0,0,0.1) 25%, transparent 25%), linear-gradient(315deg, rgba(0,0,0,0.2) 25%, rgba(255,255,255,0.1) 25%);
+				}
+				.fallBack4 {
+					background-color: #e5e5f7;
+					opacity: 0.8;
+					background-image:  linear-gradient(135deg, rgba(0,0,0,0.1) 25%, transparent 25%), linear-gradient(225deg, rgba(0,0,0,0.1) 25%, transparent 25%), linear-gradient(45deg, rgba(0,0,0,0.1) 25%, transparent 25%), linear-gradient(315deg, rgba(0,0,0,0.1) 25%, rgba(255,255,255,0.1) 25%);
+					background-position:  10px 0, 10px 0, 0 0, 0 0;
+					background-size: 20px 20px;
+					background-repeat: repeat;
+				}
+				div {
+					display: flex;
+					justify-content: center;
+					align-items: center;
+
+					padding: 20px;
+
+					flex: 1;
+					height: 100%;
+				}
 			}
 		}
 		.content {

@@ -41,7 +41,6 @@ const PodcastImageFallback = ({ podcastId, podcastPath, imageSource, imageErrorT
 			style={{
 				backgroundColor: randomColor2,
 				/* background: 'linear-gradient(0deg,' + randomColor + ' 0% ,' + randomColor2 + ' 100%)', */
-				padding: '30px',
 				overflow: 'hidden',
 				justifyContent: 'center',
 				fontWeight: 'bold',
@@ -49,13 +48,15 @@ const PodcastImageFallback = ({ podcastId, podcastPath, imageSource, imageErrorT
 				alignItems: 'center',
 				textAlign: 'center',
 				color: fontColor,
-				fontSize: fontSize > 20 ? 20 : fontSize,
+				fontSize: fontSize > 20 ? 24 : fontSize,
 				width: coverWidth,
 				height: coverHeight,
 				contentVisibility: 'auto'
 			}}
 			className={className + ' fallBack'} originalsource={originalSource}>
-			{imageErrorText}
+				<div className="fallBack">
+					{imageErrorText}
+				</div>
 		</div>
 	);
 };

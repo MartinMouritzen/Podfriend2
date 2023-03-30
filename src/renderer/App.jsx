@@ -33,6 +33,7 @@ import PodcastPage from 'pages/PodcastPage/PodcastPage';
 import EpisodePage from 'pages/PodcastPage/EpisodePage';
 import SearchPage from 'pages/SearchPage/SearchPage';
 import WalletPage from 'pages/WalletPage/WalletPage';
+import CategoryPage from 'pages/CategoryPage/CategoryPage';
 
 import useStore from 'store/Store';
 
@@ -97,6 +98,7 @@ export default function App({ platform, audioController, desktop = false }) {
 		<Route path="/search/:searchQuery?" render={(props) => <SearchPage {...props} />} />,
 		<Route exact={true} path="/podcast/:podcastPath/" render={(props) => <PodcastPage {...props} />} />,
 		<Route exact={true} path="/podcast/:podcastPath/episode/:episodeId/" render={(props) => <EpisodePage audioController={audioController} navigateToPath={navigateToPath} {...props} />} />,
+		<Route path="/categories/:categoryName/" render={(props) => <CategoryPage {...props} />} />,
 		<Redirect exact={true} from="/" to="home/" />,
 		<Redirect exact={true} from="/index.html" to="home/" />
 	].map((Route, index) => ({ ...Route, key: index }));
@@ -107,7 +109,7 @@ export default function App({ platform, audioController, desktop = false }) {
 				{ platform === 'desktop' &&
 					<DesktopHeader />
 				}
-				<Player audioController={audioController} navigateToPath={navigateToPath} />
+				<Player audioController={audioController} navigateToPath={navigateToPath} platform={platform} />
 				<div className="menuShadow" style={{ display: 'none' }}>&nbsp;</div>
 				<IonReactRouter ref={router}>
 					<IonSplitPane contentId="main" when={showSplitPane}>

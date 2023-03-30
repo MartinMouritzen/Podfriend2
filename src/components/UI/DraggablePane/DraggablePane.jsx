@@ -5,7 +5,7 @@ import { useGesture } from 'react-use-gesture'
 
 import './DraggablePane.css';
 
-const DraggablePane = ({ onHide = false, onOpen = false, open = false, children, className, style }) => {
+const DraggablePane = ({ onHide = false, onOpen = false, open = false, children, className, style, platform }) => {
 	const [ heightWithoutDrag, setHeightWithoutDrag ] = useState(0);
 
 	const elementRef = useRef(null);
@@ -35,17 +35,24 @@ const DraggablePane = ({ onHide = false, onOpen = false, open = false, children,
 		try {
 			let computedSafeAreaTop = parseInt(getComputedStyle(document.documentElement).getPropertyValue("--safeAreaTop"));
 			let computedSafeAreaBottom = parseInt(getComputedStyle(document.documentElement).getPropertyValue("--safeAreaBottom"));
+
 			setSafeAreaTop(isNaN(computedSafeAreaTop) ? 10 : computedSafeAreaTop);
 			setSafeAreaBottom(isNaN(computedSafeAreaBottom) ? 10 : computedSafeAreaBottom);
 		}
 		catch(exception) {
 			console.log('Error parsing safeAreaBottom value in DraggablePane');
-			safeAreaTop(0);
+			setSafeAreaTop(0);
 			setSafeAreaBottom(0);
 		}
 
 		if (open) {
-			setHeightWithoutDrag(window.innerHeight - (safeAreaTop ? safeAreaTop : 24));
+			var newHeightWithoutDrag = window.innerHeight - (safeAreaTop ? safeAreaTop : 24)
+
+			if (platform === 'desktop') {
+				newHeightWithoutDrag = newHeightWithoutDrag - 40;
+			}
+
+			setHeightWithoutDrag(newHeightWithoutDrag);
 		}
 		else {
 			if (window.innerWidth < 670) {

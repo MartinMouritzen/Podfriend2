@@ -30,28 +30,45 @@ let mainWindow: BrowserWindow | null = null;
 
 let windowBounds: any = null;
 
+const getWindowStatus = () => {
+	return {
+		maximized: mainWindow?.isMaximized()
+	};
+};
+
+/*
 ipcMain.on('ipc-example', async (event, arg) => {
 	const msgTemplate = (pingPong: string) => `IPC test: ${pingPong}`;
 	console.log(msgTemplate(arg));
 	event.reply('ipc-example', msgTemplate('pong'));
 });
-
-ipcMain.on('windowMaximizeRequested', (e) => {
+*/
+ipcMain.on('windowStatusRequested', (event) => {
+	event.reply('window-status',getWindowStatus());
+});
+ipcMain.on('windowMaximizeRequested', (event) => {
 	if (mainWindow?.isMaximized()) {
 		mainWindow?.unmaximize();
 	}
 	else {
 		mainWindow?.maximize();
 	}
+	event.reply('window-status',getWindowStatus());
+});
+ipcMain.on('windowMinimizeRequested', (event) => {
+	mainWindow?.minimize();
+});
+ipcMain.on('windowCloseRequested', (event) => {
+	mainWindow?.close();
 });
 
 
-ipcMain.on('windowMoveStarted', (e) => {
+ipcMain.on('windowMoveStarted', (event) => {
 	if (mainWindow !== null) {
 		windowBounds = mainWindow.getBounds();
 	}
 });
-ipcMain.on('windowMoving', (e, {mouseX, mouseY}) => {
+ipcMain.on('windowMoving', (event, {mouseX, mouseY}) => {
 	const { x, y } = screen.getCursorScreenPoint();
 
 	if (mainWindow !== null) {

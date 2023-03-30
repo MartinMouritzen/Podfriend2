@@ -8,6 +8,8 @@ import PodcastFeed from 'library/PodcastFeed';
 
 import { v4 as uuidv4 } from 'uuid';
 
+import DOMPurify from 'dompurify';
+
 /**
 * Gets a podcast from the API
 **/
@@ -443,6 +445,11 @@ export const createPodcastSlice = (set, get) => ({
 				data.receivedFromServer = new Date();
 				data.receivedFromServerText = data.receivedFromServer.toDateString();
 
+				data.safeDescription = DOMPurify.sanitize(data.description, {
+					ALLOWED_TAGS: [
+						'p','br','ol','ul','li','b','a'
+					  ]
+				});
 				// Copy over configuration options from the cache
 				console.log('Copy over configuration options from the cache');
 				console.log(podcastCache);
@@ -467,10 +474,18 @@ export const createPodcastSlice = (set, get) => ({
 						data.configSelectedSortOrder = 'new';
 					}
 				}
+				
 
 				// Recreate listened states THIS SHOULD BE TEMPORARY UNTIL WE CAN GET IT FROM THE SERVER
 				if (podcastCache && podcastCache.episodes && data && data.episodes) {
 					for (var i=0;i<data.episodes.length;i++) {
+						if (!data.episodes[i].safeDescription) {
+							data.episodes[i].safeDescription = DOMPurify.sanitize(data.episodes[i].description, {
+								ALLOWED_TAGS: [
+									'p','br','ol','ul','li','b','a'
+								  ]
+							});
+						}
 						for (var x=0;x<podcastCache.episodes.length;x++) {
 							if (data.episodes[i].url == podcastCache.episodes[x].url) {
 								if (!data.episodes[i].currentTime) {
@@ -484,6 +499,7 @@ export const createPodcastSlice = (set, get) => ({
 						}
 					}
 				}
+
 				if (get().activePodcast.path === podcastPath) {
 					set({
 						activePodcast: data
@@ -523,19 +539,24 @@ export const createPodcastSlice = (set, get) => ({
 			console.log('Fetching original RSS feed to scan for changes.: ' + podcastData.feedUrl);
 			return podcastFeed.parse()
 			.then((feed) => {
-				console.log('Fetching original RSS feed to scan for changes. - Done');
+				if (feed) {
+					console.log('Fetching original RSS feed to scan for changes. - Done');
 
-				feed.uuid = uuidv4();
+					feed.uuid = uuidv4();
 
-				get().updatePodcastAttributes({
-					podcastData: podcastData,
-					attributes: {
-						rssFeedContents: feed,
-						lastOriginalRSSFeedUpdate: new Date()
-					}
-				});
-				return Promise.resolve(feed);
-
+					get().updatePodcastAttributes({
+						podcastData: podcastData,
+						attributes: {
+							rssFeedContents: feed,
+							lastOriginalRSSFeedUpdate: new Date()
+						}
+					});
+					return Promise.resolve(feed);
+				}
+				else {
+					console.log('PodcsatFeed.parse resulted in no feed');
+					return Promise.reject();
+				}
 			})
 			.catch((error) => {
 				console.error('Error parsing RSS feed: ');

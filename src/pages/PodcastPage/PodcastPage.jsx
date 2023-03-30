@@ -299,7 +299,7 @@ const PodcastPage = ({ match }) => {
 	}
 
 	return (
-		<Page defaultHeader={false} title={podcastData ? podcastData.name : 'Loading...'} className="podcastPage greyPage" setScrollableContentRef={setScrollableContentRef}>
+		<Page defaultHeader={false} title={podcastData ? podcastData.name : 'Loading...'} className="podcastPage" setScrollableContentRef={setScrollableContentRef}>
 			<IonRefresher slot="fixed" onIonRefresh={doRefresh}>
 				<IonRefresherContent>
 				</IonRefresherContent>
@@ -371,7 +371,7 @@ const PodcastPage = ({ match }) => {
 								{ (podcastState === 'loaded' && podcastData.description) &&
 									<div className="description">
 										<ReadMoreReact
-											text={podcastData.description}
+											text={podcastData.safeDescription ? podcastData.safeDescription : podcastData.description}
 											readMoreText='...more'
 											min={100}
 											ideal={150}

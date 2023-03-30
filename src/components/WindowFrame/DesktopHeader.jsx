@@ -1,10 +1,22 @@
+import { useEffect } from 'react';
 import useStore from 'store/Store';
 
 const DesktopHeader = () => {
 	const maximized = useStore((state) => state.maximized);
-	const setMaximized = useStore((state) => state.setMaximized);
+	const requestMinimize = useStore((state) => state.requestMinimize);
+	const requestMaximize = useStore((state) => state.requestMaximize);
+	const setMaximizedStatus = useStore((state) => state.setMaximizedStatus);
 	const closeApplication = useStore((state) => state.closeApplication);
 
+
+	useEffect(() => {
+		console.log('requesting window status');
+		window.electron.ipcRenderer.sendMessage('windowStatusRequested');
+
+		window.electron.ipcRenderer.on('window-status',(windowStatus) => {
+			setMaximizedStatus(windowStatus.maximized);
+		});
+	},[]);
 	/*
 	useEffect(() => {
 		if (isAppElectron) {
@@ -24,15 +36,10 @@ const DesktopHeader = () => {
 	*/
 
 	const onMinimize = () => {
-		setMaximized(false);
+		requestMinimize();
 	}
 	const onMaximizeOrNormalize = () => {
-		if (maximized) {
-			setMaximized(false);
-		}
-		else {
-			setMaximized(true);
-		}
+		requestMaximize();
 	}
 	const onClose = () => {
 		closeApplication();

@@ -1,25 +1,34 @@
 .categoryList {
-	display: flex;
 
-	overflow-x: auto;
-	overflow-y: visible;
+	padding-top: 10px;
+	padding-bottom: 10px;
 
-	padding-bottom: 20px;
+	a {
+		text-decoration: none;
+	}
 
 	.category {
-		margin-left: 20px;
+		margin-left: 15px;
+		margin-right: 5px;
 		
-		border-radius: 10px;
-		overflow: hidden;
-
 		min-width: 200px;
+
+		transition: all 0.2s;
+
+		@media (any-hover: hover) {
+			&:hover {
+				transform: scale(1.05);
+			}
+		}
 
 
 		.categoryPhoto {
 			background-size: 200px;
 			width: 200px;
-			height: 160px;
+			height: 180px;
 			min-width: 140px;
+
+			border-radius: 10px 10px 0px 0px;
 		}
 
 		.categoryName {
@@ -28,6 +37,8 @@
 			text-align: center;
 			color: #FFFFFF;
 			font-weight: 600;
+
+			border-radius: 0px 0px 10px 10px;
 		}
 	}
 }

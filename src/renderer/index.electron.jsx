@@ -61,20 +61,23 @@ audioController.browserShortcutsEnabled = false;
 
 const desktop = {
 	maximize: () => {
-		console.log('supposed to maximize');
+		window.electron.ipcRenderer.sendMessage('windowMaximizeRequested');
+	},
+	restore: () => {
+		window.electron.ipcRenderer.sendMessage('windowMaximizeRequested');
 	},
 	minimize: () => {
-		console.log('supposed to minimize');
+		window.electron.ipcRenderer.sendMessage('windowMinimizeRequested');
 	},
 	closeApplication: () => {
-		console.log('supposed to exit');
+		window.electron.ipcRenderer.sendMessage('windowCloseRequested');
 	}
 };
 
 root.render(<App platform="desktop" audioController={audioController} desktop={desktop} />);
 
 
-
+/*
 if (window.electron) {
 	// calling IPC exposed from preload script
 	window.electron.ipcRenderer.once('ipc-example', (arg) => {
@@ -83,3 +86,4 @@ if (window.electron) {
 	});
 	window.electron.ipcRenderer.sendMessage('ipc-example', ['ping']);
 }
+*/

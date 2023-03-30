@@ -248,7 +248,10 @@ const TranscriptLiveArea = ({ transcriptData, rssFeedCurrentEpisode, currentTime
 							
 							if (segment.title) {
 								return (
-									<ChapterSegment segment={segment} />
+									<ChapterSegment
+										key={'segment' + index}
+										segment={segment}
+									/>
 								);
 							}
 							else {

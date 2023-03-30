@@ -26,6 +26,10 @@ import ForwardIcon from 'images/player/forward-30.svg';
 import SkipBackwardIcon from 'images/player/skip-backward.svg';
 import SkipForwardIcon from 'images/player/skip-forward.svg';
 
+import {
+	ellipsisHorizontal as moreIcon
+} from 'ionicons/icons';
+
 import LoadingIcon from 'images/player/loading.png';
 import PlayerPodcastCoverArea from './PlayerPodcastCoverArea';
 import EpisodeSecondaryActionToolbar from './EpisodeSecondaryActionToolbar';
@@ -40,7 +44,7 @@ import TranscriptLiveArea from './Transcript/TranscriptLiveArea';
 import PodcastUtil from 'library/PodcastUtil';
 
 
-const Player = ({ audioController, navigateToPath }) => {
+const Player = ({ audioController, navigateToPath, platform }) => {
 	const { breakpoint } = useBreakpoint(BREAKPOINTS, 'desktop');
 
 	const audioElement = useRef(null);
@@ -94,6 +98,8 @@ const Player = ({ audioController, navigateToPath }) => {
 	const [errorRetries,setErrorRetries] = useState(0);
 
 	const [segmentVisible,setSegmentVisible] = useState('playing');
+
+	const [controlledSwiper, setControlledSwiper] = useState(null);
 
 	let fullPlayerOpen = false;
 	let hasEpisode = true;
@@ -238,8 +244,8 @@ const Player = ({ audioController, navigateToPath }) => {
 		setError(false);
 		setErrorText(false);
 		setErrorRetries(0);
-		console.log('Unsetting transcript data');
 		setTranscriptData(false);
+		setSegmentVisible('playing');
 		setChapters(false);
 
 		changeActiveEpisode(activePodcast,activeEpisode);
@@ -250,6 +256,10 @@ const Player = ({ audioController, navigateToPath }) => {
 			console.log(feed);
 		});
 	},[activeEpisode.url]);
+
+	useEffect(() => {
+		setSegmentVisible('playing');
+	},[fullscreen]);
 
 	const [rssFeedCurrentEpisode,setRssFeedCurrentEpisode] = useState(false);
 	
@@ -263,7 +273,6 @@ const Player = ({ audioController, navigateToPath }) => {
 			for(var i=0;i<activePodcast.rssFeedContents.items.length;i++) {
 				if (activeEpisode.guid == activePodcast.rssFeedContents.items[i].guid) {
 					foundEpisode = true;
-					console.log(activePodcast.rssFeedContents.items[i]);
 					setRssFeedCurrentEpisode(activePodcast.rssFeedContents.items[i]);
 					break;
 				}
@@ -278,7 +287,6 @@ const Player = ({ audioController, navigateToPath }) => {
 				setChapters(chapters);
 			});
 		}
-		console.log(rssFeedCurrentEpisode);
 		if (rssFeedCurrentEpisode && rssFeedCurrentEpisode.transcriptUrl) {
 			var useTranscript = false;
 			if (Array.isArray(rssFeedCurrentEpisode.transcript)) {
@@ -307,7 +315,6 @@ const Player = ({ audioController, navigateToPath }) => {
 			}
 			PodcastUtil.loadTranscript(useTranscript.url,useTranscript.type)
 			.then((transcriptData) => {
-				console.log(transcriptData);
 				setTranscriptData(transcriptData);
 			});
 		}
@@ -339,6 +346,19 @@ const Player = ({ audioController, navigateToPath }) => {
 		}
 	};
 
+	useEffect(() => {
+
+		if (segmentVisible === 'playing') {
+			controlledSwiper?.slideTo(0, 300);
+		}
+		else if (segmentVisible === 'info') {
+			controlledSwiper?.slideTo(1, 300);
+		}
+		else if (segmentVisible === 'chapters') {
+			controlledSwiper?.slideTo(2, 300);
+		}
+	},[segmentVisible]);
+
 	// var playerStyle = { backgroundColor: darkVibrantColor, borderTop: '1px solid ' + darkVibrantColor };
 	var playerStyle = {};
 
@@ -357,6 +377,7 @@ const Player = ({ audioController, navigateToPath }) => {
 				open={fullscreen}
 				className={'player ' + (fullscreen ? 'fullscreen' : 'mini') + ' ' + (shouldPlay ? ' ' + 'playing' : ' ' + 'notPlaying') + (activePodcast ? '' : ' noPodcastPlaying')}
 				style={playerStyle}
+				platform={platform}
 			>
 				{ audioController.useBrowserAudioElement === true &&
 					<audio {...audioElementProps}>
@@ -371,14 +392,14 @@ const Player = ({ audioController, navigateToPath }) => {
 									Playing
 								</IonLabel>
 							</IonSegmentButton>
+							<IonSegmentButton value="info">
+								<IonLabel>Info</IonLabel>
+							</IonSegmentButton>
 							{ chapters &&
 								<IonSegmentButton value="chapters">
 									<IonLabel>Chapters</IonLabel>
 								</IonSegmentButton>
 							}
-							<IonSegmentButton value="info">
-								<IonLabel>Info</IonLabel>
-							</IonSegmentButton>
 							{ false &&
 								<IonSegmentButton value="chat">
 									<IonLabel>Chat</IonLabel>
@@ -414,6 +435,7 @@ const Player = ({ audioController, navigateToPath }) => {
 										clickable: true,
 									}}
 									modules={[Pagination]}
+									onSwiper={setControlledSwiper}
 								>
 									<SwiperSlide>
 										<div className="swipeContents playingCoverArea">
@@ -439,6 +461,12 @@ const Player = ({ audioController, navigateToPath }) => {
 													</div>
 												</>
 											}
+										</div>
+									</SwiperSlide>
+									<SwiperSlide>
+										<div className="ion-padding">
+											<h2>Description</h2>
+											{activeEpisode.safeDescription}
 										</div>
 									</SwiperSlide>
 									{ chapters &&
@@ -527,6 +555,7 @@ const Player = ({ audioController, navigateToPath }) => {
 									}
 									<div className="button buttonForward" onClick={onForward}><SVG src={ForwardIcon} /></div>
 									<div className="button buttonSkipForward" onClick={onSkipForward}><SVG src={SkipForwardIcon} /></div>
+									<div className="button buttonMore"><IonIcon icon={moreIcon} /></div>
 									{ !fullscreen &&
 										<div className="button navigateToPodcastButton" onClick={navigateToPodcast}>
 											<PodcastImage
@@ -551,7 +580,7 @@ const Player = ({ audioController, navigateToPath }) => {
 				{ fullscreen &&
 					<EpisodeSecondaryActionToolbar activePodcast={activePodcast} activeEpisode={activeEpisode} navigateToPodcast={navigateToPodcast} />
 				}
-				{ fullscreen &&
+				{ (false && fullscreen) &&
 					<div className="episodeContent">
 						<IonList>
 							<IonListHeader>Coming up</IonListHeader>

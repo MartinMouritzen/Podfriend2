@@ -1,5 +1,6 @@
 import { IonButton, IonIcon, IonSkeletonText } from '@ionic/react';
 import {
+	chatboxOutline as chatIcon,
 	bookOutline as chapterIcon
 } from 'ionicons/icons';
 
@@ -8,11 +9,16 @@ import PodcastImage from 'components/PodcastImage/PodcastImage';
 const EpisodeSecondaryActionToolbar = ({ activePodcast, activeEpisode, navigateToPodcast }) => {
 	return (
 		<div className="episodeSecondaryActionToolbar">
+			{ /*
 			<div className="episodeSecondaryActionButton" title="Chapters">
 				<IonIcon slot="icon-only" icon={chapterIcon} />
 			</div>
 			<div className="episodeSecondaryActionButton" title="Chapters">
 				<IonIcon slot="icon-only" icon={chapterIcon} />
+			</div>
+			*/ }
+			<div className="episodeSecondaryActionButton" title="chat">
+				<IonIcon slot="icon-only" icon={chatIcon} />
 			</div>
 			<div className="episodeSecondaryActionButton" title="Go to podcast" onClick={navigateToPodcast}>
 				<PodcastImage

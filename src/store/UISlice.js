@@ -6,19 +6,22 @@ export const createUISlice = (set, get) => ({
 		});
 	},
 	maximized: false,
-	setMaximized: (maximized) => {
+	requestMaximize: (maximized) => {
 		var desktop = get().desktop;
-
-		if (!maximized) {
-			desktop.minimize();
-		}
-		else {
-			desktop.maximize();
-		}
+		desktop.maximize();
+	},
+	requestMinimize: () => {
+		var desktop = get().desktop;
+		desktop.minimize();
+	},
+	setMaximizedStatus: (maximized) => {
+		set({
+			maximized: maximized
+		});
 	},
 	closeApplication: () => {
-		console.log('close 1');
 		var desktop = get().desktop;
 		desktop.closeApplication();
-	}
+	},
+	latestSearches: []
 });

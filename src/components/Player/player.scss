@@ -12,6 +12,11 @@
 
 	z-index: 1;
 }
+.platform_desktop {
+	.openPlayerBackground {
+		pointer-events: none;
+	}
+}
 .player {
 	background-color: var(--miniplayer-background-color);
 	backdrop-filter: var(--miniplayer-backdrop-filter);
@@ -250,7 +255,7 @@
 				width: 50px;
 				max-width: 400px;
 
-				gap: 5vw;
+				gap: 3vw;
 
 				.button {
 					/* background-color: var(--primary-color); */
@@ -261,6 +266,11 @@
 					align-items: center;
 			
 					transition: all 0.1s;
+
+					ion-icon {
+						color: var(--miniplayer-button-color);
+						font-size: 26px;
+					}
 			
 					&.buttonPlay, &.buttonPause, &.buttonLoad {
 						width: 50px;
@@ -296,7 +306,7 @@
 							fill: var(--miniplayer-button-color);
 						}
 					}
-					&.buttonSkipBackward, &.buttonSkipForward, &.buttonExpand {
+					&.buttonSkipBackward, &.buttonSkipForward, &.buttonExpand, &.buttonMore {
 						height: 40px;
 			
 						svg {
@@ -310,6 +320,8 @@
 					.podcastThumbnail {
 						border-radius: 5px;
 						box-shadow: 0px 3px 11px -1px rgb(0 0 0 / 23%);
+
+						min-width: 30px;
 					}
 				}
 			}
@@ -379,7 +391,7 @@
 									height: 30px;
 								}
 							}
-							&.buttonSkipBackward, &.buttonSkipForward, &.buttonExpand {
+							&.buttonSkipBackward, &.buttonSkipForward, &.buttonExpand, &.buttonMore {
 								width: 30px;
 
 								svg {
@@ -424,7 +436,7 @@
 							&.buttonPlay, &.buttonLoad, &.buttonPause {
 								background-color: var(--miniplayer-playbutton-background-color);
 							}
-							&.buttonSkipBackward, &.buttonSkipForward, &.buttonExpand {
+							&.buttonSkipBackward, &.buttonSkipForward, &.buttonExpand, &.buttonMore {
 								width: 30px;
 			
 								svg {
@@ -464,7 +476,7 @@
 				width: 0px;
 			}
 		}
-		.buttonSkipBackward, .buttonSkipForward, &.buttonExpand {
+		.buttonSkipBackward, .buttonSkipForward, &.buttonExpand, &.buttonMore {
 			width: 0px;
 
 			svg {
@@ -496,7 +508,7 @@
 							&.buttonRewind, &.buttonForward {
 								min-width: 30px;
 							}
-							&.buttonSkipBackward, &.buttonSkipForward, &.buttonExpand {
+							&.buttonSkipBackward, &.buttonSkipForward, &.buttonExpand, &.buttonMore {
 								min-width: 30px;
 							}
 						}
@@ -685,7 +697,7 @@
 						margin-top: 15px;
 
 						.button {
-							&.buttonRewind, &.buttonForward, &.buttonSkipBackward, &.buttonSkipForward {
+							&.buttonRewind, &.buttonForward, &.buttonSkipBackward, &.buttonSkipForward, &.buttonMore {
 								min-width: 40px;
 								width: 40px;
 

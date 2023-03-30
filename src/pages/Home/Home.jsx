@@ -81,6 +81,7 @@ const Home = ({  }) => {
 					<CategoryList backButtonText="Home" />
 				</div>
 			</div>
+			<div style={{ height: 80 }}></div>
 		</Page>
 	);
 };

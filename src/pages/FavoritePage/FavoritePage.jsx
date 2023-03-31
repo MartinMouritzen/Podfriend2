@@ -38,6 +38,15 @@ const FavoritePage = () => {
 			});
 			setOrderedFollowedPodcasts(sortByOldest);
 		}
+		else if (favoriteSortOrder === 'latestListened') {
+			var sortByLatestListened= followedPodcasts.slice().sort((a, b) => {
+				if (!a.lastListened && !b.lastListened) { return 0; }
+				if (a.lastListened && !b.lastListened) { return -1; }
+				if (!a.lastListened && b.lastListened) { return 1; }
+				return new Date(b.lastListened) - new Date(a.lastListened);
+			});
+			setOrderedFollowedPodcasts(sortByLatestListened);
+		}
 		else {
 			var sortByName = followedPodcasts.slice().sort((a, b) => {
 				return a.name.localeCompare(b.name);
@@ -49,13 +58,20 @@ const FavoritePage = () => {
 	useEffect(() => {
 		console.log('change sorting order');
 		sortFavoritePodcasts();
-	},[followedPodcasts.length,favoriteSortOrder]);
+	},[JSON.stringify(followedPodcasts),favoriteSortOrder]);
 	
 
 	const showFavoriteSortMenu = () => {
 		present({
 			header: 'Order favorites',
 			buttons: [
+				{
+					text: 'Latest listened on top',
+					role: favoriteSortOrder === 'latestListened' ? 'selected' : '',
+					data: {
+						action: 'latestListened',
+					},
+				},
 				{
 					text: 'Latest added on top',
 					role: favoriteSortOrder === 'latest' ? 'selected' : '',
@@ -92,7 +108,7 @@ const FavoritePage = () => {
 			},
 		})
 	}
-
+	
 	return (
 		<Page title="Favorites" defaultHeader={false} showBackButton={false}>
 			<IonHeader collapse="condense" class="mainTitleHeader">
@@ -108,7 +124,11 @@ const FavoritePage = () => {
 			</IonHeader>
 			<div style={{ paddingLeft: '7px', paddingRight: '7px' }}>
 				<div style={{ paddingLeft: '16px', paddingRight: '16px' }}>
-					<h2>Favorite podcasts sorted by {favoriteSortOrder === 'alphabetical_az' ? 'alphabetical order' : favoriteSortOrder}</h2>
+					<h2>
+						Favorite podcasts sorted by&nbsp;
+							{favoriteSortOrder === 'alphabetical_az' ? 'alphabetical order'
+							: favoriteSortOrder === 'latestListened' ? 'latest listened' : favoriteSortOrder}
+					</h2>
 				</div>
 				<PodcastList backButtonText="Favorites" podcasts={orderedFollowedPodcasts} listType='grid' filterString={filterString} />
 			</div>

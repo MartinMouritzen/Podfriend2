@@ -85,11 +85,13 @@ const ContinueListening = ({ backButtonText = false }) => {
 								asBackground={true}
 								loadingComponent={() => <IonSkeletonText animated={true} className="coverLoading" />}
 							/>
-							<div className="episodeProgressBarOuter">
-								{ podcastData.episode.listenedPercentage &&
-									<div className="episodeProgressBarInner" style={{ width: Math.round(podcastData.episode.listenedPercentage) + '%' }}/>
-								}
-							</div>
+							{ (podcastData.episode.duration && !podcastData.episode.live) && 
+								<div className="episodeProgressBarOuter">
+									{ podcastData.episode.listenedPercentage &&
+										<div className="episodeProgressBarInner" style={{ width: Math.round(podcastData.episode.listenedPercentage) + '%' }}/>
+									}
+								</div>
+							}
 							<div className='podcastInfo'>
 								<div className='title'>
 									{podcastData.episode.title}

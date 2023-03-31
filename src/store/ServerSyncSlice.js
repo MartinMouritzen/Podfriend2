@@ -18,11 +18,28 @@ export const createServerSyncSlice = (set,get) => ({
 			return resp.json()
 		})
 		.then((response) => {
-			if (response.podcasts) {
-				// console.log(response.podcasts);
+			if (Array.isArray(response.podcasts)) {
+				var followedPodcasts = get().followedPodcasts;
+
+				response.podcasts.forEach((podcast) => {
+					get().followPodcast(podcast);
+				});
+/*
+				var found = false;
+				response.podcasts.forEach((podcast) => {
+					followedPodcasts.forEach((followedPodcast) => {
+						if (followedPodcast.guid === podcast.guid) {
+							found = true;
+						}
+					});
+					if (!found) {
+						
+					}
+				});
+*/
 			}
 			if (response.episodes) {
-				// console.log(response.episodes);
+				console.log(response.episodes);
 			}
 			set({
 				syncingPodcastState: false

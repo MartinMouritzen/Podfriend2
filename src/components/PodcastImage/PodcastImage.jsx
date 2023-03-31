@@ -39,8 +39,9 @@ const PodcastImage = React.memo(({ podcastId = false, podcastPath = false, src, 
 		// },9000);
 	},[src]);
 
-	const onError = () => {
+	const onError = (error) => {
 		console.log('image error1: ' + imageSource + '||| (original: ' + src + ')');
+		console.log(error);
 		if (fallBackImage) {
 			console.log('image error2');
 			if (fallBackImage == src) {

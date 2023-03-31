@@ -1,24 +1,26 @@
 import React, { useState, useEffect } from 'react';
 
-import { useSelector, useDispatch } from 'react-redux';
+import { useStore } from 'zustand';
 
 import { distanceInWordsToNow } from 'date-fns';
 
 import DOMPurify from 'dompurify';
 
-import { ReviewStars } from 'podfriend-approot/components/Reviews/StarRating.jsx';
-import WriteReviewForm from 'podfriend-approot/components/Reviews/WriteReviewForm.jsx';
+import { ReviewStars } from "components/Reviews/StarRating";
+import WriteReviewForm from './WriteReviewForm.jsx';
 
-import { FaEdit } from "react-icons/fa";
+import {
+	createOutline as editIcon
+} from 'ionicons/icons';
 
-import Avatar from 'podfriend-approot/components/UI/Avatar/Avatar.jsx';
+import Avatar from 'components/UI/Avatar/Avatar.jsx';
 
-import styles from './ReviewPaneUI.scss';
+import styles from './ReviewPage.scss';
 
 import SVG from 'react-inlinesvg';
 import Page from 'components/Page/Page';
 // import SadPodfriend from 'podfriend-approot/images/design/flow-illustrations/podfriend-sad.svg';
-const SadPodfriend = () => <SVG src={require('podfriend-approot/images/design/flow-illustrations/podfriend-sad.svg')} />;
+const SadPodfriend = () => <SVG src={require('images/flow-illustrations/podfriend-sad.svg')} />;
 
 function nl2br (str, is_xhtml) {
     if (typeof str === 'undefined' || str === null) {

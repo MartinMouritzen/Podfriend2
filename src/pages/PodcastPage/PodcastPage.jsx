@@ -298,6 +298,13 @@ const PodcastPage = ({ match }) => {
 		});
 	}
 
+	const showReviewModal = () => {
+		setShowReviews(true);
+	};
+	const hideReviewModal = () => {
+		setShowReviews(false);
+	};
+
 	return (
 		<Page defaultHeader={false} title={podcastData ? podcastData.name : 'Loading...'} className="podcastPage" setScrollableContentRef={setScrollableContentRef}>
 			<IonRefresher slot="fixed" onIonRefresh={doRefresh}>
@@ -358,7 +365,7 @@ const PodcastPage = ({ match }) => {
 							</IonToolbar>
 						</IonHeader>
 						<div className="podcastInfo">
-							<ReviewStarsWithText rating={podcastData.review_totalScore} reviews={podcastData.review_totalCount} />
+							<ReviewStarsWithText rating={podcastData.review_totalScore} reviews={podcastData.review_totalCount} onClick={showReviewModal} />
 							<div>
 								{ podcastState === 'loading' &&
 									<div className="description">

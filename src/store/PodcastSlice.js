@@ -65,7 +65,7 @@ export const createPodcastSlice = (set, get) => ({
 	/**********************************************************************************
 	* Favorite settings
 	***********************************************************************************/
-	favoriteSortOrder: 'latest',
+	favoriteSortOrder: 'latestListened',
 	setFavoriteSortOrder: (newOrder) => {
 		set({
 			favoriteSortOrder: newOrder
@@ -85,7 +85,7 @@ export const createPodcastSlice = (set, get) => ({
 		return isFollowed;
 	},
 	followPodcast: (podcast) => {
-		if (!podcast) {
+		if (!podcast || !podcast.path) {
 			return;
 		}
 		if (get().isPodcastFollowed(podcast.path) === false) {
@@ -97,6 +97,7 @@ export const createPodcastSlice = (set, get) => ({
 
 			var followedPodcasts = get().followedPodcasts;
 			followedPodcasts.push(podcastToStore);
+	
 
 			set({
 				followedPodcasts: followedPodcasts
@@ -112,40 +113,90 @@ export const createPodcastSlice = (set, get) => ({
 			followedPodcasts: newFollowList
 		});
 	},
-	retrieveLatestEpisodes: () => {
-		var followedPodcasts = get().followedPodcasts;
-		return new Promise((resolve,reject) => {
-			// console.log(subscribedPodcasts);
-			var feedPaths = [];
-			for(var i=0;i<followedPodcasts.length;i++) {
-				feedPaths.push(followedPodcasts[i].path);
-			}
+	updateFollowedPodcastListeningDate: (podcast) => {
+		var followedPodcasts = [...get().followedPodcasts];
 
-			try {
-				console.log('fetching latest episodes');
-				fetch('https://api.podfriend.com/podcast/episodes/?feedPaths=' + feedPaths.join(',') + '&max=14')
-				.then((result) => {
-					return result.json()
-				})
-				.then((episodes) => {
-					if (episodes.error) {
-						return reject();
-					}
-					else {
-						return resolve(episodes);
-					}
-				})
-				.catch((exception) => {
-					return reject();
-				});
-
-			}
-			catch (exception) {
-				console.log('Error fetching latest episodes');
-				console.log(exception);
-				return reject();
+		var foundIndex = false;
+		followedPodcasts.forEach((followedPodcast,index) => {
+			if (followedPodcast.guid === podcast.guid) {
+				foundIndex = index;
 			}
 		});
+		if (foundIndex !== false) {
+			console.log('updating last listened date of followed podcast');
+			console.log(followedPodcasts[foundIndex]);
+			followedPodcasts[foundIndex].lastListened = new Date();
+		}
+
+        set({
+			followedPodcasts: followedPodcasts
+		});
+	},
+	/**********************************************************************************
+	* Latest episodes
+	***********************************************************************************/
+	lastLatestEpisodesRefresh: false,
+	latestEpisodes: [],
+	retrieveLatestEpisodes: () => {
+		let shouldUpdate = false;
+		let lastLatestEpisodesRefresh = get().lastLatestEpisodesRefresh;
+	
+		if (!lastLatestEpisodesRefresh) {
+			shouldUpdate = true;
+		}
+		else {
+			lastLatestEpisodesRefresh = new Date(lastLatestEpisodesRefresh);
+	
+			const msBetweenDates = Math.abs(lastLatestEpisodesRefresh.getTime() - new Date().getTime());
+			const hoursBetweenDates = msBetweenDates / (60 * 60 * 1000);
+	
+			if (hoursBetweenDates > 1) {
+				shouldUpdate = true;
+			}
+		}
+
+		if (!shouldUpdate) {
+			return Promise.resolve(get().latestEpisodes);
+		}
+		else if (shouldUpdate) {
+			var followedPodcasts = get().followedPodcasts;
+			return new Promise((resolve,reject) => {
+				// console.log(subscribedPodcasts);
+				var feedPaths = [];
+				for(var i=0;i<followedPodcasts.length;i++) {
+					feedPaths.push(followedPodcasts[i].path);
+				}
+
+				try {
+					console.log('fetching latest episodes');
+					fetch('https://api.podfriend.com/podcast/episodes/?feedPaths=' + feedPaths.join(',') + '&max=14')
+					.then((result) => {
+						return result.json()
+					})
+					.then((episodes) => {
+						if (episodes.error) {
+							return reject();
+						}
+						else {
+							set({
+								latestEpisodes: episodes,
+								lastLatestEpisodesRefresh: new Date()
+							});
+							return resolve(episodes);
+						}
+					})
+					.catch((exception) => {
+						return reject();
+					});
+
+				}
+				catch (exception) {
+					console.log('Error fetching latest episodes');
+					console.log(exception);
+					return reject();
+				}
+			});
+		}
 	},
 	/**********************************************************************************
 	* Details about specific podcast, like sorting, season etc.
@@ -443,7 +494,7 @@ export const createPodcastSlice = (set, get) => ({
 			else {
 				console.log('Received new version of: ' + data.name);
 				data.receivedFromServer = new Date();
-				data.receivedFromServerText = data.receivedFromServer.toDateString();
+				data.receivedFromServerText = data.receivedFromServer.toString();
 
 				data.safeDescription = DOMPurify.sanitize(data.description, {
 					ALLOWED_TAGS: [

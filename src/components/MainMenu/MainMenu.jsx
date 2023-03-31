@@ -10,6 +10,8 @@ import { homeOutline as homeIcon, closeSharp as closeIcon, searchOutline as sear
 
 import {NavContext} from '@ionic/react';
 
+import PodfriendLogo from 'images/icons/podfriend_logo.svg';
+
 const MainMenu = () => {
 	const toggleMenu = () => {
  	    menuController.toggle('first');
@@ -31,6 +33,7 @@ const MainMenu = () => {
 
 	return (
 		<IonMenu menuId="first" contentId="main" side="start" className="mainMenu" swipe-gesture={false}>
+			{ /*
 			<IonHeader class="ion-no-border">
 				<IonToolbar>
 					<IonMenuToggle slot="end">
@@ -38,6 +41,10 @@ const MainMenu = () => {
 					</IonMenuToggle>
 				</IonToolbar>
 			</IonHeader>
+			*/ }
+			<div className="sidemenuHeader">
+				<img src={PodfriendLogo} /> Podfriend
+			</div>
 			<IonContent className="menuContent">
 				<form method="GET" onSubmit={onSearch}>
 					<IonSearchbar type="search" placeholder="Search for podcasts" ref={searchBar}></IonSearchbar>

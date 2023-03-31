@@ -63,6 +63,15 @@ export const createPlayerSlice = (set,get) => ({
 				// Todo, update online here too.
 			}
 		}
+
+		get().updateFollowedPodcastListeningDate(podcast);
+		get().updatePodcastAttributes({
+			podcastData: podcast,
+			attributes: {
+				lastListened: new Date()
+			}
+		});
+
 		set({
 			activePodcast: podcast,
 			activeEpisode: episode,
@@ -265,9 +274,6 @@ export const createPlayerSlice = (set,get) => ({
 				.then(() => {
 					audioController.load()
 					.then(() => {
-						console.log('loading episode');
-						console.log(episode);
-
 						var currentTime = 0;
 
 						if (episode.currentTime) {

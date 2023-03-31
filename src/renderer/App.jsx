@@ -34,6 +34,7 @@ import EpisodePage from 'pages/PodcastPage/EpisodePage';
 import SearchPage from 'pages/SearchPage/SearchPage';
 import WalletPage from 'pages/WalletPage/WalletPage';
 import CategoryPage from 'pages/CategoryPage/CategoryPage';
+import ReviewPage from 'pages/ReviewPage/ReviewPage';
 
 import useStore from 'store/Store';
 
@@ -68,11 +69,15 @@ export default function App({ platform, audioController, desktop = false }) {
 	useEffect(() => {
 		setAudioController(audioController);
 		setDesktop(desktop);
-		if (loggedIn) {
-			synchronizePodcasts();
-		}
 		console.log('App loaded');
 	},[]);
+
+	useEffect(() => {
+		if (loggedIn) {
+			console.log('synchronizePodcasts();');
+			synchronizePodcasts();
+		}
+	},[loggedIn]);
 
 	const router = useRef(false);
 	const navigateToPath = (path) => {
@@ -97,6 +102,7 @@ export default function App({ platform, audioController, desktop = false }) {
 		<Route path="/wallet/" render={(props) => <WalletPage {...props} />} />,
 		<Route path="/search/:searchQuery?" render={(props) => <SearchPage {...props} />} />,
 		<Route exact={true} path="/podcast/:podcastPath/" render={(props) => <PodcastPage {...props} />} />,
+		<Route exact={true} path="/podcast/:podcastPath/reviews/" render={(props) => <ReviewPage {...props} />} />,
 		<Route exact={true} path="/podcast/:podcastPath/episode/:episodeId/" render={(props) => <EpisodePage audioController={audioController} navigateToPath={navigateToPath} {...props} />} />,
 		<Route path="/categories/:categoryName/" render={(props) => <CategoryPage {...props} />} />,
 		<Redirect exact={true} from="/" to="home/" />,

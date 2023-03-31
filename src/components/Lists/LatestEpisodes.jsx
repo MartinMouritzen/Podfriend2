@@ -30,7 +30,9 @@ const LatestEpisodes = ({ backButtonText = false }) => {
 	const audioPlay = useStore((state) => state.audioPlay);
 	const audioPause = useStore((state) => state.audioPause);
 
-	const [latestEpisodes,setLatestEpisodes] = useState(false);
+	// const [latestEpisodes,setLatestEpisodes] = useState(false);
+
+	const latestEpisodes = useStore((state) => state.latestEpisodes);
 
 	const onPlay = (podcastPath,podcastData,episode,url) => {
 		if (activeEpisode.url === url) {
@@ -45,7 +47,8 @@ const LatestEpisodes = ({ backButtonText = false }) => {
 	};
 
 	useEffect(() => {
-		retrieveLatestEpisodes()
+		retrieveLatestEpisodes();
+		/*
 		.then((episodes) => {
 			setLatestEpisodes(episodes);
 		})
@@ -53,6 +56,7 @@ const LatestEpisodes = ({ backButtonText = false }) => {
 			console.log('exception in latestEpisodes');
 			console.log(exception);
 		});
+		*/
 	},[]);
 
 	return (

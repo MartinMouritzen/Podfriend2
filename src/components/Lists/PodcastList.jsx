@@ -31,6 +31,9 @@ const PodcastList = ({ podcasts, listType = 'scroll', filterString = '', backBut
 	return (
 		<div className={'podcastGrid ' + listType}>
 			{ podcasts !== false && podcasts.map((podcast) => {
+				if (!podcast.name) {
+					return;
+				}
 				if (filterString) {
 					if (!podcast.name.toLowerCase().includes(filterString.toLowerCase())) {
 						return;

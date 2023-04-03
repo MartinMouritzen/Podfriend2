@@ -54,7 +54,7 @@ const MainMenu = () => {
 					My content
 				</div>
 				<IonList>
-					<IonItem lines="none" button routerLink="/home/">
+					<IonItem lines="none" button routerLink="/">
 						<IonIcon icon={homeIcon} slot="start"></IonIcon>
 						<IonLabel>Home</IonLabel>
 					</IonItem>

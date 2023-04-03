@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 import { ReviewStars } from "components/Reviews/StarRating";
 
-import { useStore } from 'zustand';
+import useStore from 'store/Store';
 
 import HappyPodfriend from 'images/flow-illustrations/podfriend-happy.png';
 

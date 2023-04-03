@@ -77,7 +77,7 @@ function useHookWithRefCallback(setScrollableContentRef = false) {
 	return [setRef]
 }
 
-const Page = ({ id = null, title = "Undefined", defaultHeader = true, defaultHref = '/home/', showBackButton = true, backButtonText = "back", className = "", children, setScrollableContentRef = false }) => {
+const Page = ({ id = null, title = "Undefined", defaultHeader = true, defaultHref = '/', showBackButton = true, backButtonText = "back", className = "", children, setScrollableContentRef = false }) => {
 	const { breakpoint, maxWidth, minWidth } = useBreakpoint(BREAKPOINTS, 'desktop');
 	const location = useLocation();
 

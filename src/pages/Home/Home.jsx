@@ -41,17 +41,15 @@ const Home = ({  }) => {
 					</IonToolbar>
 				</IonHeader>
 			}
-			{ loggedIn &&
-				<div className='section noPadding'>
-					<div className='sectionInner'>
-						<div className='sectionSubTitle'>Continue</div>
-						<div className='sectionTitle'>listening</div>
-					</div>
-					<div className="sectionContents noPadding">
-						<ContinueListening backButtonText="Home" />
-					</div>
+			<div className='section noPadding'>
+				<div className='sectionInner'>
+					<div className='sectionSubTitle'>Continue</div>
+					<div className='sectionTitle'>listening</div>
 				</div>
-			}
+				<div className="sectionContents noPadding">
+					<ContinueListening backButtonText="Home" />
+				</div>
+			</div>
 			{ loggedIn &&
 				<div className='section'>
 					<div className='sectionInner'>

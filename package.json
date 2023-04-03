@@ -17,6 +17,7 @@
 	"scripts": {
 		"build": "concurrently \"yarn build:main\" \"yarn build:renderer\"",
 		"build:main": "cross-env NODE_ENV=production TS_NODE_TRANSPILE_ONLY=true webpack --config ./.erb/configs/webpack.config.main.prod.ts",
+		"build:web": "cross-env NODE_ENV=production TS_NODE_TRANSPILE_ONLY=true webpack --config ./.erb/configs/webpack.config.web.prod.ts",
 		"build:renderer": "cross-env NODE_ENV=production TS_NODE_TRANSPILE_ONLY=true webpack --config ./.erb/configs/webpack.config.renderer.prod.ts",
 		"postinstall": "ts-node .erb/scripts/check-native-dep.js && electron-builder install-app-deps && cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack --config ./.erb/configs/webpack.config.renderer.dev.dll.ts",
 		"package": "ts-node ./.erb/scripts/clean.js dist && yarn build && electron-builder build --publish never",
@@ -73,6 +74,7 @@
 		"browserslist-config-erb": "^0.0.3",
 		"chalk": "^4.1.2",
 		"concurrently": "^7.1.0",
+		"copy-webpack-plugin": "^11.0.0",
 		"core-js": "^3.22.5",
 		"cross-env": "^7.0.3",
 		"css-loader": "^6.7.1",
@@ -105,17 +107,31 @@
 		"webpack-merge": "^5.8.0"
 	},
 	"build": {
-		"productName": "ElectronReact",
-		"appId": "org.erb.ElectronReact",
+		"productName": "Podfriend",
+		"appId": "com.podfriend",
 		"asar": true,
 		"asarUnpack": "**\\*.{node,dll}",
 		"files": [
 			"dist",
+			"src/images",
 			"node_modules",
 			"package.json"
 		],
 		"afterSign": ".erb/scripts/notarize.js",
+		"appx": {
+			"applicationId": "Podfriend.Podfriend",
+			"backgroundColor": "#0176e5",
+			"displayName": "Podfriend",
+			"identityName": "51008Podfriend.Podfriend",
+			"publisher": "CN=CEE666B1-CA88-4DED-AAAE-327BEA0D24D5",
+			"publisherDisplayName": "Podfriend",
+			"languages": [
+				"en-us"
+			],
+			"showNameOnTiles": "true"
+		},
 		"mac": {
+			"icon": "./assets/icons/podfriend.icns",
 			"target": {
 				"target": "default",
 				"arch": [
@@ -144,8 +160,16 @@
 			]
 		},
 		"win": {
+			"publish": [
+				{
+					"provider": "generic",
+					"url": "http://update.podfriend.com"
+				}
+			],
 			"target": [
-				"nsis"
+				"nsis",
+				"msi",
+				"appx"
 			]
 		},
 		"linux": {
@@ -161,12 +185,7 @@
 		},
 		"extraResources": [
 			"./assets/**"
-		],
-		"publish": {
-			"provider": "github",
-			"owner": "electron-react-boilerplate",
-			"repo": "electron-react-boilerplate"
-		}
+		]
 	},
 	"collective": {
 		"url": "https://www.podfriend.com"

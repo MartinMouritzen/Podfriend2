@@ -432,38 +432,92 @@ ion-menu {
 			.deleteFromList {
 				position: absolute;
 				z-index: 1;
-				top: 10px;
-				right: 10px;
-				background-color: rgba(255,255,255,0.4);
+				top: 6px;
+				right: 6px;
+				background-color: rgba(255,255,255,0.6);
+				
 				backdrop-filter: blur(20px);
-				box-shadow: 0px 1px 5px 0px rgb(50 50 50 / 45% );
+				box-shadow: 0px 1px 5px 0px rgb(50 50 50 / 25% );
 
 				display: flex;
 				justify-content: center;
 				align-items: center;
-				padding: 2px;
+				padding: 0px;
+				border-radius: 5px;
 
 				ion-icon {
 					font-size: 28px;
-					color: #FFFFFF;
+					color: rgba(0,0,0,0.6);
+					
 				}
 			}
-		}
-		.episodeProgressBarOuter {
-			position: absolute;
+			&.expandedEpisode {
+				min-height: 216px;
+				max-height: 216px;
 
-			top: 205px;
-			left: 5px;
+				.podcastInfo {
+					.title {
+						margin-left: 5px;
+					}
+					.description {
+						display: -webkit-box;
+						-webkit-line-clamp: 4;
+						-webkit-box-orient: vertical;  
+						overflow: hidden;
 
-			border-radius: 0px 0px 5px 5px;
-			overflow: hidden;
+						margin-top: 5px;
 
-			background-color: rgba(255,255,255,0.6);
-			width: calc(100% - 10px);
-			height: 10px;
-			.episodeProgressBarInner {
-				background-color: var(--primary-color);
+						max-width: 175px;
+
+						font-size: 14px;
+						color: rgba(0,0,0,0.8);
+
+						margin-left: 5px;
+					}
+					.author {
+						margin-left: 5px;
+					}
+				}
+				.episodeProgressBarOuter {
+					top: 206px;
+					width: 100%;
+					left: 0px;
+
+				}
+			}
+			.episodeDuration {
+				position: absolute;
+	
+				top: 190px;
+				right: 10px;
+	
+				background-color: rgba(0,0,0,1);
+				color: #FFFFFF;
+				font-size: 12px;
+				padding: 2px;
+				border-radius: 3px;
+			}
+			.episodeProgressBarOuter {
+				position: absolute;
+	
+				top: 205px;
+				left: 5px;
+	
+				border-radius: 0px 0px 5px 5px;
+				overflow: hidden;
+	
+				background-color: rgba(255,255,255,0.6);
+				width: calc(100% - 10px);
 				height: 10px;
+				.episodeProgressBarInner {
+					background-color: var(--primary-color);
+					height: 10px;
+				}
+			}
+			&.hasProgressBar {
+				.episodeDuration {
+					top: 180px;
+				}
 			}
 		}
 		.swiper-slide {
@@ -595,6 +649,46 @@ ion-menu {
 		margin-bottom: 5px;
 		padding: 5px;
 
+		&.expandedEpisode {
+			background-color: #F0f0f0;
+			width: 350px;
+
+			display: flex;
+			flex-direction: row;
+
+			align-items: start;
+
+			.podcastName {
+				display: inline-block;
+				max-width: 140px;
+
+				background-color: rgba(0,0,0,0.12);
+				color: rgba(0,0,0,0.87);
+
+				text-overflow: ellipsis;
+				overflow: hidden;
+				white-space: nowrap;
+
+				font-size: 14px;
+
+				padding: 4px;
+				padding-left: 10px;
+				padding-right: 10px;
+
+				border-radius: 15px;
+
+				margin-top: 1px;
+				margin-left: 5px;
+				margin-bottom: 5px;
+			}
+
+			.cover {
+				max-width: 150px;
+
+
+			}
+		}
+
 		.cover {
 			width: 100% !important;
 			height: auto !important;
@@ -716,9 +810,13 @@ ion-menu {
 			align-items: center;
 		}
 		.podcastItem:hover {
-			transform: scale(1.1);
+			transform: scale(1.05);
 			z-index: 10;
 			background-color: #0176e7;
+
+			ion-chip {
+				color: #FFFFFF;
+			}
 		}
 		.podcastItem:hover .title {
 			color: #FFFFFF;

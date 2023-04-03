@@ -18,6 +18,8 @@ const distPath = path.join(appPath, 'dist');
 const distMainPath = path.join(distPath, 'electron');
 const distRendererPath = path.join(distPath, 'renderer');
 
+const webPath = path.join(distPath, 'web');
+
 const buildPath = path.join(releasePath, 'build');
 
 export default {
@@ -34,5 +36,6 @@ export default {
   distPath,
   distMainPath,
   distRendererPath,
+  webPath,
   buildPath,
 };

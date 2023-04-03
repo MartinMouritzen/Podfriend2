@@ -62,7 +62,7 @@ class TimeUtil {
 		timeUnits.push(('' + s).padStart(2,'0'));
 		return timeUnits.join(':');
 	}
-	static fancyTimeFormat(duration) {
+	static fancyTimeFormat(duration,dividerSymbol = ":") {
 		// Hours, minutes and seconds
 		var hrs = ~~(duration / 3600);
 		var mins = ~~((duration % 3600) / 60);
@@ -72,10 +72,12 @@ class TimeUtil {
 		var ret = "";
 	
 		if (hrs > 0) {
-			ret += "" + hrs + ":" + (mins < 10 ? "0" : "");
+			ret += "" + hrs + dividerSymbol + (mins < 10 ? "0" : "");
 		}
 	
-		ret += "" + mins + ":" + (secs < 10 ? "0" : "");
+		ret += "" + mins;
+
+		ret += dividerSymbol + (secs < 10 ? "0" : "");
 		ret += "" + secs;
 		return ret;
 	}

@@ -2,6 +2,8 @@ import { IonButton, IonButtons, IonContent, IonFooter, IonHeader, IonIcon, IonLa
 
 import { memo, useState, useRef, useEffect } from 'react';
 
+import DOMPurify from 'dompurify';
+
 var randomColor = require('randomcolor');
 
 import {
@@ -72,6 +74,8 @@ const TranscriptLiveArea = ({ transcriptData, rssFeedCurrentEpisode, currentTime
 		var newSpeakers = {};
 		var addedSpeaker = false;
 
+		console.log(transcriptData);
+
 		for(var i=0;i<transcriptData.length;i++) {
 			var segment = transcriptData[i];
 
@@ -138,6 +142,13 @@ const TranscriptLiveArea = ({ transcriptData, rssFeedCurrentEpisode, currentTime
 			if (segment.endTime > currentSegment.endTime) {
 				currentSegment.endTime = parseFloat(segment.endTime);
 			}
+
+			segment.body = DOMPurify.sanitize(segment.body, {
+				ALLOWED_TAGS: [
+					'br','ol','ul','li','b','a'
+				]
+			});
+			
 			currentSegment.lines.push(segment);
 		}
 		if (chapters) {
@@ -242,7 +253,7 @@ const TranscriptLiveArea = ({ transcriptData, rssFeedCurrentEpisode, currentTime
 					</IonToolbar>
 				</IonHeader>
 				<IonContent className="smoothScroll" ref={contentNodeRef}>
-					<div className="transcript">
+					<div className={'transcript ' + (!speakers ? ' noSpeakers' : 'hasSpeakers')}>
 						{ segments && segments.map((segment,index) => {
 							var segmentIsActive = segment.startTime <= currentTime && segment.endTime > currentTime;
 							

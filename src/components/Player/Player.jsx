@@ -1,4 +1,4 @@
-import { IonMenu, IonTitle, IonSearchbar, IonHeader, IonContent, IonIcon, IonLabel, IonList, IonItem, IonToolbar, IonButtons, IonButton, IonRange, IonSegment, IonSegmentButton, IonSkeletonText, IonChip, IonListHeader } from '@ionic/react';
+import { IonMenu, IonTitle, IonSearchbar, IonHeader, IonContent, IonIcon, IonLabel, IonList, IonItem, IonToolbar, IonButtons, IonButton, IonRange, IonSegment, IonSegmentButton, IonSkeletonText, IonChip, IonListHeader, useIonActionSheet } from '@ionic/react';
 
 import useStore from 'store/Store';
 
@@ -27,7 +27,11 @@ import SkipBackwardIcon from 'images/player/skip-backward.svg';
 import SkipForwardIcon from 'images/player/skip-forward.svg';
 
 import {
-	ellipsisHorizontal as moreIcon
+	ellipsisHorizontal as moreIcon,
+	alarmOutline as alarmIcon,
+	speedometerOutline as speedIcon,
+	shareOutline as shareIcon,
+	browsersOutline as goIcon
 } from 'ionicons/icons';
 
 import LoadingIcon from 'images/player/loading.png';
@@ -347,7 +351,6 @@ const Player = ({ audioController, navigateToPath, platform }) => {
 	};
 
 	useEffect(() => {
-
 		if (segmentVisible === 'playing') {
 			controlledSwiper?.slideTo(0, 300);
 		}
@@ -361,6 +364,66 @@ const Player = ({ audioController, navigateToPath, platform }) => {
 
 	// var playerStyle = { backgroundColor: darkVibrantColor, borderTop: '1px solid ' + darkVibrantColor };
 	var playerStyle = {};
+
+	const [actionSheetPresent] = useIonActionSheet();
+	const showMoreSheet = () => {
+		actionSheetPresent({
+			buttons: [
+				{
+					text: 'Set audio speed',
+					icon: speedIcon,
+					data: {
+						action: 'website'
+					}
+				},
+				{
+					text: 'Set sleep timer',
+					icon: alarmIcon,
+					data: {
+						action: 'website'
+					}
+				},
+				{
+					text: 'Share episode',
+					icon: shareIcon,
+					data: {
+						action: 'website'
+					}
+				},
+				{
+					text: 'Go to podcast page',
+					icon: goIcon,
+					data: {
+						action: 'website'
+					}
+				},
+				/*
+				{
+					text: 'Add season to playlist',
+					data: {
+						action: 'share',
+					},
+				},
+				*/
+				{
+					text: 'Cancel',
+					role: 'cancel',
+					data: {
+						action: 'cancel',
+					},
+				},
+			],
+			onWillDismiss: ({ detail }) => {
+				if (detail?.data?.action === 'website') {
+					window.open(podcastData.link,"_blank");
+				}
+			},
+			onDidDismiss: ({ detail }) => {
+				console.log('pressed action sheet button');
+				console.log(detail);
+			},
+		})
+	};
 
 	return (
 		<>
@@ -419,7 +482,7 @@ const Player = ({ audioController, navigateToPath, platform }) => {
 								</div>
 							}
 							<div className="podcastInfo">
-								<div className="episodeTitle">
+								<div className="episodeTitle" title={activeEpisode.title}>
 									{activeEpisode.title}
 								</div>
 								<div className="podcastName">
@@ -464,9 +527,10 @@ const Player = ({ audioController, navigateToPath, platform }) => {
 										</div>
 									</SwiperSlide>
 									<SwiperSlide>
-										<div className="ion-padding">
+										<div className="description">
 											<h2>Description</h2>
-											{activeEpisode.safeDescription}
+											<div dangerouslySetInnerHTML={{__html: activeEpisode.safeDescription}}>
+											</div>
 										</div>
 									</SwiperSlide>
 									{ chapters &&
@@ -555,7 +619,7 @@ const Player = ({ audioController, navigateToPath, platform }) => {
 									}
 									<div className="button buttonForward" onClick={onForward}><SVG src={ForwardIcon} /></div>
 									<div className="button buttonSkipForward" onClick={onSkipForward}><SVG src={SkipForwardIcon} /></div>
-									<div className="button buttonMore"><IonIcon icon={moreIcon} /></div>
+									<div className="button buttonMore" onClick={showMoreSheet}><IonIcon icon={moreIcon} /></div>
 									{ !fullscreen &&
 										<div className="button navigateToPodcastButton" onClick={navigateToPodcast}>
 											<PodcastImage

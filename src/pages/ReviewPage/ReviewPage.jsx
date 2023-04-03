@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-import { useStore } from 'zustand';
+import useStore from 'store/Store';
 
 import { distanceInWordsToNow } from 'date-fns';
 
@@ -19,6 +19,8 @@ import styles from './ReviewPage.scss';
 
 import SVG from 'react-inlinesvg';
 import Page from 'components/Page/Page';
+import { IonIcon } from '@ionic/react';
+
 // import SadPodfriend from 'podfriend-approot/images/design/flow-illustrations/podfriend-sad.svg';
 const SadPodfriend = () => <SVG src={require('images/flow-illustrations/podfriend-sad.svg')} />;
 
@@ -31,7 +33,7 @@ function nl2br (str, is_xhtml) {
 }
 
 const ReviewAggregatedInfo = ({ totalCountReviews, reviews, totalScore, onWriteReviewClick, existingReview, notLoggedInMessage }) => {
-	const isLoggedIn = useSelector((state) => state.user.isLoggedIn);
+	const loggedIn = useStore((state) => state.loggedIn);
 
 	var ratings = {
 		1: 0,
@@ -51,16 +53,16 @@ const ReviewAggregatedInfo = ({ totalCountReviews, reviews, totalScore, onWriteR
 	}
 
 	return (
-		<div className={styles.reviewAggregatedColumn}>
-			<div className={styles.reviewAggregatedInfo}>
+		<div className='reviewAggregatedColumn'>
+			<div className='reviewAggregatedInfo'>
 				<div style={{ display: 'flex'}}>
-					<div className={styles.totalScore}>{ parseFloat(totalScore).toFixed(1)}</div>
+					<div className='totalScore'>{ parseFloat(totalScore).toFixed(1)}</div>
 					<div>
 						<ReviewStars secondaryColor='#cecece' rating={totalScore} size={30} />
-						<div className={styles.basedOn}>based on {totalCountReviews} review{totalCountReviews != 1 ? 's' : ''}</div>
+						<div className='basedOn'>based on {totalCountReviews} review{totalCountReviews != 1 ? 's' : ''}</div>
 					</div>
 				</div>
-				<div className={styles.ratingBreakdownLines}>
+				<div className='ratingBreakdownLines'>
 					<RatingBreakDownLine rating={5} numberOfRatings={ratings[5]} totalRatings={totalCountReviews} />
 					<RatingBreakDownLine rating={4} numberOfRatings={ratings[4]} totalRatings={totalCountReviews} />
 					<RatingBreakDownLine rating={3} numberOfRatings={ratings[3]} totalRatings={totalCountReviews} />
@@ -69,8 +71,8 @@ const ReviewAggregatedInfo = ({ totalCountReviews, reviews, totalScore, onWriteR
 				</div>
 			</div>
 			{ notLoggedInMessage === false &&
-				<button className={styles.writeAReview} onClick={onWriteReviewClick}>
-					<FaEdit />
+				<button className='writeAReview' onClick={onWriteReviewClick}>
+					<IonIcon icon={editIcon} />
 					{ false && existingReview !== false && existingReview.reviewContent &&
 						<>Modify your review</>
 					}
@@ -83,7 +85,7 @@ const ReviewAggregatedInfo = ({ totalCountReviews, reviews, totalScore, onWriteR
 				</button>
 			}
 			{ notLoggedInMessage !== false &&
-				<div className={styles.notLoggedInMessage + ' warningMessage'} style={{ marginTop: 20 }}>
+				<div className='notLoggedInMessage warningMessage' style={{ marginTop: 20 }}>
 					Hey friend! You need a profile to be able to rate and review Podcasts.<br /><br />
 					You can create a profile or log in by clicking on the user icon in the top right corner.
 				</div>
@@ -94,18 +96,18 @@ const ReviewAggregatedInfo = ({ totalCountReviews, reviews, totalScore, onWriteR
 const RatingBreakDownLine = ({ rating, numberOfRatings, totalRatings }) => {
 	var percentage = numberOfRatings === 0 ? 0 : numberOfRatings / totalRatings * 100;
 	return (
-		<div className={styles.ratingBreakdowLineContainer} key={rating}>
-			<div className={styles.ratingBreakdowLineLabel}>
+		<div className='ratingBreakdowLineContainer' key={rating}>
+			<div className='ratingBreakdowLineLabel'>
 				{rating} stars
 			</div>
-			<div key={rating} className={styles.ratingBreakdownLine}>
-				<div className={styles.ratingBreakdownLine} title={`${numberOfRatings} reviews. ${percentage}% of all reviews.`}>
-					<div className={styles.ratingBreakdownLineInner} rating={rating} style={{ width: percentage + '%' }}>
+			<div key={rating} className='ratingBreakdownLine'>
+				<div className='ratingBreakdownLine' title={`${numberOfRatings} reviews. ${percentage}% of all reviews.`}>
+					<div className='ratingBreakdownLineInner' rating={rating} style={{ width: percentage + '%' }}>
 
 					</div>
 				</div>
 			</div>
-			<div className={styles.ratingPercentage}>
+			<div className='ratingPercentage'>
 				{percentage}%
 			</div>
 		</div>
@@ -122,33 +124,35 @@ class Review extends React.PureComponent {
 		}));
 		
 		return (
-			<div key={this.props.guid} className={styles.review}>
-				<div className={styles.avatarColumn}>
-					<div className={styles.avatar}>
+			<div key={this.props.guid} className='review'>
+				<div className='avatarColumn'>
+					<div className='avatar'>
 						<Avatar userName={this.props.reviewerName} userGuid={this.props.userGuid} />
 					</div>
 				</div>
-				<div className={styles.reviewColumn}>
-					<div className={styles.rating}>
+				<div className='reviewColumn'>
+					<div className='rating'>
 						<ReviewStars secondaryColor='#cecece' rating={this.props.rating} size={24} />
 					</div>
-					<div className={styles.reviewerName}>
+					<div className='reviewerName'>
 						{this.props.reviewerName}
 					</div>
-					<div className={styles.reviewContent} dangerouslySetInnerHTML={{__html:reviewContent}} />
-					<div className={styles.reviewDate}>
-						<span className={styles.agoText}>{distanceInWordsToNow(this.props.reviewDate)} ago</span>
+					<div className='reviewContent' dangerouslySetInnerHTML={{__html:reviewContent}} />
+					<div className='reviewDate'>
+						<span className='agoText'>{distanceInWordsToNow(this.props.reviewDate)} ago</span>
 					</div>
 				</div>
 			</div>
 		);
 	}
 }
-const ReviewPaneUI = ({ podcastName, totalCountReviews, totalScore, podcastGuid, onSubmitReview }) => {
-	const isLoggedIn = useSelector((state) => state.user.isLoggedIn);
-	const profileData = useSelector((state) => state.user.profileData);
+const ReviewPage = ({ podcastName, totalCountReviews, totalScore, podcastGuid, onSubmitReview }) => {
+	const loggedIn = useStore((state) => state.loggedIn);
+	const userData = useStore((state) => state.userData);
 
-	const reviews = useSelector((state) => state.podcast.reviews);
+	const loadReviews = useStore((state) => state.loadReviews);
+
+	const [reviews,setReviews] = useState([]);
 
 	const [writingReview,setWritingReview] = useState(false);
 	const [hasRated,setHasRated] = useState(false);
@@ -157,7 +161,7 @@ const ReviewPaneUI = ({ podcastName, totalCountReviews, totalScore, podcastGuid,
 	const [notLoggedInMessage,setNotLoggedInMessage] = useState(false);
 
 	const onWriteReviewClick = () => {
-		if (isLoggedIn) {
+		if (loggedIn) {
 			setWritingReview(true);
 		}
 		else {
@@ -180,29 +184,29 @@ const ReviewPaneUI = ({ podcastName, totalCountReviews, totalScore, podcastGuid,
 
 	return (
 		<Page>
-			<div className={styles.reviewPane}>
+			<div className='reviewPane'>
 				{ writingReview !== false &&
 					<WriteReviewForm podcastName={podcastName} podcastGuid={podcastGuid} onSubmitReview={onSubmitReviewIntercept} />
 				}
 				{ writingReview === false &&
-					<div className={styles.reviewColumns}>
+					<div className='reviewColumns'>
 						<ReviewAggregatedInfo totalCountReviews={totalCountReviews} reviews={reviews} totalScore={totalScore} onWriteReviewClick={onWriteReviewClick} notLoggedInMessage={notLoggedInMessage} />
-						<div className={styles.reviewList}>
+						<div className='reviewList'>
 							{ hasReviewsWithText !== true &&
-								<div className={styles.noReviews}>
-									<div className={styles.noReviewsIllustration}>
+								<div className='noReviews'>
+									<div className='noReviewsIllustration'>
 										<SadPodfriend />
 									</div>
-									<div className={styles.noReviewsText}>
+									<div className='noReviewsText'>
 										No reviews yet.
 									</div>
-									<div className={styles.noReviewsSubText}>
-										{ isLoggedIn === true &&
+									<div className='noReviewsSubText'>
+										{ loggedIn === true &&
 											<>
 												Make Podfriend happy! Be the first to write a review.
 											</>
 										}
-										{ isLoggedIn === false &&
+										{ loggedIn === false &&
 											<>
 												Make Podfriend happy! Log in, and be the first to write a review.
 											</>
@@ -231,4 +235,4 @@ const ReviewPaneUI = ({ podcastName, totalCountReviews, totalScore, podcastGuid,
 		</Page>
 	);
 }
-export default ReviewPaneUI;
+export default ReviewPage;

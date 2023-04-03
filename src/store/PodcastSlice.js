@@ -501,6 +501,11 @@ export const createPodcastSlice = (set, get) => ({
 						'p','br','ol','ul','li','b','a'
 					  ]
 				});
+				data.descriptionNoHTML = DOMPurify.sanitize(data.description, {
+					ALLOWED_TAGS: [
+						
+					]
+				});
 				// Copy over configuration options from the cache
 				console.log('Copy over configuration options from the cache');
 				console.log(podcastCache);
@@ -530,6 +535,13 @@ export const createPodcastSlice = (set, get) => ({
 				// Recreate listened states THIS SHOULD BE TEMPORARY UNTIL WE CAN GET IT FROM THE SERVER
 				if (podcastCache && podcastCache.episodes && data && data.episodes) {
 					for (var i=0;i<data.episodes.length;i++) {
+						if (!data.episodes[i].descriptionNoHTML) {
+							data.episodes[i].descriptionNoHTML = DOMPurify.sanitize(data.episodes[i].description, {
+								ALLOWED_TAGS: [
+									
+								  ]
+							});
+						}
 						if (!data.episodes[i].safeDescription) {
 							data.episodes[i].safeDescription = DOMPurify.sanitize(data.episodes[i].description, {
 								ALLOWED_TAGS: [

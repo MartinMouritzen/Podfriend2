@@ -142,7 +142,7 @@ const EpisodeItem = ({ podcastData, episode, guid, id, title, description, image
 								<IonIcon icon={selectedIcon} style={{ marginLeft: '4px', marginRight: '9px', pointerEvents: 'none' }} />
 							}
 							{ episodeTitle }</h2>
-						<p className="description ">{episodeDescription}</p>
+						<p className="description" dangerouslySetInnerHTML={{__html:episodeDescription}}></p>
 					</Link>
 					<div className="playAndProgress">
 						<div>

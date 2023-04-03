@@ -2,10 +2,11 @@ import useStore from 'store/Store';
 
 import { IonButton, IonIcon, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle } from "@ionic/react";
 
-import playIcon from 'images/icons/play-circle.svg';
+// import playIcon from 'images/icons/play-circle.svg';
 import dotsIcon from 'images/icons/dots.svg';
 
 import {
+	playCircle as playIcon,
 	pauseCircleSharp as pauseIcon
 } from 'ionicons/icons';
 
@@ -48,7 +49,7 @@ const LiveItem = ({ podcastData, liveItem }) => {
 	return (
 		<div className="liveItem" key={liveItem.title}>
 			<div className="content">
-				<img src={liveItem['itunes:image'].href} style={{ width: 100, float: 'right' }} />
+				<img src={liveItem['itunes:image'].href} style={{ width: 'auto', maxHeight: 140, maxWidth: 240, float: 'right', borderRadius: '5px' }} />
 				<div className="liveBadge">
 					{ formatEpisodeStatusText() }
 					

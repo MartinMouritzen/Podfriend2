@@ -133,7 +133,7 @@ const configuration: webpack.Configuration = {
 
 		new HtmlWebpackPlugin({
 			filename: path.join('index.html'),
-			template: path.join(webpackPaths.srcRendererPath, 'index.ejs'),
+			template: path.join(webpackPaths.srcRendererPath, 'index.electron.ejs'),
 			minify: {
 				collapseWhitespace: true,
 				removeAttributeQuotes: true,

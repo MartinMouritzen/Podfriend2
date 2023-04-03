@@ -4,7 +4,7 @@ import { MemoryRouter as Router, Routes, Route, Redirect } from 'react-router-do
 import './App.scss';
 
 import { IonApp, IonRouterOutlet, IonSplitPane, setupIonicReact, IonMenu, IonTabs, IonTab, IonTabBar, IonTabButton, IonIcon, IonLabel, IonBadge, IonGrid, IonRow, IonHeader, IonToolbar } from '@ionic/react';
-import { IonReactRouter } from '@ionic/react-router';
+import { IonReactRouter, IonReactHashRouter } from '@ionic/react-router';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -66,6 +66,8 @@ export default function App({ platform, audioController, desktop = false }) {
 	const authToken = useStore((state) => state.authToken);
 	const authenticateUser = useStore((state) => state.authenticateUser);
 
+	const RouterUsed = desktop ? IonReactHashRouter : IonReactRouter;
+
 	useEffect(() => {
 		setAudioController(audioController);
 		setDesktop(desktop);
@@ -94,7 +96,7 @@ export default function App({ platform, audioController, desktop = false }) {
 	},[authToken]);
 
 	const routes = [
-		<Route path="/home/" exact={true} render={(props) => <Home {...props} />} />,
+		<Route path="/" exact={true} render={(props) => <Home {...props} />} />,
 		<Route path="/discover/" render={(props) => <DiscoverPage {...props} />} />,
 		<Route path="/favorites/" render={(props) => <FavoritePage {...props} />} />,
 		<Route path="/playlist/" render={(props) => <Home {...props} />} />,
@@ -105,8 +107,8 @@ export default function App({ platform, audioController, desktop = false }) {
 		<Route exact={true} path="/podcast/:podcastPath/reviews/" render={(props) => <ReviewPage {...props} />} />,
 		<Route exact={true} path="/podcast/:podcastPath/episode/:episodeId/" render={(props) => <EpisodePage audioController={audioController} navigateToPath={navigateToPath} {...props} />} />,
 		<Route path="/categories/:categoryName/" render={(props) => <CategoryPage {...props} />} />,
-		<Redirect exact={true} from="/" to="home/" />,
-		<Redirect exact={true} from="/index.html" to="home/" />
+		<Redirect exact={true} from="/home/" to="/" />,
+		<Redirect exact={true} from="/index.html" to="/" />
 	].map((Route, index) => ({ ...Route, key: index }));
 
 	return (
@@ -117,14 +119,14 @@ export default function App({ platform, audioController, desktop = false }) {
 				}
 				<Player audioController={audioController} navigateToPath={navigateToPath} platform={platform} />
 				<div className="menuShadow" style={{ display: 'none' }}>&nbsp;</div>
-				<IonReactRouter ref={router}>
+				<RouterUsed ref={router}>
 					<IonSplitPane contentId="main" when={showSplitPane}>
 						<MainMenu />
 						<IonRouterOutlet id="main">
 							{routes}
 						</IonRouterOutlet>
 					</IonSplitPane>
-				</IonReactRouter>
+				</RouterUsed>
 			</IonApp>
 		</>
 	);

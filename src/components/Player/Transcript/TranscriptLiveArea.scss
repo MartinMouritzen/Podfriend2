@@ -7,6 +7,8 @@
 	width: calc(100vw - 50px) !important;
 	max-width: 400px;
 
+	overflow: hidden;
+
 	text-align: center;
 
 	background-color: #EEEEEE;
@@ -77,6 +79,29 @@
 }
 .transcript {
 	padding-top: 10px;
+
+	&.noSpeakers {
+		.segmentContainer {
+			margin-top: 0px !important;
+			.segmentContainerInner {
+				display: flex;
+				flex-direction: row !important;
+
+				align-items: center;
+
+				
+
+				gap: 10px;
+
+				.segmentGroupInfo {
+
+				}
+				.lines {
+					flex: 1;
+				}
+			}
+		}
+	}
 
 	.transcriptChapter {
 		margin-bottom: 20px;
@@ -158,7 +183,7 @@
 			display: flex;
 			justify-content: center;
 			align-items: center;
-			font-size: 36px;
+			font-size: 28px;
 			font-weight: 500;
 
 			border: 2px solid rgba(0,0,0,0.3);

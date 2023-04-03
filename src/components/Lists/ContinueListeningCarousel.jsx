@@ -3,7 +3,7 @@ import PodcastList from './PodcastList';
 
 import TimeUtil from 'library/TimeUtil';
 
-import { IonIcon, IonSkeletonText } from '@ionic/react';
+import { IonChip, IonIcon, IonSkeletonText } from '@ionic/react';
 
 import {
 	close as removeIcon
@@ -70,7 +70,7 @@ const ContinueListening = ({ backButtonText = false }) => {
 
 				return (
 					<SwiperSlide key={episode.guid ? episode.guid : episode.url}>
-						<div onClick={() => { onPlay(podcastData.podcastPath,podcastData,episode,episode.url) }} className="podcastItem">
+						<div onClick={() => { onPlay(podcastData.podcastPath,podcastData,episode,episode.url) }} className={'podcastItem hasProgressBar expandedEpisode'}>
 							<div className="deleteFromList" onClick={(event) => { event.stopPropagation(); event.preventDefault(); deletePodcastFromContinueListeningList(episode); return false; }}><IonIcon icon={removeIcon} /></div>
 							<PodcastImage
 								podcastPath={podcastData.podcastPath}
@@ -85,16 +85,23 @@ const ContinueListening = ({ backButtonText = false }) => {
 								asBackground={true}
 								loadingComponent={() => <IonSkeletonText animated={true} className="coverLoading" />}
 							/>
+							{ !!podcastData.episode.duration &&
+								<div className="episodeDuration">{TimeUtil.fancyTimeFormat(podcastData.episode.duration)}</div>
+							}
 							{ (podcastData.episode.duration && !podcastData.episode.live) && 
 								<div className="episodeProgressBarOuter">
-									{ podcastData.episode.listenedPercentage &&
-										<div className="episodeProgressBarInner" style={{ width: Math.round(podcastData.episode.listenedPercentage) + '%' }}/>
+									{ !!podcastData.episode.listenedPercentage &&
+										<div className="episodeProgressBarInner" style={{ width: Math.round(podcastData.episode.listenedPercentage) + '%' }} />
 									}
 								</div>
 							}
 							<div className='podcastInfo'>
+								<div className="podcastName">{podcastData.podcastName}</div>
 								<div className='title'>
 									{podcastData.episode.title}
+								</div>
+								<div className='description'>
+									{podcastData.episode.descriptionNoHTML}
 								</div>
 								
 									<div className='author'>

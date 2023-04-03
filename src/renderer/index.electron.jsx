@@ -74,6 +74,8 @@ const desktop = {
 	}
 };
 
+// window.electron.ipcRenderer
+
 root.render(<App platform="desktop" audioController={audioController} desktop={desktop} />);
 
 

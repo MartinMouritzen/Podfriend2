@@ -9,7 +9,7 @@
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
 import path from 'path';
-import { app, BrowserWindow, shell, ipcMain, screen } from 'electron';
+import { app, BrowserWindow, shell, ipcMain, screen, globalShortcut } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import MenuBuilder from './menu';
@@ -34,6 +34,117 @@ const getWindowStatus = () => {
 	return {
 		maximized: mainWindow?.isMaximized()
 	};
+};
+
+let mediaKeysEnabled = true;
+
+const disableMediaKeys = () => {
+	mediaKeysEnabled = false;
+	globalShortcut.unregister('VolumeUp');
+	globalShortcut.unregister('VolumeDown');
+	globalShortcut.unregister('VolumeMute');
+	globalShortcut.unregister('MediaPlayPause');
+	globalShortcut.unregister('MediaStop');
+	globalShortcut.unregister('MediaNextTrack');
+	globalShortcut.unregister('MediaPreviousTrack');
+
+};
+const enableMediaKeys = () => {
+	mediaKeysEnabled = true;
+	/*
+	globalShortcut.register('VolumeUp', () => {
+		console.log('VolumeUp');
+		// console.log(audio.getVolume());
+
+		var volume = audio.getVolume();
+		
+		if (volume.then) {
+			volume.then((volume) => {
+				audio.setVolume(volume + 2);
+			});
+		}
+		else {
+			audio.setVolume(volume + 2);
+		}
+		
+		// mainWindow.webContents.executeJavaScript('Events.emit(\'VolumeUp\',false)');
+		// quickViewWindow.webContents.executeJavaScript('Events.emit(\'VolumeUp\',false)');
+	});
+	
+	globalShortcut.register('VolumeDown', () => {
+		console.log('VolumeDown');
+
+		var volume = audio.getVolume();
+		
+		if (volume.then) {
+			volume.then((existingVolume) => {
+				audio.setVolume(existingVolume - 2);
+			});
+		}
+		else {
+			audio.setVolume(volume - 2);
+		}
+		// mainWindow.webContents.executeJavaScript('Events.emit(\'VolumeDown\',false)');
+		// quickViewWindow.webContents.executeJavaScript('Events.emit(\'VolumeDown\',false)');
+	});
+	
+	globalShortcut.register('VolumeMute', () => {
+		console.log('VolumeMute');
+		
+		var mutedStatus = audio.isMuted();
+		
+		if (mutedStatus.then) {
+			mutedStatus.then((existingMutedStatus) => {
+				audio.setMuted(!existingMutedStatus);
+			});
+		}
+		else {
+			audio.setMuted(!mutedStatus);
+		}
+
+		// mainWindow.webContents.executeJavaScript('Events.emit(\'VolumeMute\',false)');
+		// quickViewWindow.webContents.executeJavaScript('Events.emit(\'VolumeMute\',false)');
+	});
+	*/
+	
+	globalShortcut.register('MediaPlayPause', () => {
+		// console.log('MediaPlayPause');
+		// playPause();
+		
+		if (mediaKeysEnabled) {
+			mainWindow?.webContents.executeJavaScript('Events.emit(\'MediaPlayPause\',false)');
+		}
+		// quickViewWindow.webContents.executeJavaScript('Events.emit(\'MediaPlayPause\',false)');
+	});
+	
+	globalShortcut.register('MediaStop', () => {
+		console.log('MediaStop - BUT - we are sending playpause for now.');
+		// playPause();
+		// mainWindow.webContents.executeJavaScript('Events.emit(\'MediaStop\',false)');
+		// quickViewWindow.webContents.executeJavaScript('Events.emit(\'MediaStop\',false)');
+		if (mediaKeysEnabled) {
+			mainWindow?.webContents.executeJavaScript('Events.emit(\'MediaPlayPause\',false)');
+		}
+		// quickViewWindow.webContents.executeJavaScript('Events.emit(\'MediaPlayPause\',false)');
+	});
+	
+	globalShortcut.register('MediaNextTrack', () => {
+		console.log('MediaNextTrack');
+		if (mediaKeysEnabled) {
+			mainWindow?.webContents.executeJavaScript('Events.emit(\'MediaNextTrack\',false)');
+		}
+		// quickViewWindow.webContents.executeJavaScript('Events.emit(\'MediaNextTrack\',false)');
+		// next();
+	});
+	
+	globalShortcut.register('MediaPreviousTrack', () => {
+		if (mediaKeysEnabled) {
+			mainWindow?.webContents.executeJavaScript('Events.emit(\'MediaPreviousTrack\',false)');
+		}
+		// quickViewWindow.webContents.executeJavaScript('Events.emit(\'MediaPreviousTrack\',false)');
+		console.log('MediaPreviousTrack');
+		// previous();
+	});
 };
 
 /*
@@ -152,6 +263,13 @@ const createWindow = async () => {
 		if (!mainWindow) {
 			throw new Error('"mainWindow" is not defined');
 		}
+
+		globalShortcut.register('CommandOrControl+Shift+K', () => {
+			mainWindow?.webContents.openDevTools()
+		})
+
+		enableMediaKeys();
+
 		if (process.env.START_MINIMIZED) {
 			mainWindow.minimize();
 		} else {

@@ -11,6 +11,8 @@ import { ReviewStarsWithText } from "components/Reviews/StarRating";
 
 import useStore from 'store/Store';
 
+import { Link } from 'react-router-dom';
+
 import ReadMoreReact from 'read-more-react';
 
 import LoadingRings from 'images/loading/loading-rings.svg';
@@ -365,7 +367,18 @@ const PodcastPage = ({ match }) => {
 							</IonToolbar>
 						</IonHeader>
 						<div className="podcastInfo">
-							<ReviewStarsWithText rating={podcastData.review_totalScore} reviews={podcastData.review_totalCount} onClick={showReviewModal} />
+							<Link
+								to={{
+									pathname: '/podcast/' + podcastData.path + '/reviews/',
+									state: {
+										podcast: podcastData,
+										backButtonText: podcastData.name
+									}
+								}}
+								className='reviewStarsLink'
+							>
+								<ReviewStarsWithText rating={podcastData.review_totalScore} reviews={podcastData.review_totalCount} />
+							</Link>
 							<div>
 								{ podcastState === 'loading' &&
 									<div className="description">
@@ -422,12 +435,14 @@ const PodcastPage = ({ match }) => {
 												action: 'website'
 											}
 										},
+										/*
 										{
 											text: 'Add season to playlist',
 											data: {
 												action: 'share',
 											},
 										},
+										*/
 										{
 											text: 'Cancel',
 											role: 'cancel',

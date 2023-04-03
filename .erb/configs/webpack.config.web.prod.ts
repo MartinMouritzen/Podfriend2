@@ -11,6 +11,7 @@ import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
 import { merge } from 'webpack-merge';
 import TerserPlugin from 'terser-webpack-plugin';
 import baseConfig from './webpack.config.base';
+import CopyPlugin from 'copy-webpack-plugin';
 import webpackPaths from './webpack.paths';
 import checkNodeEnv from '../scripts/check-node-env';
 import deleteSourceMaps from '../scripts/delete-source-maps';
@@ -24,7 +25,7 @@ const configuration: webpack.Configuration = {
 	target: ['web'],
 	entry: [path.join(webpackPaths.srcRendererPath, 'index.web.jsx')],
 	output: {
-		path: webpackPaths.distRendererPath,
+		path: webpackPaths.webPath,
 		publicPath: './',
 		filename: 'web.prod.js',
 		library: {
@@ -85,6 +86,12 @@ const configuration: webpack.Configuration = {
 		 * NODE_ENV should be production so that modules do not perform certain
 		 * development checks
 		 */
+		new CopyPlugin({
+			patterns: [
+				{ from: './src/web/assets/', to: webpackPaths.webPath },
+				{ from: './src/images/', to: path.join(webpackPaths.webPath, '/images/') }
+			]
+		}),
 		new webpack.EnvironmentPlugin({
 			NODE_ENV: 'production',
 			DEBUG_PROD: false,
@@ -97,7 +104,7 @@ const configuration: webpack.Configuration = {
 		}),
 		new HtmlWebpackPlugin({
 			filename: 'index.html',
-			template: path.join(webpackPaths.srcRendererPath, 'index.ejs'),
+			template: path.join(webpackPaths.srcRendererPath, 'index.web.ejs'),
 			minify: {
 				collapseWhitespace: true,
 				removeAttributeQuotes: true,

@@ -31,7 +31,7 @@ const BottomMenu = ({ routes }) => {
 	
 	return (
 			<IonTabBar slot="bottom" className="bottomTabs">
-				<IonTabButton tab="home" href="/home/">
+				<IonTabButton tab="home" href="/">
 					<IonIcon icon={homeIcon} />
 					<IonLabel>Home</IonLabel>
 				</IonTabButton>

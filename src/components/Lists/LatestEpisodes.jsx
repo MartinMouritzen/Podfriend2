@@ -95,6 +95,9 @@ const LatestEpisodes = ({ backButtonText = false }) => {
 								asBackground={true}
 								loadingComponent={() => <IonSkeletonText animated={true} className="coverLoading" />}
 							/>
+							{ !!episode.duration &&
+								<div className="episodeDuration">{TimeUtil.fancyTimeFormat(episode.duration)}</div>
+							}
 							<div className='podcastInfo'>
 								<div className='title'>
 									{episode.title}

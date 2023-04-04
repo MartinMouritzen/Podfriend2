@@ -1,196 +1,211 @@
-.reviewPane {
-	background-color: #FFFFFF;
-
-	min-height: 60vh;
-	max-width: 960px;
-
-	display: flex;
-
-	@media (min-width: 600px) {
-		width: 65vw;
-		max-height: 600px;
-		overflow: auto;
-	}
-}
-.reviewColumns {
-	flex: 1;
-	display: flex;
-	flex-direction: row;
-
-	@media (max-width: 900px) {
-		display: block;
-	}
-}
-/***************************
-* Aggregated info panel
-***************************/
-.reviewAggregatedColumn {
-	width: 320px;
-
-	padding: 20px;
-
-	background-color: #FFFFFF;
-
-	margin-left: auto;
-	margin-right: auto;
-}
-.notLoggedInMessage {
-	
-}
-.reviewAggregatedInfo .totalScore {
-	font-size: 56px;
-	font-weight: bold;
-	color: #25333c;
-	margin-right: 10px;
-}
-.reviewAggregatedInfo .basedOn {
-	color: #25333c;
-}
-.ratingPercentage {
-	font-size: 14px;
-	text-align: right;
-	width: 30px;
-	opacity: 0.7;
-}
-.writeAReview {
-	width: 100%;
-	margin-top: 10px;
-}
-.reviewAggregatedInfo .ratingBreakdownLines {
-	width: 300px;
-	margin-top: 15px;
-}
-.reviewAggregatedInfo .ratingBreakdownLines .ratingBreakdowLineContainer {
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-	margin: 10px;
-	margin-bottom: 15px;
-}
-.reviewAggregatedInfo .ratingBreakdownLines .ratingBreakdowLineLabel {
-	margin-right: 10px;
-	color: #25333c;
-}
-.reviewAggregatedInfo .ratingBreakdownLines .ratingBreakdownLine {
-	width: 170px;
-	height: 14px;
-	background-color: #EEEEEE;
-
-	border-radius: 10px;
-	overflow: hidden;
-	
-	position: relative;
-	top: 1px;
-}
-.reviewAggregatedInfo .ratingBreakdownLines .ratingBreakdownLineInner {
-	background-color: #cecece;
-	overflow: hidden;
-	height: 20px;
-	border-bottom: 1px solid #e3c5a1;
-	transition: all 0.2s;
-}
-.reviewAggregatedInfo .ratingBreakdownLines .ratingBreakdownLineInner[rating="5"] {
-	background-color: var(--review-stars-color-five);
-}
-.reviewAggregatedInfo .ratingBreakdownLines .ratingBreakdownLineInner[rating="4"] {
-	background-color: var(--review-stars-color-four);
-}
-.reviewAggregatedInfo .ratingBreakdownLines .ratingBreakdownLineInner[rating="3"] {
-	background-color: var(--review-stars-color-three);
-}
-.reviewAggregatedInfo .ratingBreakdownLines .ratingBreakdownLineInner[rating="2"] {
-	background-color: var(--review-stars-color-two);
-}
-.reviewAggregatedInfo .ratingBreakdownLines .ratingBreakdownLineInner[rating="1"] {
-	background-color: var(--review-stars-color-one);
-}
-/*
-.reviewAggregatedInfo .ratingBreakdownLines .ratingBreakdownLine:hover .ratingBreakdownLineInner {
-	background-color: #ffcc48;
-	overflow: hidden;
-	height: 20px;
-	border-bottom: 1px solid #c68840;
-}
-*/
-/***************************
-* Reviews
-***************************/
-.reviewList {
-	flex: 1;
-	background-color: #f6f7fa;
-	padding: 10px;
-
-	.noReviews {
+.reviewPage {
+	.reviewColumns {
+		flex: 1;
 		display: flex;
-		height: 100%;
+		flex-direction: row;
+	
+		@media (max-width: 768px) {
+			display: block;
+		}
+		.reviewsLoading {
+			padding-top: 30px;
+			ion-spinner {
+				margin-bottom: 20px;
+			}
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			align-items: center;
+
+			height: 100%;
+		}
+	}
+	/***************************
+	* Aggregated info panel
+	***************************/
+	.reviewAggregatedColumn {
+		width: 320px;
+	
+		padding: 20px;
+	
+		background-color: #FFFFFF;
+	
+		margin-left: auto;
+		margin-right: auto;
+
+		@media (max-width: 768px) {
+			width: 100%;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+		}
+	}
+	.notLoggedInMessage {
+		
+	}
+	.reviewAggregatedInfo {
+		display: flex;
 		flex-direction: column;
-		justify-content: center;
 		align-items: center;
-
-		padding-top: 40px;
-		padding-bottom: 40px;
-
-		.noReviewsIllustration {
-			filter: grayscale(100%);
-			opacity: 0.5;
-			margin-bottom: 20px;
-
-			svg {
-				width: 200px;
+		.totalScore {
+			font-size: 56px;
+			font-weight: bold;
+			color: #25333c;
+			margin-right: 10px;
+		}
+		.basedOn {
+			color: #25333c;
+		}
+		.stars {
+			margin-top: 10px;
+		}
+	}
+	.ratingPercentage {
+		white-space: nowrap;
+		font-size: 14px;
+		text-align: right;
+		width: 30px;
+		opacity: 0.7;
+	}
+	.writeAReview {
+		width: 100%;
+		margin-top: 10px;
+	}
+	.reviewAggregatedInfo .ratingBreakdownLines {
+		width: 300px;
+		margin-top: 15px;
+	}
+	.reviewAggregatedInfo .ratingBreakdownLines .ratingBreakdowLineContainer {
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		margin: 10px;
+		margin-bottom: 15px;
+	}
+	.reviewAggregatedInfo .ratingBreakdownLines .ratingBreakdowLineLabel {
+		margin-right: 10px;
+		color: #25333c;
+	}
+	.reviewAggregatedInfo .ratingBreakdownLines .ratingBreakdownLine {
+		width: 170px;
+		height: 14px;
+		background-color: #EEEEEE;
+	
+		border-radius: 10px;
+		overflow: hidden;
+		
+		position: relative;
+		top: 1px;
+	}
+	.reviewAggregatedInfo .ratingBreakdownLines .ratingBreakdownLineInner {
+		background-color: #cecece;
+		overflow: hidden;
+		height: 20px;
+		border-bottom: 1px solid #e3c5a1;
+		transition: all 0.2s;
+	}
+	.reviewAggregatedInfo .ratingBreakdownLines .ratingBreakdownLineInner[rating="5"] {
+		background-color: var(--review-stars-color-five);
+	}
+	.reviewAggregatedInfo .ratingBreakdownLines .ratingBreakdownLineInner[rating="4"] {
+		background-color: var(--review-stars-color-four);
+	}
+	.reviewAggregatedInfo .ratingBreakdownLines .ratingBreakdownLineInner[rating="3"] {
+		background-color: var(--review-stars-color-three);
+	}
+	.reviewAggregatedInfo .ratingBreakdownLines .ratingBreakdownLineInner[rating="2"] {
+		background-color: var(--review-stars-color-two);
+	}
+	.reviewAggregatedInfo .ratingBreakdownLines .ratingBreakdownLineInner[rating="1"] {
+		background-color: var(--review-stars-color-one);
+	}
+	/*
+	.reviewAggregatedInfo .ratingBreakdownLines .ratingBreakdownLine:hover .ratingBreakdownLineInner {
+		background-color: #ffcc48;
+		overflow: hidden;
+		height: 20px;
+		border-bottom: 1px solid #c68840;
+	}
+	*/
+	/***************************
+	* Reviews
+	***************************/
+	.reviewList {
+		flex: 1;
+		padding: 10px;
+	
+		.noReviews {
+			display: flex;
+			height: 100%;
+			flex-direction: column;
+			justify-content: center;
+			align-items: center;
+	
+			padding-top: 40px;
+			padding-bottom: 40px;
+	
+			.noReviewsIllustration {
+				filter: grayscale(100%);
+				opacity: 0.5;
+				margin-bottom: 20px;
+	
+				svg {
+					width: 200px;
+				}
+			}
+			.noReviewsText {
+				font-size: 36px;
+				margin-bottom: 10px;
+				opacity: 0.8;
+			}
+			.noReviewsSubText {
+				font-size: 16px;
 			}
 		}
-		.noReviewsText {
-			font-size: 36px;
-			margin-bottom: 10px;
-			opacity: 0.8;
-		}
-		.noReviewsSubText {
-			font-size: 16px;
-		}
 	}
-}
-.review {
-	background-color: #FFFFFF;
-	padding: 15px;
-	margin: 10px;
-	box-shadow: 0 3px 5px -2px rgba(0,0,0,.2);
-	display: flex;
-	flex-direction: row;
-	max-width: 600px;
-}
-.avatarColumn {
-	width: 70px;
-}
-.reviewColumn {
-	flex: 1;
-}
-.review .rating {
-	float: right;
-	position: relative;
-	bottom: 4px;
-}
-.review .avatar {
-	margin-top: 5px;
-	margin-left: 5px;
-}
-.review .reviewerName {
-	color: #25333c;
-	font-weight: bold;
-	margin-top: 5px;
-	margin-bottom: 5px;
-}
-.reviewContent {
-	color: #303040;
-	margin-top: 10px;
-	border-top: 1px solid #EEEEEE;
-	padding-top: 10px;
-	margin-bottom: 5px;
-	padding-right: 5px;
-}
-.review .reviewDate {
-	float: right;
-}
-.review .agoText {
-	color: #AAAAAA;
-	font-size: 14px;
+	.review {
+		background-color: #FFFFFF;
+		padding: 15px;
+		margin: 10px;
+		box-shadow: 0 3px 5px -2px rgba(0,0,0,.2);
+		display: flex;
+		flex-direction: row;
+		max-width: 600px;
+	}
+	.avatarColumn {
+		width: 70px;
+	}
+	.reviewColumn {
+		flex: 1;
+	}
+	.review .rating {
+		float: right;
+		position: relative;
+		bottom: 4px;
+	}
+	.review .avatar {
+		margin-top: 5px;
+		margin-left: 5px;
+	}
+	.review .reviewerName {
+		color: #25333c;
+		font-weight: bold;
+		margin-top: 5px;
+		margin-bottom: 5px;
+	}
+	.reviewContent {
+		color: #303040;
+		margin-top: 10px;
+		border-top: 1px solid #EEEEEE;
+		padding-top: 10px;
+		margin-bottom: 5px;
+		padding-right: 5px;
+	}
+	.review .reviewDate {
+		float: right;
+	}
+	.review .agoText {
+		color: #AAAAAA;
+		font-size: 14px;
+	}
 }

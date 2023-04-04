@@ -227,7 +227,8 @@ const TranscriptLiveArea = ({ transcriptData, rssFeedCurrentEpisode, currentTime
 													</div>
 												}
 											</div>
-											{line.body}
+											<div dangerouslySetInnerHTML={{__html:line.body}}>
+											</div>
 										</div>
 									);
 								}

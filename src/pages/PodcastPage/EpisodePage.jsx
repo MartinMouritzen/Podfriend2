@@ -40,6 +40,8 @@ const EpisodePage = ({ match, audioController }) => {
 	const audioElement = useRef(null);
 	const scrollChild = useRef(null);
 
+	const retrievePodcastFromServer = useStore((state) => state.retrievePodcastFromServer);
+
 	const activePodcast = useStore((state) => state.activePodcast);
 	const activeEpisode = useStore((state) => state.activeEpisode);
 

@@ -82,6 +82,12 @@
 	--primary-input-text-color: #99b9d8;
 
 	--ion-color-medium: #E4E6EB;
+
+	--review-stars-color-five: #78bf70;
+	--review-stars-color-four: #9eda97;
+	--review-stars-color-three: #f8c86a;
+	--review-stars-color-two: #f79e67;
+	--review-stars-color-one: #ed5656;
 }
 a {
 	outline : none;
@@ -135,6 +141,9 @@ ion-content {
 	ion-content {
 		--background: var(--grey-page-background);
 	}
+}
+.heightWithoutPagePadding {
+	min-height: calc(100% - 90px);
 }
 .playerPagePadding {
 	height: 90px;

@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation } from "react-router-dom";
 
 import useStore from 'store/Store';
 
-import { distanceInWordsToNow } from 'date-fns';
+import { formatDistance } from 'date-fns';
 
 import DOMPurify from 'dompurify';
 
@@ -10,16 +11,17 @@ import { ReviewStars } from "components/Reviews/StarRating";
 import WriteReviewForm from './WriteReviewForm.jsx';
 
 import {
-	createOutline as editIcon
+	createOutline as editIcon2,
+	starOutline as editIcon
 } from 'ionicons/icons';
 
 import Avatar from 'components/UI/Avatar/Avatar.jsx';
 
-import styles from './ReviewPage.scss';
+import './ReviewPage.scss';
 
 import SVG from 'react-inlinesvg';
 import Page from 'components/Page/Page';
-import { IonIcon } from '@ionic/react';
+import { IonButton, IonHeader, IonIcon, IonSpinner, IonTitle, IonToolbar } from '@ionic/react';
 
 // import SadPodfriend from 'podfriend-approot/images/design/flow-illustrations/podfriend-sad.svg';
 const SadPodfriend = () => <SVG src={require('images/flow-illustrations/podfriend-sad.svg')} />;
@@ -48,7 +50,7 @@ const ReviewAggregatedInfo = ({ totalCountReviews, reviews, totalScore, onWriteR
 			ratings[reviews[i].rating]++;
 		}
 	}
-	if (totalScore === null || isNaN(totalScore)) {
+	if (totalScore === null || isNaN(totalScore) || totalScore === false) {
 		totalScore = 0;
 	}
 
@@ -71,8 +73,8 @@ const ReviewAggregatedInfo = ({ totalCountReviews, reviews, totalScore, onWriteR
 				</div>
 			</div>
 			{ notLoggedInMessage === false &&
-				<button className='writeAReview' onClick={onWriteReviewClick}>
-					<IonIcon icon={editIcon} />
+				<IonButton expand='block' onClick={onWriteReviewClick} style={{ width: '100%', maxWidth: '260px', marginLeft: 'auto', marginRight: 'auto' }}>
+					<IonIcon icon={editIcon} slot="start" />
 					{ false && existingReview !== false && existingReview.reviewContent &&
 						<>Modify your review</>
 					}
@@ -82,7 +84,7 @@ const ReviewAggregatedInfo = ({ totalCountReviews, reviews, totalScore, onWriteR
 					{ true &&
 						<>Rate this Podcast</>
 					}
-				</button>
+				</IonButton>
 			}
 			{ notLoggedInMessage !== false &&
 				<div className='notLoggedInMessage warningMessage' style={{ marginTop: 20 }}>
@@ -108,57 +110,144 @@ const RatingBreakDownLine = ({ rating, numberOfRatings, totalRatings }) => {
 				</div>
 			</div>
 			<div className='ratingPercentage'>
-				{percentage}%
+				{Math.round(percentage)}%
 			</div>
 		</div>
 	);
 }
-class Review extends React.PureComponent {
-	render() {
-		if (!this.props.reviewContent) {
-			return null;
-		}
+const Review = ({ guid, reviewContent, reviewerName, reviewDate, userGuid, rating }) => {
+	if (!reviewContent) {
+		return null;
+	}
 
-		var reviewContent = nl2br(DOMPurify.sanitize(this.props.reviewContent,{
-			ALLOWED_TAGS: ['i','em','b','strong']
-		}));
-		
-		return (
-			<div key={this.props.guid} className='review'>
-				<div className='avatarColumn'>
-					<div className='avatar'>
-						<Avatar userName={this.props.reviewerName} userGuid={this.props.userGuid} />
-					</div>
-				</div>
-				<div className='reviewColumn'>
-					<div className='rating'>
-						<ReviewStars secondaryColor='#cecece' rating={this.props.rating} size={24} />
-					</div>
-					<div className='reviewerName'>
-						{this.props.reviewerName}
-					</div>
-					<div className='reviewContent' dangerouslySetInnerHTML={{__html:reviewContent}} />
-					<div className='reviewDate'>
-						<span className='agoText'>{distanceInWordsToNow(this.props.reviewDate)} ago</span>
-					</div>
+	var reviewContent = nl2br(DOMPurify.sanitize(reviewContent,{
+		ALLOWED_TAGS: ['i','em','b','strong']
+	}));
+	
+	return (
+		<div key={guid} className='review'>
+			<div className='avatarColumn'>
+				<div className='avatar'>
+					<Avatar userName={reviewerName} userGuid={userGuid} />
 				</div>
 			</div>
-		);
-	}
+			<div className='reviewColumn'>
+				<div className='rating'>
+					<ReviewStars secondaryColor='#cecece' rating={rating} size={24} />
+				</div>
+				<div className='reviewerName'>
+					{reviewerName}
+				</div>
+				<div className='reviewContent' dangerouslySetInnerHTML={{__html:reviewContent}} />
+				<div className='reviewDate'>
+					<span className='agoText'>{formatDistance(reviewDate,new Date())} ago</span>
+				</div>
+			</div>
+		</div>
+	);
 }
-const ReviewPage = ({ podcastName, totalCountReviews, totalScore, podcastGuid, onSubmitReview }) => {
+const ReviewPage = ({ match, onSubmitReview }) => {
+	const podcastPath = match.params.podcastPath;
+	const [podcast,setPodcast] = useState();
+
+	const getPodcastFromCache = useStore((state) => state.getPodcastFromCache);
+	const retrievePodcastFromServer = useStore((state) => state.retrievePodcastFromServer);
+	const shouldPodcastUpdate = useStore((state) => state.shouldPodcastUpdate);
+
+	const activePodcast = useStore((state) => state.activePodcast);
+	const activeEpisode = useStore((state) => state.activeEpisode);
+
 	const loggedIn = useStore((state) => state.loggedIn);
 	const userData = useStore((state) => state.userData);
 
 	const loadReviews = useStore((state) => state.loadReviews);
 
 	const [reviews,setReviews] = useState([]);
+	const [totalCountReviews,setTotalCountReviews] = useState(false);
+	const [totalScore,setTotalScore] = useState(false);
+	const [reviewsLoading,setReviewsLoading] = useState(true);
+
+	
+	const [hasReviewsWithText,setHasReviewsWithText] = useState([]);
+	
 
 	const [writingReview,setWritingReview] = useState(false);
 	const [hasRated,setHasRated] = useState(false);
 	const [reviewsNeedRefresh,setReviewsNeedRefresh] = useState(0);
 
 	const [notLoggedInMessage,setNotLoggedInMessage] = useState(false);
+
+	const location = useLocation();
+
+	const refreshReviews = () => {
+		loadReviews(podcast.guid)
+		.then((reviewData) => {
+			setReviewsLoading(false);
+			setReviews(reviewData.reviews);
+			setTotalCountReviews(reviewData.totalCountReviews);
+			setTotalScore(reviewData.totalScore);
+		})
+		.catch((exception) => {
+			console.log('Failed to load reviews');
+			console.log(exception);
+		});
+	};
+
+	useEffect(() => {
+		console.log('review page path changed');
+		if (podcast && podcast.guid) {
+			setReviewsLoading(true);
+			setReviews([]);
+			setTotalCountReviews(false);
+			setTotalScore(false);
+			setWritingReview(false);
+
+			refreshReviews();
+		}
+
+	},[podcast?.path]);
+
+	useEffect(() => {
+		setPodcast(false);
+		if (location.state && location.state.podcast && location.state.episode) {
+			setPodcast(location.state.podcast);
+		}
+		else {
+			try {
+				if (activePodcast.path === podcastPath) {
+					setPodcast(activePodcast);
+				}
+				getPodcastFromCache(podcastPath)
+				.then((podcastCache) => {
+					if (podcastCache) {
+						setPodcast(podcastCache);
+					}
+					var shouldUpdate = shouldPodcastUpdate(podcastCache);
+			
+					if (shouldUpdate) {
+						retrievePodcastFromServer(podcastPath,podcastCache)
+						.then((podcastDataFromServer) => {
+							setPodcast(podcastDataFromServer);
+						})
+						.catch((error) => {
+							console.log('Error2 fetching podcast in EpisodePage::fetchPodcast: ' + error);
+							console.log(error);
+							
+							throw error;
+						});
+					}
+				})
+				.catch((exception) => {
+					console.log('Error in episodePage:getPodcast (2)');
+					console.log(exception);
+				});
+			}
+			catch (exception) {
+				console.log('Error in episodePage:getPodcast');
+				console.log(exception);
+			}
+		}
+	},[podcastPath]);
 
 	const onWriteReviewClick = () => {
 		if (loggedIn) {
@@ -171,67 +260,79 @@ const ReviewPage = ({ podcastName, totalCountReviews, totalScore, podcastGuid, o
 
 	const onSubmitReviewIntercept = () => {
 		setReviewsNeedRefresh(reviewsNeedRefresh + 1);
-		onSubmitReview();
+		setWritingReview(false);
+		refreshReviews();
 	};
 
-	var hasReviewsWithText = false;
-	for (var i=0;i<reviews.length;i++) {
-		if (reviews[i].reviewContent) {
-			hasReviewsWithText = true;
-			break;
+	useEffect(() => {
+		var hasText = false;
+		console.log(reviews);
+		for (var i=0;i<reviews.length;i++) {
+			if (reviews[i].reviewContent) {
+				hasText = true;
+				break;
+			}
 		}
-	}
+		setHasReviewsWithText(hasText);
+	},[JSON.stringify(reviews)]);
+
 
 	return (
-		<Page>
-			<div className='reviewPane'>
-				{ writingReview !== false &&
-					<WriteReviewForm podcastName={podcastName} podcastGuid={podcastGuid} onSubmitReview={onSubmitReviewIntercept} />
-				}
-				{ writingReview === false &&
-					<div className='reviewColumns'>
-						<ReviewAggregatedInfo totalCountReviews={totalCountReviews} reviews={reviews} totalScore={totalScore} onWriteReviewClick={onWriteReviewClick} notLoggedInMessage={notLoggedInMessage} />
-						<div className='reviewList'>
-							{ hasReviewsWithText !== true &&
-								<div className='noReviews'>
-									<div className='noReviewsIllustration'>
-										<SadPodfriend />
-									</div>
-									<div className='noReviewsText'>
-										No reviews yet.
-									</div>
-									<div className='noReviewsSubText'>
-										{ loggedIn === true &&
-											<>
-												Make Podfriend happy! Be the first to write a review.
-											</>
-										}
-										{ loggedIn === false &&
-											<>
-												Make Podfriend happy! Log in, and be the first to write a review.
-											</>
-										}
-									</div>
+		<Page className="reviewPage greyPage" defaultHeader={false} defaultHref={'/podcast/' + podcastPath} title={podcast ? `Reviews for ${podcast.name}` : 'Reviews'}>
+			{ writingReview !== false &&
+				<>
+					<WriteReviewForm podcastName={podcast?.name} podcastGuid={podcast.guid} onSubmitReview={onSubmitReviewIntercept} />
+				</>
+			}
+			{ writingReview === false &&
+				<div className='reviewColumns heightWithoutPagePadding'>
+					<ReviewAggregatedInfo totalCountReviews={totalCountReviews} reviews={reviews} totalScore={totalScore} onWriteReviewClick={onWriteReviewClick} notLoggedInMessage={notLoggedInMessage} />
+					<div className='reviewList'>
+						{ reviewsLoading &&
+							<div className="reviewsLoading">
+								<IonSpinner />
+								Loading reviews for {podcast?.name}
+							</div>
+						}
+						{ (!reviewsLoading && hasReviewsWithText !== true) &&
+							<div className='noReviews'>
+								<div className='noReviewsIllustration'>
+									<SadPodfriend />
 								</div>
-							}
-							{ hasReviewsWithText && reviews && reviews.map((review) => {
-								return (
-									<Review
-										hasRated={hasRated}
-										guid={review.guid}
-										userGuid={review.userGuid}
-										rating={review.rating}
-										reviewerName={review.reviewerName}
-										reviewDate={review.reviewDate}
-										reviewContent={review.reviewContent}
-									
-									/>
-								);
-							}) }
-						</div>
+								<div className='noReviewsText'>
+									No reviews yet.
+								</div>
+								<div className='noReviewsSubText'>
+									{ loggedIn === true &&
+										<>
+											Make Podfriend happy! Be the first to write a review.
+										</>
+									}
+									{ loggedIn === false &&
+										<>
+											Make Podfriend happy! Log in, and be the first to write a review.
+										</>
+									}
+								</div>
+							</div>
+						}
+						{ (!reviewsLoading && hasReviewsWithText && reviews) && reviews.map((review) => {
+							return (
+								<Review
+									hasRated={hasRated}
+									guid={review.guid}
+									userGuid={review.userGuid}
+									rating={review.rating}
+									reviewerName={review.reviewerName}
+									reviewDate={review.reviewDate}
+									reviewContent={review.reviewContent}
+								
+								/>
+							);
+						}) }
 					</div>
-				}
-			</div>
+				</div>
+			}
 		</Page>
 	);
 }

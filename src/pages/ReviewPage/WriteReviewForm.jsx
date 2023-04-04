@@ -10,8 +10,8 @@ import {
 	checkmarkCircle as checkIcon
 } from 'ionicons/icons';
 
-import styles from './WriteReviewForm.scss';
-import { IonIcon, IonInput } from '@ionic/react';
+import './WriteReviewForm.scss';
+import { IonButton, IonIcon, IonInput, IonTextarea } from '@ionic/react';
 
 const STATUS_RATE = 1;
 const STATUS_RATE_PUBLISHING = 2;
@@ -31,9 +31,8 @@ const WriteReviewForm = ({ podcastName, podcastGuid, onSubmitReview }) => {
 	const [savingReview,setSavingReview] = useState(false);
 	const [hasSavedReview,setHasSavedReview] = useState(false);
 
-	const isLoggedIn = useSelector((state) => state.user.isLoggedIn);
-	const profileData = useSelector((state) => state.user.profileData);
-	const authToken = useSelector((state) => state.user.authToken);
+	const loggedIn = useStore((state) => state.loggedIn);
+	const authToken = useStore((state) => state.authToken);
 
 	useEffect(() => {
 		setStarValue(0);
@@ -143,19 +142,19 @@ const WriteReviewForm = ({ podcastName, podcastGuid, onSubmitReview }) => {
 	};
 
 	return (
-		<div className={styles.writeReviewForm}>
+		<div className='writeReviewForm'>
 			{ hasSavedReview === true &&
-				<div className={styles.reviewWritten}>
-					<div className={styles.reviewWrittenIllustration}>
+				<div className='reviewWritten'>
+					<div className='reviewWrittenIllustration'>
 						<img src={HappyPodfriend} />
 					</div>
-					<div className={styles.reviewWrittenHeadline}>
-						<h2>Your review has been saved!</h2>
+					<div className='reviewWrittenHeadline'>
+						<h2>Your reviewed {podcastName}!</h2>
 					</div>
-					<p>Feels good doesn't it?</p>
+					<p>Feels good right?</p>
 
-					<div style={{ width: '200px'}} onClick={onSubmitReview}>
-						<button>Back to podcast</button>
+					<div onClick={onSubmitReview} style={{ marginTop: 20 }}>
+						<IonButton>Back to podcast</IonButton>
 					</div>
 				</div>
 			}
@@ -167,26 +166,26 @@ const WriteReviewForm = ({ podcastName, podcastGuid, onSubmitReview }) => {
 					<h2>How would you rate &quot;{podcastName}&quot;?</h2>
 
 					<ReviewStars size={46} rating={starValue} onClick={onStarClick} />
-					<div className={styles.starExplanation}>Click to rate the podcast</div>
+					<div className='starExplanation'>Click to rate the podcast</div>
 				</>
 			}
 
 			{ hasSavedReview === false && starValue !== 0 && 
-				<div className={styles.writeReviewFormFields}>
+				<div className='writeReviewFormFields'>
 					<div style={{ marginBottom: '5px' }}>
-						You rated the podcast
+						You already rated &quot;{podcastName}&quot;
 					</div>
 					<div style={{ display: 'flex', alignItems: 'center' }}>
-						<ReviewStars size={36} rating={starValue} onClick={onStarClick} />
-						<div style={{ marginLeft: 10 }}>
+						<ReviewStars size={46} rating={starValue} onClick={onStarClick} />
+						<div style={{ marginLeft: 10, position: 'relative', bottom: '5px' }}>
 							{ hasSavedRating === true && 
-								<span><IonIcon icon={checkIcon} /> Rating saved</span>
+								<span><IonIcon icon={checkIcon} size="large" style={{ position: 'relative', top: '10px' }} /> Rating saved</span>
 							}
 						</div>
 					</div>
 					<p>
 						{ existingReview === true &&
-							<>You already rated this podcast, but you can modify the rating above if you want!</>
+							<>You can modify your rating by clicking the stars above.</>
 						}
 						{ existingReview === false &&
 							<>Thanks for the rating! Would you consider adding a review? It really helps others in deciding to listen to the podcast!</>
@@ -200,8 +199,8 @@ const WriteReviewForm = ({ podcastName, podcastGuid, onSubmitReview }) => {
 							<>Add a review for &quot;{podcastName}&quot;?</>
 						}
 					</h2>
-					<IonInput
-						style={{backgroundColor: '#F9F9F9' }}
+					<IonTextarea
+						style={{backgroundColor: '#FFFFFF', padding: 20 }}
 						onIonChange={onReviewTextChange}
 						value={reviewText}
 						label={'How do you feel about the podcast?'}
@@ -217,14 +216,14 @@ const WriteReviewForm = ({ podcastName, podcastGuid, onSubmitReview }) => {
 						</div>
 					}
 
-					<button onClick={onSubmit}>
+					<IonButton expand="block" onClick={onSubmit}>
 						{ existingReview === true &&
 							<>Modify Review</>
 						}
 						{ existingReview === false &&
 							<>Post Review</>
 						}
-					</button>
+					</IonButton>
 				</div>
 			}
 		</div>

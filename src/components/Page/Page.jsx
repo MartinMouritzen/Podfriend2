@@ -139,7 +139,7 @@ const Page = ({ id = null, title = "Undefined", defaultHeader = true, defaultHre
 					</IonButtons>
 				</IonToolbar>
 			</IonHeader>
-			<IonContent id="main" forceOverscroll={true} ref={contentNodeRef}>
+			<IonContent id="main" forceOverscroll={false} ref={contentNodeRef}>
 				{ defaultHeader &&
 					<IonHeader collapse="condense" className="mainTitleHeader">
 						<IonToolbar>

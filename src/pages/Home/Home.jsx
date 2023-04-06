@@ -6,7 +6,7 @@ import useStore from 'store/Store';
 
 import TrendingPodcasts from "components/Lists/TrendingPodcasts";
 import CategoryList from "components/Lists/CategoryList";
-import { IonButton, IonButtons, IonHeader, IonSearchbar, IonTitle, IonToolbar, useIonRouter } from "@ionic/react";
+import { IonButton, IonButtons, IonHeader, IonSearchbar, IonSpinner, IonTitle, IonToolbar, useIonRouter } from "@ionic/react";
 
 import useBreakpoint from 'use-breakpoint';
 import { BREAKPOINTS } from 'constants/breakpoints';
@@ -18,6 +18,8 @@ const Home = ({  }) => {
 	const { breakpoint } = useBreakpoint(BREAKPOINTS, 'desktop');
 
 	const loggedIn = useStore((state) => state.loggedIn);
+	const refreshingLatestEpisodes = useStore((state) => state.refreshingLatestEpisodes);
+	
 
 	const router = useIonRouter();
 	const searchBar = useRef(null);
@@ -54,7 +56,11 @@ const Home = ({  }) => {
 				<div className='section'>
 					<div className='sectionInner'>
 						<div className='sectionSubTitle'>Latest</div>
-						<div className='sectionTitle'>episodes</div>
+						<div className='sectionTitle'>episodes
+							{ refreshingLatestEpisodes &&
+								<IonSpinner name="dots" />
+							}
+						</div>
 					</div>
 					<div className="sectionContents noPadding">
 						<LatestEpisodes backButtonText="Home" />

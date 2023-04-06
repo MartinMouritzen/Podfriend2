@@ -78,7 +78,7 @@ export const createPlayerSlice = (set,get) => ({
 			shouldPlay: true,
 			loading: true
 		});
-		get().addEpisodeToContinueListeningList(podcast,episode);
+		// get().addEpisodeToContinueListeningList(podcast,episode);
 	},
 	audioPause: () => {
 		set({

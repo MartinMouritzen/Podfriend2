@@ -1,4 +1,4 @@
-import { IonHeader, IonToolbar, IonTitle, IonSkeletonText, IonButton, IonIcon, IonRefresher, IonRefresherContent, useIonActionSheet, IonItem, IonChip } from "@ionic/react";
+import { IonHeader, IonToolbar, IonTitle, IonSkeletonText, IonButton, IonIcon, useIonActionSheet, IonItem, IonChip } from "@ionic/react";
 import Page from "components/Page/Page";
 import PodcastImage from "components/PodcastImage/PodcastImage";
 import { useState, useEffect, useRef } from "react";
@@ -272,7 +272,7 @@ const PodcastPage = ({ match }) => {
 
 	function doRefresh(event) {
 
-		console.log('Begin async operation');
+		console.log('Begin podcast sync');
 		/*	  
 		setTimeout(() => {
 		  console.log('Async operation has ended');
@@ -286,7 +286,7 @@ const PodcastPage = ({ match }) => {
 			var endTime = new Date();
 			var timeDifference = endTime - startTime;
 			
-			var minimumTimeToDisplayLoading = 2500;
+			var minimumTimeToDisplayLoading = 1500;
 			var remainingTime = 0;
 			
 			if (timeDifference < minimumTimeToDisplayLoading) {
@@ -308,11 +308,7 @@ const PodcastPage = ({ match }) => {
 	};
 
 	return (
-		<Page defaultHeader={false} title={podcastData ? podcastData.name : 'Loading...'} className="podcastPage" setScrollableContentRef={setScrollableContentRef}>
-			<IonRefresher slot="fixed" onIonRefresh={doRefresh}>
-				<IonRefresherContent>
-				</IonRefresherContent>
-			</IonRefresher>
+		<Page defaultHeader={false} title={podcastData ? podcastData.name : 'Loading...'} className="podcastPage greyPage" setScrollableContentRef={setScrollableContentRef} onRefresh={doRefresh}>
 			<div className="podcastPageContent">
 				<div className="podcastHeader">
 					<div className="coverHolder">
@@ -497,10 +493,10 @@ const PodcastPage = ({ match }) => {
 						<PodcastPersons persons={persons} />
 					</div>
 				}
-				{ podcastState === 'loading' &&
+				{ (false && podcastState === 'loading') &&
 					<IonSkeletonText animated={true} className="reviewSpotlight"></IonSkeletonText>
 				}
-				{ podcastState === 'loaded' && podcastIsFollowed === false &&
+				{ (false && podcastState === 'loaded' && podcastIsFollowed === false) &&
 					<div className="reviewSpotlight">
 						<div>&quot;This podcast is amazing. I love the way they cover these hard cases.&quot;</div>
 						<div>John Doe</div>

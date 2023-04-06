@@ -1,4 +1,4 @@
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonButtons, IonMenuButton, IonBackButton, IonButton, IonIcon, IonModal, IonLabel } from "@ionic/react";
+import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonButtons, IonMenuButton, IonBackButton, IonButton, IonIcon, IonModal, IonLabel, IonRefresher, IonRefresherContent } from "@ionic/react";
 
 import { useRef, useState, useEffect, useCallback } from 'react';
 
@@ -77,7 +77,7 @@ function useHookWithRefCallback(setScrollableContentRef = false) {
 	return [setRef]
 }
 
-const Page = ({ id = null, title = "Undefined", defaultHeader = true, defaultHref = '/', showBackButton = true, backButtonText = "back", className = "", children, setScrollableContentRef = false }) => {
+const Page = ({ id = null, title = "Undefined", defaultHeader = true, defaultHref = '/', showBackButton = true, backButtonText = "back", className = "", children, setScrollableContentRef = false, onRefresh = false}) => {
 	const { breakpoint, maxWidth, minWidth } = useBreakpoint(BREAKPOINTS, 'desktop');
 	const location = useLocation();
 
@@ -126,8 +126,8 @@ const Page = ({ id = null, title = "Undefined", defaultHeader = true, defaultHre
 					<IonTitle>{title}</IonTitle>
 					<IonButtons slot="end" className="ionButtons">
 						<IonButton id={modalString}>
-							{ (false && loggedIn) &&
-								<IonLabel style={{ maxWidth: 90 }}>{userData.username}</IonLabel>
+							{ loggedIn &&
+								<IonLabel className="userNameLabel">{userData.username}</IonLabel>
 							}
 							{ loggedIn &&
 								<IonIcon slot="icon-only" icon={loggedInIcon} expand="block"></IonIcon>
@@ -147,7 +147,12 @@ const Page = ({ id = null, title = "Undefined", defaultHeader = true, defaultHre
 						</IonToolbar>
 					</IonHeader>
 				}
-
+				{ (onRefresh !== false) &&
+					<IonRefresher slot="fixed" onIonRefresh={onRefresh}>
+						<IonRefresherContent>
+						</IonRefresherContent>
+					</IonRefresher>
+				}
 				{children}
 				<div className="playerPagePadding" style={{ height: 90 }}></div>
 				<AccountModal trigger={modalString} />

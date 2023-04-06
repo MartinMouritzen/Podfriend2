@@ -181,7 +181,6 @@
 		left: 0px;
 		width: 100%;
 
-
 		ion-range::part(bar-active) {
 			background-color: #29bd73;
 		}
@@ -687,7 +686,7 @@
 						.progressText, .durationText {
 							display: flex;
 						}
-					
+
 						ion-range {
 							--height: 8px;
 					

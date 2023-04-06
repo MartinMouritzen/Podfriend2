@@ -23,8 +23,6 @@ export const createPodcastSlice = (set, get) => ({
 	addEpisodeToContinueListeningList: (podcast,episode) => {
 		var continueListeningEpisodeList = [...get().continueListeningEpisodeList];
 
-		// console.log(continueListeningEpisodeList);
-
 		var podcastToStore = structuredClone(podcast);
 		delete podcastToStore.episodes;
 
@@ -35,6 +33,19 @@ export const createPodcastSlice = (set, get) => ({
 			podcast: podcastToStore,
 			episode: episode
 		});
+
+		/*
+		// Debug code that lets us remove if an empty episode has been added
+		for(var i=continueListeningEpisodeList.length - 1;i>=1;i--) {
+			if (!continueListeningEpisodeList[i]) {
+				continueListeningEpisodeList.splice(i,1);
+			}
+		}
+		set({
+			continueListeningEpisodeList: continueListeningEpisodeList
+		});
+		return;
+		*/
 
 		var alreadyExisted = false;
 		for(var i=continueListeningEpisodeList.length - 1;i>=1;i--) {
@@ -136,10 +147,15 @@ export const createPodcastSlice = (set, get) => ({
 	* Latest episodes
 	***********************************************************************************/
 	lastLatestEpisodesRefresh: false,
+	refreshingLatestEpisodes: false,
 	latestEpisodes: [],
 	retrieveLatestEpisodes: () => {
 		let shouldUpdate = false;
 		let lastLatestEpisodesRefresh = get().lastLatestEpisodesRefresh;
+
+		set({
+			refreshingLatestEpisodes: true
+		});
 	
 		if (!lastLatestEpisodesRefresh) {
 			shouldUpdate = true;
@@ -156,6 +172,9 @@ export const createPodcastSlice = (set, get) => ({
 		}
 
 		if (!shouldUpdate) {
+			set({
+				refreshingLatestEpisodes: false
+			});
 			return Promise.resolve(get().latestEpisodes);
 		}
 		else if (shouldUpdate) {
@@ -180,17 +199,25 @@ export const createPodcastSlice = (set, get) => ({
 						else {
 							set({
 								latestEpisodes: episodes,
+								refreshingLatestEpisodes: false,
 								lastLatestEpisodesRefresh: new Date()
 							});
 							return resolve(episodes);
 						}
 					})
 					.catch((exception) => {
+						console.log(exception);
+						set({
+							refreshingLatestEpisodes: false
+						});
 						return reject();
 					});
 
 				}
 				catch (exception) {
+					set({
+						refreshingLatestEpisodes: false
+					});
 					console.log('Error fetching latest episodes');
 					console.log(exception);
 					return reject();
@@ -263,19 +290,23 @@ export const createPodcastSlice = (set, get) => ({
 		if (activeEpisode.live) {
 			return;
 		}
+
+		var currentDuration = get().audioController.getDuration();
+		var newProgress = get().audioController.getCurrentTime();
+		var newDuration = isNaN(currentDuration) ? activeEpisode.duration : currentDuration;
+		let listenedPercentage = (100 * newProgress) / newDuration;
+
+		/*
+		// We only want to update if the difference is over a second, or if we're at the very end of the episode (to make sure we capture when the episode ends)
+		var difference = Math.abs(activeEpisode.currentTime - newProgress);
+		if (difference < 1 || listenedPercentage >= 97) {
+			return;
+		}
+		*/
+
 		var activePodcast = get().activePodcast;
 
 		if (activePodcast ) {
-			var currentDuration = get().audioController.getDuration();
-
-			var newProgress = get().audioController.getCurrentTime();
-			var newDuration = isNaN(currentDuration) ? activeEpisode.duration : currentDuration;
-
-			// Update activeEpisode as well as the cached object
-			// var newActivePodcast = structuredClone(get().activePodcast);
-
-			let listenedPercentage = (100 * newProgress) / newDuration;
-
 			var activePodcastCopy = structuredClone(activePodcast);
 			var activeEpisodeCopy = structuredClone(activeEpisode);
 
@@ -283,13 +314,48 @@ export const createPodcastSlice = (set, get) => ({
 			activeEpisodeCopy.duration = newDuration;
 			activeEpisodeCopy.listenedPercentage = listenedPercentage;
 
-			// Update the continue listening list, so it can display new time left.
+			var secondsLeft = newDuration - newProgress;
+
+			if (secondsLeft < 20 || listenedPercentage > 97) {
+				activeEpisodeCopy.listened = true;
+			}
+			else {
+				activeEpisodeCopy.listened = false;
+			}
 			var continueListeningEpisodeListCopy = structuredClone(get().continueListeningEpisodeList);
-			for(var i=continueListeningEpisodeListCopy.length - 1;i>=0;i--) {
-				if (continueListeningEpisodeListCopy[i]['episode'].guid == activeEpisodeCopy.guid) {
-					continueListeningEpisodeListCopy[i]['episode'].currentTime = newProgress;
-					continueListeningEpisodeListCopy[i]['episode'].duration = newDuration;
-					continueListeningEpisodeListCopy[i]['episode'].listenedPercentage = listenedPercentage;
+			// console.log(continueListeningEpisodeListCopy);
+
+			if (listenedPercentage > 2) {
+				// Update the continue listening list, so it can display new time left.
+				var found = false;
+				for(var i=continueListeningEpisodeListCopy.length - 1;i>=0;i--) {
+					if (!continueListeningEpisodeListCopy[i]) {
+						continue;
+					}
+					if (continueListeningEpisodeListCopy[i]['episode'].guid == activeEpisodeCopy.guid) {
+						found = i;
+						if (activeEpisodeCopy.listened) {
+
+						}
+						else {
+							continueListeningEpisodeListCopy[i]['episode'].currentTime = newProgress;
+							continueListeningEpisodeListCopy[i]['episode'].duration = newDuration;
+							continueListeningEpisodeListCopy[i]['episode'].listenedPercentage = listenedPercentage;
+						}
+					}
+				}
+				if (secondsLeft < 20 || listenedPercentage > 97) {
+					if (found !== false) {
+						console.log(secondsLeft);
+						console.log(listenedPercentage);
+						console.log('removing episode at index: ' + found);
+						continueListeningEpisodeListCopy.splice(found,1);
+					}
+				}
+				else if (found === false) {
+					console.log('adding episode');
+					get().addEpisodeToContinueListeningList(activePodcastCopy,activeEpisodeCopy);
+					continueListeningEpisodeListCopy = structuredClone(get().continueListeningEpisodeList);
 				}
 			}
 

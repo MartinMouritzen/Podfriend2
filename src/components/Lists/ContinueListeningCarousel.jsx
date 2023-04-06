@@ -65,6 +65,9 @@ const ContinueListening = ({ backButtonText = false }) => {
 			className="coverSwiper"
 		>
 			{ continueListeningEpisodeList !== false && continueListeningEpisodeList.map((podcastData) => {
+				if (!podcastData) {
+					return;
+				}
 				const episode = podcastData.episode;
 				const timeLeft = podcastData.episode.duration - podcastData.episode.currentTime;
 

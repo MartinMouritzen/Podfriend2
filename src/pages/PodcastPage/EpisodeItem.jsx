@@ -104,7 +104,7 @@ const EpisodeItem = ({ podcastData, episode, guid, id, title, description, image
 			<IonItem
 				key={id}
 	//			onClick={() => { onEpisodeSelect(episode); }}
-				className={'episode' + (selected ? ' selected' : '')}
+				className={'episode' + (selected ? ' selected' : '') + (episode.listened ? ' listened' : '')}
 			>
 				<PodcastImage
 					podcastPath={podcastData.path}

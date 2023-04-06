@@ -20,7 +20,7 @@
 	--list-grid-cover-size: 140px;
 	--list-scroll-cover-size: 210px;
 
-	--grey-page-background: #f6f8f5;
+	--grey-page-background: #eaebe9;
 
 	--badge-color: #3554d1;
 
@@ -271,7 +271,18 @@ ion-menu {
 	}
 }
 .mainHeader {
+	.userNameLabel {
+		display: none;
 
+		@media (min-width: 500px) {
+			display: block;
+			max-width: 150px;
+			text-overflow: ellipsis;
+			overflow: hidden;
+			white-space: nowrap;
+
+		}
+	}
 }
 .ionButtons {
 
@@ -404,6 +415,15 @@ ion-menu {
 
 		font-size: 28px;
 		text-transform: lowercase;
+
+		ion-spinner {
+			--color: var(--primary-color);
+			opacity: 0.5;
+
+			position: relative;
+			top: 6px;
+			left: 7px;
+		}
 	}
 }
 
@@ -519,6 +539,7 @@ ion-menu {
 				width: calc(100% - 10px);
 				height: 10px;
 				.episodeProgressBarInner {
+					transition: all 0.2s;
 					background-color: var(--primary-color);
 					height: 10px;
 				}

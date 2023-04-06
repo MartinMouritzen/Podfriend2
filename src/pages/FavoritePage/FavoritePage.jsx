@@ -13,6 +13,8 @@ import { IonSearchbar, IonToolbar, IonHeader, IonTitle, IonButtons, IonButton, I
 const FavoritePage = () => {
 	const [present] = useIonActionSheet();
 
+	const synchronizePodcasts = useStore((state) => state.synchronizePodcasts);
+
 	const favoriteSortOrder = useStore((state) => state.favoriteSortOrder);
 	const setFavoriteSortOrder = useStore((state) => state.setFavoriteSortOrder);
 
@@ -59,7 +61,28 @@ const FavoritePage = () => {
 		console.log('change sorting order');
 		sortFavoritePodcasts();
 	},[JSON.stringify(followedPodcasts),favoriteSortOrder]);
-	
+
+	const onRefreshFavorites = (event) => {
+		var startTime = new Date();
+
+		synchronizePodcasts()
+		.then(() => {
+			var endTime = new Date();
+			var timeDifference = endTime - startTime;
+			
+			var minimumTimeToDisplayLoading = 1500;
+			var remainingTime = 0;
+			
+			if (timeDifference < minimumTimeToDisplayLoading) {
+				remainingTime = minimumTimeToDisplayLoading - timeDifference;
+			}
+			setTimeout(() => {
+				if (event && event.detail && event.detail.complete) {
+					event.detail.complete();
+				}
+			},remainingTime);
+		});
+	};	
 
 	const showFavoriteSortMenu = () => {
 		present({
@@ -108,9 +131,9 @@ const FavoritePage = () => {
 			},
 		})
 	}
-	
+
 	return (
-		<Page title="Favorites" defaultHeader={false} showBackButton={false}>
+		<Page title="Favorites" defaultHeader={false} showBackButton={false} onRefresh={onRefreshFavorites}>
 			<IonHeader collapse="condense" class="mainTitleHeader">
 				<IonToolbar>
 					<IonTitle size="large">Favorites</IonTitle>

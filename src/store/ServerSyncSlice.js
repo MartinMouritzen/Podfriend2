@@ -1,11 +1,15 @@
 export const createServerSyncSlice = (set,get) => ({
 	syncingPodcastState: false,
+	lastSyncedPodcastState: false,
 	synchronizePodcasts: () => {
 		set({
 			syncingPodcastState: true
 		});
 
-		const podcastSynchronizationURL = 'https://api.podfriend.com/user/favorites/';
+		var lastSyncedPodcastState = get().lastSyncedPodcastState;
+		lastSyncedPodcastState = false;
+
+		const podcastSynchronizationURL = 'https://api.podfriend.com/user/favorites/' + (lastSyncedPodcastState ? '?after=' + lastSyncedPodcastState : '');
 		return fetch(podcastSynchronizationURL, {
 			method: "GET",
 			headers: {
@@ -24,25 +28,13 @@ export const createServerSyncSlice = (set,get) => ({
 				response.podcasts.forEach((podcast) => {
 					get().followPodcast(podcast);
 				});
-/*
-				var found = false;
-				response.podcasts.forEach((podcast) => {
-					followedPodcasts.forEach((followedPodcast) => {
-						if (followedPodcast.guid === podcast.guid) {
-							found = true;
-						}
-					});
-					if (!found) {
-						
-					}
-				});
-*/
 			}
 			if (response.episodes) {
 				console.log(response.episodes);
 			}
 			set({
-				syncingPodcastState: false
+				syncingPodcastState: false,
+				lastSyncedPodcastState: Math.floor(Date.now() / 1000)
 			});
 		})
 		.catch((error) => {

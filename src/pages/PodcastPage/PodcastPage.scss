@@ -5,10 +5,10 @@ h3 {
 	display: flex;
 	flex-direction: column;
 
-	margin-top: 20px;
-	margin-left: 20px;
+	padding: 20px;
 
-	padding-right: 20px;
+	background-color: #FFFFFF;
+	border-bottom: 1px solid #d1d3d6;
 
 	.podcastHeaderContent {
 		flex: 1;
@@ -252,9 +252,10 @@ h3 {
 		max-width: 800px;
 	}
 	.podcastHeader {
+		justify-content: center;
 		.podcastHeaderContent {
 			margin-left: 30px !important;
-			max-width: 600px;
+			max-width: 470px;
 		}
 		.toolbar-title-large {
 			margin-left: 0px !important;
@@ -285,6 +286,7 @@ h3 {
 		}
 	}
 }
+/*
 @media (min-width: 1600px) {
 	.podcastPage {
 		display: flex;
@@ -293,7 +295,7 @@ h3 {
 			display: flex;
 		}
 		.podcastHeader {
-			max-width: 450px;
+			max-width: 490px;
 			flex-direction: column;
 
 			padding-right: 0px;
@@ -330,9 +332,10 @@ h3 {
 			}
 			.actionButtons {
 				margin-left: 0px;
-				width: 450px;
-				max-width: 450px;
+				width: 440px;
+				max-width: 440px;
 			}
 		}
 	}
 }
+*/

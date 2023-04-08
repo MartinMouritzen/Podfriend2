@@ -6,8 +6,7 @@
 	height: 56px;
 	width: calc(100vw - 50px) !important;
 	max-width: 400px;
-
-	overflow: hidden;
+	max-height: 56px;
 
 	text-align: center;
 
@@ -35,6 +34,9 @@
 		padding-right: 10px;
 
 		border-radius: 5px;
+
+		max-height: 56px;
+		overflow: hidden;
 
 		.avatar {
 			position: absolute;

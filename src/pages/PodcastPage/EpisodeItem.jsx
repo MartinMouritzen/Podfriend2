@@ -15,7 +15,9 @@ import {
 	list as addToPlaylistIcon2,
 	play as playIcon,
 	play as selectedIcon,
-	pause as pauseIcon
+	pause as pauseIcon,
+	checkmarkSharp as listenedIcon,
+	checkmarkCircle
 } from 'ionicons/icons';
 
 import { useIonToast, IonList, IonItem, IonLabel, IonSelect,IonSelectOption, IonImg, IonIcon, IonButton, IonHeader, IonToolbar, IonTitle, IonButtons, IonModal, IonContent, IonListHeader, IonSkeletonText, IonRouterLink, IonItemSliding, IonItemOptions, IonItemOption } from '@ionic/react';
@@ -45,10 +47,10 @@ const EpisodeItem = ({ podcastData, episode, guid, id, title, description, image
 		}));
 	},[title, description]);
 
-	var totalMinutes = Math.round(duration / 60);
-	var minutesLeft = currentTime ? Math.round((duration - currentTime) / 60) : totalMinutes;
+	var totalMinutes = Math.round(episode.duration / 60);
+	var minutesLeft = episode.currentTime ? Math.round((episode.duration - episode.currentTime) / 60) : totalMinutes;
 	
-	var progressPercentage = currentTime ? (100 * currentTime) / duration : 0;
+	var progressPercentage = episode.currentTime ? (100 * episode.currentTime) / episode.duration : 0;
 	if (progressPercentage > 100) {
 		progressPercentage = 100;
 	}
@@ -106,19 +108,24 @@ const EpisodeItem = ({ podcastData, episode, guid, id, title, description, image
 	//			onClick={() => { onEpisodeSelect(episode); }}
 				className={'episode' + (selected ? ' selected' : '') + (episode.listened ? ' listened' : '')}
 			>
-				<PodcastImage
-					podcastPath={podcastData.path}
-					width={120}
-					height={120}
-					coverWidth={60}
-					coverHeight={60}
-					imageErrorText={title}
-					src={image ? image : podcastData.artworkUrl600 ? podcastData.artworkUrl600 : podcastData.image}
-					fallBackImage={podcastData.artworkUrl600}
-					className={'cover'}
-					asBackground={true}
-					loadingComponent={() => <IonSkeletonText animated={true} className="coverLoading" />}
-				/>
+				<div>
+					<PodcastImage
+						podcastPath={podcastData.path}
+						width={120}
+						height={120}
+						coverWidth={60}
+						coverHeight={60}
+						imageErrorText={title}
+						src={image ? image : podcastData.artworkUrl600 ? podcastData.artworkUrl600 : podcastData.image}
+						fallBackImage={podcastData.artworkUrl600}
+						className={'cover'}
+						asBackground={true}
+						loadingComponent={() => <IonSkeletonText animated={true} className="coverLoading" />}
+					/>
+					{ episode.listened &&
+						<div className="listenedMarker"><IonIcon icon={listenedIcon} /></div>
+					}
+				</div>
 				<IonLabel className="ion-text-wrap">
 					<Link
 						to={{
@@ -133,6 +140,9 @@ const EpisodeItem = ({ podcastData, episode, guid, id, title, description, image
 						<p className="date">
 							{format(episode.date ? new Date(episode.date) : new Date(),'MMM d, yyyy')}
 							<span className='agoText'>({formatDistance(new Date(episode.date), new Date())} ago)</span>
+							{ episode.listened === true &&
+								<span className="listenedLabel"><IonIcon icon={checkmarkCircle} /> Listened</span>
+							}
 						</p>
 						<h2>
 							{ (selected && shouldPlay) &&
@@ -164,10 +174,10 @@ const EpisodeItem = ({ podcastData, episode, guid, id, title, description, image
 								<span>{totalMinutes} min</span>
 							}
 							{ (!isNaN(minutesLeft) && minutesLeft != totalMinutes) && 
-								<span>{Math.round((duration - currentTime) / 60)} of {totalMinutes} min left</span>
+								<span>{Math.round((episode.duration - episode.currentTime) / 60)} of {totalMinutes} min left</span>
 							}
 							{ isNaN(minutesLeft) &&
-								<span>{currentTime} - {duration}</span>
+								<span>{episode.currentTime} - {episode.duration}</span>
 							}
 						</div>
 					</div>

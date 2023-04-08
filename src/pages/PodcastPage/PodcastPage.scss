@@ -164,8 +164,9 @@ h3 {
 .liveItem {
 	background-color: #F9F9FF;
 	margin-left: 20px;
-	margin-top: 20px;
 	margin-right: 20px;
+
+	margin-top: 20px;
 	border-radius: 10px;
 
 	box-shadow: rgb(0 0 0 / 25%) 0px 0px 0.125rem 0px, rgb(0 0 0 / 12%) 0px 0.125rem 0.125rem 0px;
@@ -246,9 +247,17 @@ h3 {
 	}
 }
 @media (min-width: 1024px) {
+	.actionButtons {
+		max-width: 492px !important;
+		padding-right: 20px;
+	}
 	.liveItem {
 		margin-left: 10px;
 		margin-right: 40px;
+
+		margin-left: auto;
+		margin-right: auto;
+
 		max-width: 800px;
 	}
 	.podcastHeader {

@@ -55,12 +55,44 @@
 
 	&.listened {
 		--background: #F6F6F6;
+		opacity: 0.6;
+	}
+	.listenedLabel {
+		color: #000000;
+		font-weight: 500;
+		margin-left: 10px;
+
+		ion-icon {
+			position: relative;
+			top: 2px;
+		}
+	}
+	.listenedMarker {
+		display: none;
+		position: absolute;
+		top: 10px;
+		right: 4px;
+		ion-icon {
+			color: var(--ion-color-success);
+			font-size: 56px;
+		}
 	}
 
 	h2 {
 		min-height: 26px;
 		display: flex;
 		align-items: center;
+
+		align-items: start;
+
+		max-width: 600px;
+
+		overflow: hidden;
+		display: -webkit-box;
+		-webkit-line-clamp: 2;
+				line-clamp: 2; 
+		-webkit-box-orient: vertical;
+
 
 		img {
 			margin-top: 0px;
@@ -173,8 +205,6 @@
 		*/
 	}
 	.cover, .coverLoading {
-		width: 60px;
-		height: 60px;
 		margin-right: 10px;
 	}
 }
@@ -194,7 +224,11 @@
 			--padding-bottom: 5px;
 			--padding-start: 10px;
 			--padding-end: 0px;
-			border-radius: 10px;
+			
+			.cover, .coverLoading {
+				width: 115px !important;
+				height: 115px !important;
+			}
 		}
 		&.selected {
 

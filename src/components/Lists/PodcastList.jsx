@@ -4,7 +4,7 @@ import PodcastImage from 'components/PodcastImage/PodcastImage';
 import { Link } from 'react-router-dom';
 import CoverCarousel from './CoverCarousel';
 
-const PodcastList = ({ podcasts, listType = 'scroll', filterString = '', backButtonText = false }) => {
+const PodcastList = ({ podcasts, listType = 'scroll', filterString = '', backButtonText = false, displayLoadingCovers = 10 }) => {
 	const onClick = () => {
 		console.log('yay');
 	};
@@ -30,6 +30,11 @@ const PodcastList = ({ podcasts, listType = 'scroll', filterString = '', backBut
 
 	return (
 		<div className={'podcastGrid ' + listType}>
+			{ (podcasts === false && displayLoadingCovers !== false) &&  Array.apply(null, { length: displayLoadingCovers }).map((e,i) => {
+				return (
+					<IonSkeletonText style={{ width: 200, height: 200 }} />
+				);
+			} ) }
 			{ podcasts !== false && podcasts.map((podcast) => {
 				if (!podcast.name) {
 					return;

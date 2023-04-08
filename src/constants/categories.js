@@ -1,5 +1,5 @@
-const categories = [
-	{
+const categories = {
+	'true-crime': {
 		id: 103,
 		key: 'true-crime',
 		name: 'True Crime',
@@ -7,7 +7,7 @@ const categories = [
 		backgroundColor: 'rgba(0,0,0,0.7)',
 		color: '#ffffff'
 	},
-	{
+	'arts': {
 		id: 1,
 		key: 'arts',
 		name: 'Arts',
@@ -15,7 +15,7 @@ const categories = [
 		backgroundColor: 'rgba(50,50,255,0.7)',
 		color: '#ffffff'
 	},
-	{
+	'business': {
 		id: 9,
 		name: 'Business',
 		key: 'business',
@@ -23,7 +23,7 @@ const categories = [
 		backgroundColor: 'rgba(100,150,10,0.9)',
 		color: '#ffffff'
 	},
-	{
+	'comedy': {
 		id: 16,
 		name: 'Comedy',
 		key: 'comedy',
@@ -31,7 +31,7 @@ const categories = [
 		backgroundColor: 'rgba(195,195,0,0.9)',
 		color: '#ffffff'
 	},
-	{
+	'education': {
 		id: 20,
 		name: 'Education',
 		key: 'education',
@@ -39,7 +39,7 @@ const categories = [
 		backgroundColor: 'rgba(255,0,0,0.7)',
 		color: '#ffffff'
 	},
-	{
+	'food': {
 		id: 6,
 		key: 'food',
 		name: 'Food',
@@ -47,7 +47,7 @@ const categories = [
 		backgroundColor: '#fb9b6b',
 		color: '#ffffff'
 	},
-	{
+	'movie': {
 		id: 105,
 		key: 'movie',
 		name: 'Movies',
@@ -75,5 +75,5 @@ const categories = [
 		color: '#ffffff'
 	}
 	*/
-];
+};
 export default categories;

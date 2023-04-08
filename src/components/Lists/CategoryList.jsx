@@ -2,7 +2,7 @@ import './CategoryList.scss';
 
 import { Link } from 'react-router-dom';
 
-import categories from 'categories';
+import categories from 'constants/categories';
 
 // Import Swiper React components
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -36,7 +36,8 @@ const CategoryList = () => {
 
 			className="coverSwiper categoryList"
 		>
-			{ categories.map((category) => {
+			{ Object.entries(categories).map(([key,value]) => {
+				const category = categories[key];
 				return (
 					<SwiperSlide key={category.id}>
 						<Link

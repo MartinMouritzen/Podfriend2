@@ -28,14 +28,21 @@ export const createPlayerSlice = (set,get) => ({
 		// console.log(episodeUrl);
 		episodeUrl = episodeUrl.url ? episodeUrl.url : episodeUrl;
 
+		// console.log('podcast');
+		// console.log(podcast);
+
 		if (!podcast) {
 			podcast = await get().getPodcast(podcastPath);
 		}
 
 		const activePodcast = get().activePodcast;
 
+		// console.log('activePodcast');
+		// console.log(activePodcast);
+
 		if (podcast.path === activePodcast.path) {
-			podcast = structuredClone(activePodcast);;
+			console.log('podcast was the active podcast');
+			podcast = structuredClone(activePodcast);
 		}
 		let episode = false;
 
@@ -51,15 +58,19 @@ export const createPlayerSlice = (set,get) => ({
 			};
 		}
 		else {
+			// console.log(podcast);
 			episode = get().getEpisodeByUrl(podcast,episodeUrl);
+
+			// console.log(episode);
+
 			if (!episode) {
 				console.log('Episode not found?');
 				console.log(episodeUrl);
 				console.log(podcast);
 				return;
 			}
-			if (episode.listened) {
-				episode.currentTime = 0;
+			if (episode.listened === true) {
+				// episode.currentTime = 0;
 				// Todo, update online here too.
 			}
 		}
@@ -71,6 +82,8 @@ export const createPlayerSlice = (set,get) => ({
 				lastListened: new Date()
 			}
 		});
+
+		console.log(podcast);
 
 		set({
 			activePodcast: podcast,

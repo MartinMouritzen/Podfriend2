@@ -103,8 +103,8 @@ const ContinueListening = ({ backButtonText = false }) => {
 								<div className='title'>
 									{podcastData.episode.title}
 								</div>
-								<div className='description'>
-									{podcastData.episode.descriptionNoHTML}
+								<div className='description' dangerouslySetInnerHTML={{__html:podcastData.episode.descriptionNoHTML}}>
+
 								</div>
 								
 									<div className='author'>

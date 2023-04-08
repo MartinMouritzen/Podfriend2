@@ -20,16 +20,15 @@ const EpisodeList = ({ podcastData, podcastPath, episodes, showNumberOfEpisodes 
 	const updatePodcastConfig = useStore((state) => state.updatePodcastConfig);
 	const activePodcast = useStore((state) => state.activePodcast);
 	const activeEpisode = useStore((state) => state.activeEpisode);
+	const shouldPlay = useStore((state) => state.shouldPlay);
 
-	/*
 	if (activePodcast.path == podcastData.path) {
 		podcastData = activePodcast;
 	}
-	*/
 
-	useEffect(() => {
-		console.log(podcastData);
-		console.log(podcastData.receivedFromServer);
+	const reorderEpisodes = () => {
+		// console.log(podcastData);
+		// console.log(podcastData.receivedFromServer);
 
 		let seasonCount = 0;
 		let rawSeasons = [];
@@ -80,6 +79,10 @@ const EpisodeList = ({ podcastData, podcastPath, episodes, showNumberOfEpisodes 
 				setSelectedSortOrder('new');
 			}
 		}
+	};
+
+	useEffect(() => {
+		reorderEpisodes();
 	},[podcastData.path,podcastData.receivedFromServerText]);
 
 	useEffect(() => {
@@ -153,27 +156,9 @@ const EpisodeList = ({ podcastData, podcastPath, episodes, showNumberOfEpisodes 
 					</IonItem>
 				</IonSelect>
 			</div>
-			<EpisodeListInner episodeCountShowMoreTrigger={episodeCountShowMoreTrigger} showNumberOfEpisodes={showNumberOfEpisodes} podcastData={podcastData} seasons={seasons} selectedSeason={selectedSeason} sortedEpisodes={sortedEpisodes} activePodcast={activePodcast} activeEpisode={activeEpisode} inset={inset} />
-			{ (sortedEpisodes.length > episodeCountShowMoreTrigger && showNumberOfEpisodes > 0 && showNumberOfEpisodes < sortedEpisodes.length) &&
-				<div style={{ padding: '10px', textAlign: 'right' }}>
-					<IonButton id="open-episode-modal" fill="clear">Show all episodes ({sortedEpisodes.length})</IonButton>
 
-					<AllEpisodesModal podcastData={podcastData} seasons={seasons} selectedSeason={selectedSeason} sortedEpisodes={sortedEpisodes} activePodcast={activePodcast} activeEpisode={activeEpisode} trigger="open-episode-modal" />
-				</div>
-			}
-		</div>
-	);
-};
-/************************************************
-* Actual list of episdoes
-************************************************/
-const EpisodeListInner = ({ podcastData, seasons, selectedSeason, sortedEpisodes, showNumberOfEpisodes, episodeCountShowMoreTrigger, inset = false }) => {
-	// const activePodcast = useStore((state) => state.activePodcast);
-	const activeEpisode = useStore((state) => state.activeEpisode);
-	const shouldPlay = useStore((state) => state.shouldPlay);
 
-	return (
-		<IonList lines="full" inset={inset} className="episodeList">
+			<IonList lines="full" inset={inset} className="episodeList">
 		{ seasons.map((episodes,seasonIndex) => {
 			if (selectedSeason == seasonIndex && sortedEpisodes) {
 				var shownEpisodes = 0;
@@ -193,6 +178,14 @@ const EpisodeListInner = ({ podcastData, seasons, selectedSeason, sortedEpisodes
 							}
 						}
 					}
+
+					/*
+					if (episode.guid === 'Buzzsprout-11756765') {
+						console.log(podcastData.episodes);
+						console.log(episode.currentTime);
+						console.log(episode);
+					}
+					*/
 
 					return <EpisodeItem
 						key={episode.guid ? episode.guid : episode.url}
@@ -214,8 +207,22 @@ const EpisodeListInner = ({ podcastData, seasons, selectedSeason, sortedEpisodes
 			}
 		})}
 		</IonList>
+
+
+			{ (sortedEpisodes.length > episodeCountShowMoreTrigger && showNumberOfEpisodes > 0 && showNumberOfEpisodes < sortedEpisodes.length) &&
+				<div style={{ padding: '10px', textAlign: 'right' }}>
+					<IonButton id="open-episode-modal" fill="clear">Show all episodes ({sortedEpisodes.length})</IonButton>
+
+					<AllEpisodesModal podcastData={podcastData} seasons={seasons} selectedSeason={selectedSeason} sortedEpisodes={sortedEpisodes} activePodcast={activePodcast} activeEpisode={activeEpisode} trigger="open-episode-modal" />
+				</div>
+			}
+		</div>
 	);
-}
+};
+/************************************************
+* Actual list of episdoes
+************************************************/
+
 /************************************************
 * All episodes modal list
 ************************************************/

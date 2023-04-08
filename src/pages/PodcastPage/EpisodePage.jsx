@@ -18,7 +18,9 @@ import PlayerPodcastCoverArea from "components/Player/PlayerPodcastCoverArea";
 import TranscriptLiveArea from "components/Player/Transcript/TranscriptLiveArea";
 
 import {
-	earthSharp as websiteIcon,
+	chatbubblesOutline as commentsIcon,
+	bookmarksOutline as chaptersIcon,
+	documentTextOutline as transcriptIcon,
 	micSharp as companyIcon,
 } from 'ionicons/icons';
 
@@ -174,23 +176,26 @@ const EpisodePage = ({ match, audioController }) => {
 							</IonToolbar>
 						</IonHeader>
 					</div>
-					<div className="description">
-						{podcast?.description}
-					</div>
+
 					<IonList lines="full" inset={true}>
 						<IonItem detail={true}>
-							<IonIcon icon={websiteIcon} slot="start" />
+							<IonIcon icon={commentsIcon} slot="start" />
 							<IonLabel>Comments</IonLabel>
 						</IonItem>
 						<IonItem detail={true}>
-							<IonIcon icon={websiteIcon} slot="start" />
+							<IonIcon icon={transcriptIcon} slot="start" />
 							<IonLabel>Transcript</IonLabel>
 						</IonItem>
 						<IonItem detail={true}>
-							<IonIcon icon={websiteIcon} slot="start" />
+							<IonIcon icon={chaptersIcon} slot="start" />
 							<IonLabel>Chapters</IonLabel>
 						</IonItem>
 					</IonList>
+
+					<div className="description" dangerouslySetInnerHTML={{__html:episode?.safeDescription}}>
+						
+					</div>
+
 	
 				</div>
 			</div>

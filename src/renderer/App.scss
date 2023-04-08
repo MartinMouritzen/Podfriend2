@@ -664,9 +664,11 @@ ion-menu {
 		height: 120px;
 	}
 	&.scroll, &.grid {
+		margin-left: 10px;
+		margin-right: 10px;
+		gap: 5px;
 		.podcastItem {
-			margin-left: 5px;
-			margin-right: 10px;
+			
 		}
 	}
 	.podcastItem {

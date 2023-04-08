@@ -47,7 +47,11 @@ const LatestEpisodes = ({ backButtonText = false }) => {
 	};
 
 	useEffect(() => {
-		retrieveLatestEpisodes();
+		retrieveLatestEpisodes()
+		.catch((exception) => {
+			console.log('Error happened when retrieving latest episodes');
+			console.log(exception);
+		});
 		/*
 		.then((episodes) => {
 			setLatestEpisodes(episodes);

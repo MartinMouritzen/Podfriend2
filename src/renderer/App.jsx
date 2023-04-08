@@ -106,7 +106,7 @@ export default function App({ platform, audioController, desktop = false }) {
 		<Route exact={true} path="/podcast/:podcastPath/" render={(props) => <PodcastPage {...props} />} />,
 		<Route exact={true} path="/podcast/:podcastPath/reviews/" render={(props) => <ReviewPage {...props} />} />,
 		<Route exact={true} path="/podcast/:podcastPath/episode/:episodeId/" render={(props) => <EpisodePage audioController={audioController} navigateToPath={navigateToPath} {...props} />} />,
-		<Route path="/categories/:categoryName/" render={(props) => <CategoryPage {...props} />} />,
+		<Route path="/categories/:categoryKey/" render={(props) => <CategoryPage {...props} />} />,
 		<Redirect exact={true} from="/home/" to="/" />,
 		<Redirect exact={true} from="/index.html" to="/" />
 	].map((Route, index) => ({ ...Route, key: index }));

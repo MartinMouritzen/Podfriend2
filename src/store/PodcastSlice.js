@@ -149,7 +149,7 @@ export const createPodcastSlice = (set, get) => ({
 	lastLatestEpisodesRefresh: false,
 	refreshingLatestEpisodes: false,
 	latestEpisodes: [],
-	retrieveLatestEpisodes: () => {
+	retrieveLatestEpisodes: (max = 24) => {
 		let shouldUpdate = false;
 		let lastLatestEpisodesRefresh = get().lastLatestEpisodesRefresh;
 
@@ -188,7 +188,7 @@ export const createPodcastSlice = (set, get) => ({
 
 				try {
 					console.log('fetching latest episodes');
-					fetch('https://api.podfriend.com/podcast/episodes/?feedPaths=' + feedPaths.join(',') + '&max=14')
+					fetch('https://api.podfriend.com/podcast/episodes/?feedPaths=' + feedPaths.join(',') + '&max=' + max)
 					.then((result) => {
 						return result.json()
 					})
@@ -206,6 +206,7 @@ export const createPodcastSlice = (set, get) => ({
 						}
 					})
 					.catch((exception) => {
+						console.log('Error fetching latest episodes1');
 						console.log(exception);
 						set({
 							refreshingLatestEpisodes: false
@@ -218,7 +219,7 @@ export const createPodcastSlice = (set, get) => ({
 					set({
 						refreshingLatestEpisodes: false
 					});
-					console.log('Error fetching latest episodes');
+					console.log('Error fetching latest episodes2');
 					console.log(exception);
 					return reject();
 				}
@@ -320,7 +321,7 @@ export const createPodcastSlice = (set, get) => ({
 				activeEpisodeCopy.listened = true;
 			}
 			else {
-				activeEpisodeCopy.listened = false;
+				// activeEpisodeCopy.listened = false;
 			}
 			var continueListeningEpisodeListCopy = structuredClone(get().continueListeningEpisodeList);
 			// console.log(continueListeningEpisodeListCopy);
@@ -365,6 +366,9 @@ export const createPodcastSlice = (set, get) => ({
 					if (episode.url === activeEpisodeCopy.url) {
 						// console.log(episode);
 						// console.log(activeEpisodeCopy);
+						//if (activeEpisodeCopy.listened) {
+						//	console.log('setting listened episodes in activepodcast');
+						//}
 
 						activePodcastCopy.episodes[index] = activeEpisodeCopy;
 					}
@@ -397,7 +401,22 @@ export const createPodcastSlice = (set, get) => ({
 	***********************************************************************************/
 	lastTrendingPodcastRefresh: false,
 	trendingPodcasts: [],
-	refreshTrendingPodcasts: async(categoryId,limit = 14) => {
+	__retrieveTrendingPodcasts: async(categoryId,limit = 14) => {
+		const trendingAPIUrl = `https://api.podfriend.com/podcasts/trending/${categoryId ? categoryId : ''}?limit=${limit}`;
+
+		try {
+			let rawResults = await fetch(trendingAPIUrl);
+			let results = await rawResults.json();
+
+			return results;
+		}
+		catch(exception) {
+			console.log('Error getting trending podcasts');
+			console.log(trendingAPIUrl);
+			console.log(exception);
+		}
+	},
+	refreshTrendingPodcasts: async(limit = 14) => {
 		let shouldUpdate = false;
 		let lastTrendingPodcastRefresh = get().lastTrendingPodcastRefresh;
 	
@@ -416,22 +435,14 @@ export const createPodcastSlice = (set, get) => ({
 		}
 		if (shouldUpdate) {
 			console.log('Should refresh trending podcasts.');
-			const trendingAPIUrl = `https://api.podfriend.com/podcasts/trending/${categoryId ? categoryId : ''}?limit=${limit}`;
-	
-			try {
-				let rawResults = await fetch(trendingAPIUrl);
-				let results = await rawResults.json();
-	
+			
+			get().__retrieveTrendingPodcasts(false,limit)
+			.then((results) => {
 				set({
 					trendingPodcasts: results,
 					lastTrendingPodcastRefresh: new Date()
 				});
-			}
-			catch(exception) {
-				console.log('Error getting trending podcasts');
-				console.log(trendingAPIUrl);
-				console.log(exception);
-			}
+			});
 		}
 	},
 	/**********************************************************************************
@@ -598,8 +609,7 @@ export const createPodcastSlice = (set, get) => ({
 				}
 				
 
-				// Recreate listened states THIS SHOULD BE TEMPORARY UNTIL WE CAN GET IT FROM THE SERVER
-				if (podcastCache && podcastCache.episodes && data && data.episodes) {
+				if (data && data.episodes) {
 					for (var i=0;i<data.episodes.length;i++) {
 						if (!data.episodes[i].descriptionNoHTML) {
 							data.episodes[i].descriptionNoHTML = DOMPurify.sanitize(data.episodes[i].description, {
@@ -615,15 +625,18 @@ export const createPodcastSlice = (set, get) => ({
 								  ]
 							});
 						}
-						for (var x=0;x<podcastCache.episodes.length;x++) {
-							if (data.episodes[i].url == podcastCache.episodes[x].url) {
-								if (!data.episodes[i].currentTime) {
-									data.episodes[i].currentTime = podcastCache.episodes[x].currentTime;
+						// // Recreate listened states THIS SHOULD BE TEMPORARY UNTIL WE CAN GET IT FROM THE SERVER
+						if (podcastCache && podcastCache.episodes) {
+							for (var x=0;x<podcastCache.episodes.length;x++) {
+								if (data.episodes[i].url == podcastCache.episodes[x].url) {
+									if (!data.episodes[i].currentTime) {
+										data.episodes[i].currentTime = podcastCache.episodes[x].currentTime;
+									}
+									if (!data.episodes[i].listened) {
+										data.episodes[i].listened = podcastCache.episodes[x].listened;
+									}
+									break;
 								}
-								if (!data.episodes[i].listened) {
-									data.episodes[i].listened = podcastCache.episodes[x].listened;
-								}
-								break;
 							}
 						}
 					}

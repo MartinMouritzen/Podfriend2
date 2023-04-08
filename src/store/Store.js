@@ -24,7 +24,12 @@ const storage = {
     return (await get(name)) || null
   },
   setItem: async (name, value) => {
-    await set(name, value)
+	try {
+    	await set(name, value)
+	}
+	catch(exception) {
+		console.log(exception);
+	}
   },
   removeItem: async (name) => {
     await del(name)

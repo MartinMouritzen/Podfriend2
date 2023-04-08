@@ -399,7 +399,7 @@ const PodcastPage = ({ match }) => {
 						</div>
 						<div className="actionButtons" ref={actionButtonsRef}>
 							{ podcastIsFollowed !== false &&
-								<IonButton id="followButton" onClick={onUnfollowPodcast}>
+								<IonButton fill="outline" id="followButton" onClick={onUnfollowPodcast}>
 									<IonIcon slot="start" icon={followIcon}></IonIcon>
 									Unfollow
 								</IonButton>
@@ -410,7 +410,7 @@ const PodcastPage = ({ match }) => {
 									Follow
 								</IonButton>
 							}
-							<IonButton id="lastEpisodeButton" fill="outline">
+							<IonButton id="lastEpisodeButton" fill={podcastIsFollowed === true ? 'solid' : 'outline'}>
 								<IonIcon slot="start" icon={playIcon}></IonIcon>
 								{ podcastSeasonType === 'episodic' &&
 									<>Latest</>

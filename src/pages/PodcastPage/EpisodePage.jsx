@@ -1,4 +1,4 @@
-import { IonChip, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonSegment, IonSegmentButton, IonSkeletonText, IonTitle, IonToolbar } from "@ionic/react";
+import { IonButton, IonChip, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonSegment, IonSegmentButton, IonSkeletonText, IonTitle, IonToolbar } from "@ionic/react";
 import Page from "components/Page/Page"
 
 import { useEffect, useState, useRef } from 'react';
@@ -22,6 +22,8 @@ import {
 	bookmarksOutline as chaptersIcon,
 	documentTextOutline as transcriptIcon,
 	micSharp as companyIcon,
+	playCircle as playIcon,
+	pauseCircle as pauseIcon
 } from 'ionicons/icons';
 
 import useStore from 'store/Store';
@@ -42,16 +44,14 @@ const EpisodePage = ({ match, audioController }) => {
 	const audioElement = useRef(null);
 	const scrollChild = useRef(null);
 
+	const getPodcastFromCache = useStore((state) => state.getPodcastFromCache);
+	const shouldPodcastUpdate = useStore((state) => state.shouldPodcastUpdate);
 	const retrievePodcastFromServer = useStore((state) => state.retrievePodcastFromServer);
 
 	const activePodcast = useStore((state) => state.activePodcast);
 	const activeEpisode = useStore((state) => state.activeEpisode);
 
 	const retrieveOriginalPodcastFeed = useStore((state) => state.retrieveOriginalPodcastFeed);
-
-	const fullscreen = useStore((state) => state.playerFullscreen);
-	const maximize = useStore((state) => state.playerMaximize);
-	const minimize = useStore((state) => state.playerMinimize);
 
 	const shouldPlay = useStore((state) => state.shouldPlay);
 
@@ -65,18 +65,7 @@ const EpisodePage = ({ match, audioController }) => {
 	const updateProgress = useStore((state) => state.updateProgress);
 	const streamDataLoading = useStore((state) => state.streamDataLoading);
 
-	const setCurrentTime = useStore((state) => state.setCurrentTime);
-
-	const resetAudioSegmentTime = useStore((state) => state.resetAudioSegmentTime);
-	
-	const onBackward = useStore((state) => state.audioBackward);
-	const onForward = useStore((state) => state.audioForward);
-	const onSkipBackward = useStore((state) => state.audioSkipBackward);
-	const onSkipForward = useStore((state) => state.audioSkipForward);
-
-	const changeActiveEpisode = useStore((state) => state.changeActiveEpisode);
-
-	const [isVideo,setIsVideo] = useState(false);
+	const playEpisode = useStore((state) => state.playEpisode);
 
 	const [chapters,setChapters] = useState(false);
 	const [transcriptData,setTranscriptData] = useState(false);
@@ -86,12 +75,15 @@ const EpisodePage = ({ match, audioController }) => {
 
 	const [subtitleFileURL,setSubtitleFileURL] = useState(false);
 
-	const [error,setError] = useState(false);
-	const [errorText,setErrorText] = useState(false);
-
-	const [errorRetries,setErrorRetries] = useState(0);
-
-	const [segmentVisible,setSegmentVisible] = useState('playing');
+	useEffect(() => {
+		if (podcast && podcast.episodes) {
+			podcast.episodes.forEach((episode) => {
+				if (episode.guid === episodeId) {
+					setEpisode(episode);
+				}
+			});
+		}
+	},[podcast?.path]);
 
 	useEffect(() => {
 		if (location.state && location.state.podcast && location.state.episode) {
@@ -137,46 +129,79 @@ const EpisodePage = ({ match, audioController }) => {
 		}
 	},[location]);
 
+	const onPauseClick = () => {
+		audioPause();
+	}
+	const onPlayClick = () => {
+		if (activeEpisode.url === episode.url) {
+			audioPlay();
+		}
+		else {
+			playEpisode(podcast,episode.url);
+		}
+	}
+
 	const backButtonText = location?.state?.podcast ? location.state.podcast.name : podcast ? podcast.name : 'Back';
 
 	return (
-		<Page className="episodePage" defaultHeader={false} defaultHref={'/podcast/' + podcastPath} title={episode ? episode.title : 'Loading...'} backButtonText={backButtonText}>
+		<Page className="episodePage greyPage" defaultHeader={false} defaultHref={'/podcast/' + podcastPath} title={episode ? episode.title : 'Loading...'} backButtonText={backButtonText}>
 			<div className="episodePageContent">
 				<div className="episodeHeader">
-					<div className="playerCoverContainer">
-						{ episode &&
-							<PlayerPodcastCoverArea
-								podcast={podcast}
-								episode={episode}
-								audioController={audioController}
-								chapters={chapters}
-								currentChapter={currentChapter}
-							/>
-							
-						}
+					<div className="episodeHeaderInner">
+						<div className="playerCoverContainer">
+							{ episode &&
+								<PlayerPodcastCoverArea
+									podcast={podcast}
+									episode={episode}
+									audioController={audioController}
+									chapters={chapters}
+									currentChapter={currentChapter}
+								/>
+								
+							}
+						</div>
+						<div className="episodeHeaderText">
+							<IonChip>Episode</IonChip>
+							<IonHeader collapse="condense">
+								<IonToolbar>
+									<IonTitle size="large">
+										{ !podcast &&
+											<IonSkeletonText animated={true} style={{ width: '90vw', height: 26 }}></IonSkeletonText>
+										}
+										{ podcast &&
+											<>
+												<div className="ion-text-wrap">
+													{episode?.title}
+												</div>
+											</>
+										}
+									</IonTitle>
+								</IonToolbar>
+							</IonHeader>
+							<h3>{podcast?.name}</h3>
+							<div style={{ marginTop: 10 }}>
+								Released
+							</div>
+
+							<div className="episodeButtons">
+								{ (shouldPlay && activeEpisode.url === episode.url) &&
+									<IonButton onClick={onPauseClick}>
+										<IonIcon icon={pauseIcon} slot="start" />
+										Pause episode
+									</IonButton>
+								}
+								{ (!shouldPlay || (activeEpisode.url !== episode.url)) &&
+									<IonButton onClick={onPlayClick}>
+										<IonIcon icon={playIcon} slot="start" />
+										Play episode
+									</IonButton>	
+								}
+							</div>
+						</div>
 					</div>
 				</div>
 				<div className="episodeContents">
-					<div className="episodeHeaderText">
-						<IonChip>Episode</IonChip>
-						<IonHeader collapse="condense">
-							<IonToolbar>
-								<IonTitle size="large">
-									{ !podcast &&
-										<IonSkeletonText animated={true} style={{ width: '90vw', height: 26 }}></IonSkeletonText>
-									}
-									{ podcast &&
-										<>
-										<div className="ion-text-wrap">
-											{episode.title}
-											</div>
-										</>
-									}
-								</IonTitle>
-							</IonToolbar>
-						</IonHeader>
-					</div>
-
+{ false &&
 					<IonList lines="full" inset={true}>
 						<IonItem detail={true}>
 							<IonIcon icon={commentsIcon} slot="start" />
@@ -191,8 +216,9 @@ const EpisodePage = ({ match, audioController }) => {
 							<IonLabel>Chapters</IonLabel>
 						</IonItem>
 					</IonList>
-
-					<div className="description" dangerouslySetInnerHTML={{__html:episode?.safeDescription}}>
+}
+					<h2>Episode description</h2>
+					<div className="description contentCard" dangerouslySetInnerHTML={{__html:episode?.safeDescription}}>
 						
 					</div>
 

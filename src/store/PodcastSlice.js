@@ -621,7 +621,7 @@ export const createPodcastSlice = (set, get) => ({
 						if (!data.episodes[i].safeDescription) {
 							data.episodes[i].safeDescription = DOMPurify.sanitize(data.episodes[i].description, {
 								ALLOWED_TAGS: [
-									'p','br','ol','ul','li','b','a'
+									'p','br','ol','ul','li','b','a','strong'
 								  ]
 							});
 						}

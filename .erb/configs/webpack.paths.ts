@@ -18,7 +18,7 @@ const distPath = path.join(appPath, 'dist');
 const distMainPath = path.join(distPath, 'electron');
 const distRendererPath = path.join(distPath, 'renderer');
 
-const webPath = path.join(distPath, 'web');
+const webPath = path.join(releasePath, 'web');
 
 const buildPath = path.join(releasePath, 'build');
 

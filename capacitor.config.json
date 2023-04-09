@@ -3,7 +3,7 @@
 	"appName": "Podfriend",
 	"bundledWebRuntime": false,
 	"npmClient": "yarn",
-	"webDir": "build",
+	"webDir": "release/web",
 	"plugins": {
 		"SplashScreen": {
 			"launchAutoHide": false,

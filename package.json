@@ -112,6 +112,8 @@
 	},
 	"build": {
 		"productName": "Podfriend",
+		"buildVersion": "2.0.0",
+		"extraMetadata": { "version": "2.0.0" },
 		"appId": "com.podfriend",
 		"asar": true,
 		"asarUnpack": "**\\*.{node,dll}",

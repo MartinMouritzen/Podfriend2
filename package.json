@@ -37,6 +37,7 @@
 	"dependencies": {
 		"@capacitor/android": "4.0.1",
 		"@capacitor/core": "^4.0.1",
+		"@capacitor/device": "^4.1.0",
 		"@capacitor/ios": "4.0.1",
 		"@ionic/react": "^6.2.1",
 		"@ionic/react-router": "^6.2.1",
@@ -63,7 +64,7 @@
 		"transcriptator": "^1.0.3",
 		"use-breakpoint": "^3.0.3",
 		"uuid": "^9.0.0",
-		"zustand": "^4.0.0"
+		"zustand": "^4.3.7"
 	},
 	"devDependencies": {
 		"@capacitor/cli": "^4.0.1",
@@ -94,6 +95,7 @@
 		"identity-obj-proxy": "^3.0.0",
 		"mini-css-extract-plugin": "^2.6.0",
 		"react-refresh": "^0.13.0",
+		"react-scripts": "5.0.1",
 		"rimraf": "^3.0.2",
 		"sass": "^1.51.0",
 		"sass-loader": "^12.6.0",

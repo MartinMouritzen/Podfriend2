@@ -22,7 +22,7 @@ import playIcon from 'images/icons/play-circle.svg';
 import dotsIcon from 'images/icons/dots.svg';
 // import { autoUpdater } from "electron";
 
-import useDimensions from "react-use-dimensions";
+import useDimensions from "hooks/useDimensions";
 import EpisodeList from "./EpisodeList";
 import PodcastPersons from "./PodcastPersons";
 import RSSFeed from "library/RSSFeed";

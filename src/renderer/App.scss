@@ -438,7 +438,15 @@ ion-menu {
 		}
 	}
 }
+.emptyListenDiv {
+	margin: 16px;
 
+	background-color: #F6f6f6;
+	border: 1px solid #d1d3d6;
+	width: 210px;
+	padding: 10px;
+	border-radius: 5px;
+}
 
 .podcastGrid, .coverSwiper {
 	&.podcastGrid {

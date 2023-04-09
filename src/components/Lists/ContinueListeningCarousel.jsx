@@ -44,6 +44,14 @@ const ContinueListening = ({ backButtonText = false }) => {
 		audioPause();
 	};
 
+	if (continueListeningEpisodeList === false || !continueListeningEpisodeList.length || continueListeningEpisodeList.length === 0) {
+		return (
+			<div className="emptyListenDiv">
+				Your queue is currently empty.
+			</div>
+		);
+	}
+
 	return (
 		<Swiper
 			slidesPerView='auto'

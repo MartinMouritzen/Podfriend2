@@ -4,7 +4,7 @@ import { memo, useState, useRef, useEffect } from 'react';
 
 import DOMPurify from 'dompurify';
 
-var randomColor = require('randomcolor');
+import Colors from 'library/Colors';
 
 import {
 	play as playIcon,
@@ -74,8 +74,6 @@ const TranscriptLiveArea = ({ transcriptData, rssFeedCurrentEpisode, currentTime
 		var newSpeakers = {};
 		var addedSpeaker = false;
 
-		console.log(transcriptData);
-
 		for(var i=0;i<transcriptData.length;i++) {
 			var segment = transcriptData[i];
 
@@ -108,12 +106,7 @@ const TranscriptLiveArea = ({ transcriptData, rssFeedCurrentEpisode, currentTime
 						initials: StringUtil.getInitials(segment.speaker),
 						avatar: avatar,
 						role: role,
-						color: randomColor({
-							seed: segment.speaker,
-							luminosity: 'bright',
-							format: 'rgba',
-							alpha: 0.8
-						}),
+						color: Colors.getRandomColor(segment.speaker),
 						position: lastPosition === 'right' ? 'left' : 'right'
 					};
 					lastPosition = newSpeakers[segment.speaker].position;
@@ -214,15 +207,18 @@ const TranscriptLiveArea = ({ transcriptData, rssFeedCurrentEpisode, currentTime
 								var lineIsActive = line.startTime <= currentTime && line.endTime > currentTime;
 								if (lineIsActive) {
 									return (
-										<div key={'liveline' + lineIndex} className="liveSegment" style={{ backgroundColor: (speakers ? speakers[segment.speaker].color : '#EEEEEE' )}}>
+										<div key={'liveline' + lineIndex} className="liveSegment" style={{
+											backgroundColor: (speakers ? speakers[segment.speaker].color?.backgroundColor : '#EEEEEE' ),
+											color: (speakers ? speakers[segment.speaker].color?.textColor : '#FFFFFF')
+										}}>
 											<div>
 												{ (speakers && speakers[segment.speaker].avatar) &&
-													<div className="avatar" style={{ backgroundColor: speakers[segment.speaker].color }}>
+													<div className="avatar" style={{ backgroundColor: speakers[segment.speaker].color?.backgroundColor }}>
 														<img src={speakers[segment.speaker].avatar} className="avatarImage"  />
 													</div>
 												}
 												{ (speakers && !speakers[segment.speaker].avatar) &&
-													<div className="avatar" style={{ backgroundColor: speakers[segment.speaker].color }}>
+													<div className="avatar" style={{ backgroundColor: speakers[segment.speaker].color?.backgroundColor }}>
 														{speakers[segment.speaker].initials}
 													</div>
 												}

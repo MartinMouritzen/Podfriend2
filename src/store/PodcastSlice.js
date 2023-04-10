@@ -1,3 +1,5 @@
+import structuredClone from '@ungap/structured-clone';
+
 import ClientStorage from './ClientStorage';
 
 const clientStorage = new ClientStorage();

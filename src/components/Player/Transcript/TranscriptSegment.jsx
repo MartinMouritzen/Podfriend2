@@ -29,7 +29,7 @@ const TranscriptSegment = ({ avatar, initials, color, speakerName, position, cur
 	return (
 		<div className={'segmentContainer ' + (isActive ? 'active ' : '') + 'position_' + position} ref={segmentRef}>
 			{ position === 'left' &&
-				<div className="avatar" style={{ backgroundColor: color }}>
+				<div className="avatar" style={{ backgroundColor: color ? color.backgroundColor : 'var(--primary-color)' }}>
 					{ avatar &&
 						<img src={avatar} className="avatarImage"  />
 					}
@@ -49,7 +49,7 @@ const TranscriptSegment = ({ avatar, initials, color, speakerName, position, cur
 						{TimeUtil.fancyTimeFormat(startTime)}
 					</div>
 				</div>
-				<div className="lines" style={{ backgroundColor: color ? color : 'var(--primary-color-light)' }}>
+				<div className="lines" style={{ backgroundColor: color ? color.backgroundColor : 'var(--primary-color-light)', color: color ? color.textColor : '#FFFFFF' }}>
 					{ lines && lines.map((line,index) => {
 						var lineIsActive = line.startTime <= currentTime && line.endTime > currentTime;
 						// var body = line.body;
@@ -69,7 +69,7 @@ const TranscriptSegment = ({ avatar, initials, color, speakerName, position, cur
 				</div>
 			</div>
 			{ position === 'right' &&
-				<div className="avatar" style={{ backgroundColor: color }}>
+				<div className="avatar" style={{ backgroundColor: color ? color.backgroundColor : 'var(--primary-color)' }}>
 					{ avatar &&
 						<img src={avatar} className="avatarImage"  />
 					}

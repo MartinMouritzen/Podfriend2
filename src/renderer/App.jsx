@@ -1,5 +1,7 @@
 import { useEffect, useRef } from 'react';
 
+import { Capacitor } from '@capacitor/core';
+
 import { MemoryRouter as Router, Routes, Route, Redirect } from 'react-router-dom';
 import './App.scss';
 
@@ -51,6 +53,8 @@ setupIonicReact({
 
 });
 
+const capPlatform = Capacitor.getPlatform();
+
 /* import MenuShadow from 'images/layout/menushadow.png'; */
 
 export default function App({ platform, audioController, desktop = false }) {
@@ -66,7 +70,7 @@ export default function App({ platform, audioController, desktop = false }) {
 	const authToken = useStore((state) => state.authToken);
 	const authenticateUser = useStore((state) => state.authenticateUser);
 
-	const RouterUsed = desktop ? IonReactHashRouter : IonReactRouter;
+	const RouterUsed = desktop ? IonReactHashRouter : capPlatform === 'web' ? IonReactRouter : IonReactHashRouter;
 
 	useEffect(() => {
 		setAudioController(audioController);

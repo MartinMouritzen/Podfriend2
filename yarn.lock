@@ -1089,6 +1089,11 @@
   resolved "https://registry.npmjs.org/@capacitor/android/-/android-4.0.1.tgz"
   integrity sha512-JXToVdVYe4icOcPG8GOIiRoGSu3zQcZW965o2HUxWC0vQF3Xh0/ntbNL/J1Vf7HODyUkiRnozvzDzn6nWoVQEQ==
 
+"@capacitor/browser@^4.1.1":
+  version "4.1.1"
+  resolved "https://registry.yarnpkg.com/@capacitor/browser/-/browser-4.1.1.tgz#ef7f705bda5c63c5497d4cb3c9108bd6aa9db908"
+  integrity sha512-RJKNeRiLm6X668X75YiPN/9t3z1pxVEPjIhLM/AtWAEsHUb8bjroQQ3WGdW/30Wa60a7ywiw3YLqWctfRaYyFw==
+
 "@capacitor/cli@^4.0.1":
   version "4.0.1"
   resolved "https://registry.npmjs.org/@capacitor/cli/-/cli-4.0.1.tgz"
@@ -2585,6 +2590,11 @@
   dependencies:
     "@typescript-eslint/types" "5.57.1"
     eslint-visitor-keys "^3.3.0"
+
+"@ungap/structured-clone@^1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@ungap/structured-clone/-/structured-clone-1.0.2.tgz#112bd30f3c27cb4c7b85d59ee3918c13803238ad"
+  integrity sha512-06PHwE0K24Wi8FBmC8MuMi/+nQ3DTpcXYL3y/IaZz2ScY2GOJXOe8fyMykVXyLOKxpL2Y0frAnJZmm65OxzMLQ==
 
 "@webassemblyjs/ast@1.11.1":
   version "1.11.1"
@@ -10164,6 +10174,11 @@ schema-utils@^4.0.0:
     ajv "^8.8.0"
     ajv-formats "^2.1.1"
     ajv-keywords "^5.0.0"
+
+seedrandom@^3.0.5:
+  version "3.0.5"
+  resolved "https://registry.yarnpkg.com/seedrandom/-/seedrandom-3.0.5.tgz#54edc85c95222525b0c7a6f6b3543d8e0b3aa0a7"
+  integrity sha512-8OwmbklUNzwezjGInmZ+2clQmExQPvomqjL7LFqOYqtmuxRgQYqOD3mHaU+MvZn5FLUeVxVfQjwLZW/n/JFuqg==
 
 select-hose@^2.0.0:
   version "2.0.0"

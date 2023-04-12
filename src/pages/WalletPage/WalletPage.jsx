@@ -15,14 +15,20 @@ import {
 } from 'ionicons/icons';
 
 import './WalletPage.scss';
+import WalletModal from "components/Wallet/WalletModal";
 
 const WalletPage = ({  }) => {
 	const userData = useStore((state) => state.userData);
+	const walletSetupCompleted = useStore((state) => state.walletSetupCompleted);
 
 	// console.log(userData);
 
 	return (
 		<Page id="wallet" title="Wallet" className="greyPage" showBackButton={false}>
+		<IonButton id="open-wallet-modal" expand="block">
+          Open
+        </IonButton>
+			<WalletModal />
 			<div className="walletPageContainer">
 				<div className="creditCardContainer">
 					<CreditCard walletBalance={10} username={userData?.username} />

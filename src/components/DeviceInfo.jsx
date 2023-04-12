@@ -5,6 +5,9 @@ import {
 
 import { useEffect } from 'react';
 
+import { Browser } from '@capacitor/browser';
+
+
 const DeviceInfo = () => {
 	useEffect(() => {
 		Device.getInfo()
@@ -14,8 +17,12 @@ const DeviceInfo = () => {
 		});
 	},[]);
 
+	const openCapacitorSite = async () => {
+		await Browser.open({ url: 'http://capacitorjs.com/' });
+	  };
+
 	return (
-		<div>
+		<div onClick={openCapacitorSite}>
 			test
 		</div>
 	);

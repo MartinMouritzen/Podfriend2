@@ -13,6 +13,7 @@ import { BREAKPOINTS } from 'constants/breakpoints';
 import ContinueListening from "components/Lists/ContinueListeningCarousel";
 import CoverCarousel from "components/Lists/CoverCarousel";
 import LatestEpisodes from 'components/Lists/LatestEpisodes';
+import DeviceInfo from "components/DeviceInfo";
 
 const Home = ({  }) => {
 	const { breakpoint } = useBreakpoint(BREAKPOINTS, 'desktop');
@@ -43,6 +44,7 @@ const Home = ({  }) => {
 					</IonToolbar>
 				</IonHeader>
 			}
+			<DeviceInfo />
 			<div className='section noPadding'>
 				<div className='sectionInner'>
 					<div className='sectionSubTitle'>Continue</div>

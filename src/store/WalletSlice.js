@@ -1,6 +1,7 @@
 import { set } from "date-fns";
 
 export const createWalletSlice = (set,get) => ({
+	walletSetupCompleted: false,
 	walletBalance: 0,
 	walletSyncing: false,
 	synchronizeWallet: () => {

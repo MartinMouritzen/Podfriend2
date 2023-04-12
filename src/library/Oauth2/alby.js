@@ -1,0 +1,1 @@
+https://getalby.com/oauth?client_id=QBqT68cVBK&redirect_uri=https%3A%2F%2Fwww.podfriend.com%2Foauth%2Falby%2F&scope=account:read%20invoices:create%20invoices:read%20transactions:read%20balance:read%20payments:send

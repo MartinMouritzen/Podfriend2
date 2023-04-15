@@ -6,7 +6,7 @@ import {
 
 import PodcastImage from 'components/PodcastImage/PodcastImage';
 
-const EpisodeSecondaryActionToolbar = ({ activePodcast, activeEpisode, navigateToPodcast }) => {
+const EpisodeSecondaryActionToolbar = ({ activePodcast, activeEpisode, navigateToPodcast, openChatModal }) => {
 	return (
 		<div className="episodeSecondaryActionToolbar">
 			{ /*
@@ -17,7 +17,7 @@ const EpisodeSecondaryActionToolbar = ({ activePodcast, activeEpisode, navigateT
 				<IonIcon slot="icon-only" icon={chapterIcon} />
 			</div>
 			*/ }
-			<div className="episodeSecondaryActionButton" title="chat">
+			<div className="episodeSecondaryActionButton" title="chat" onClick={openChatModal}>
 				<IonIcon slot="icon-only" icon={chatIcon} />
 			</div>
 			<div className="episodeSecondaryActionButton" title="Go to podcast" onClick={navigateToPodcast}>

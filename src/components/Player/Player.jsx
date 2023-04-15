@@ -1,4 +1,4 @@
-import { IonMenu, IonTitle, IonSearchbar, IonHeader, IonContent, IonIcon, IonLabel, IonList, IonItem, IonToolbar, IonButtons, IonButton, IonRange, IonSegment, IonSegmentButton, IonSkeletonText, IonChip, IonListHeader, useIonActionSheet } from '@ionic/react';
+import { IonMenu, IonTitle, IonSearchbar, IonHeader, IonContent, IonIcon, IonLabel, IonList, IonItem, IonToolbar, IonButtons, IonButton, IonRange, IonSegment, IonSegmentButton, IonSkeletonText, IonChip, IonListHeader, useIonActionSheet, useIonModal } from '@ionic/react';
 
 import useStore from 'store/Store';
 
@@ -31,7 +31,8 @@ import {
 	alarmOutline as alarmIcon,
 	speedometerOutline as speedIcon,
 	shareOutline as shareIcon,
-	browsersOutline as goIcon
+	browsersOutline as goIcon,
+	chatboxOutline as chatIcon
 } from 'ionicons/icons';
 
 import LoadingIcon from 'images/player/loading.png';
@@ -46,7 +47,7 @@ import ChapterList from 'components/Chapters/ChapterList';
 import PodcastImage from 'components/PodcastImage/PodcastImage';
 import TranscriptLiveArea from './Transcript/TranscriptLiveArea';
 import PodcastUtil from 'library/PodcastUtil';
-
+import ChatModal from "components/Chat/ChatModal";
 
 const Player = ({ audioController, navigateToPath, platform }) => {
 	const { breakpoint } = useBreakpoint(BREAKPOINTS, 'desktop');
@@ -425,6 +426,19 @@ const Player = ({ audioController, navigateToPath, platform }) => {
 		})
 	};
 
+	const [presentChatModal, dismissChatModal] = useIonModal(ChatModal, {
+		onDismiss: (data, role) => dismissChatModal(data, role)
+	});
+
+	const openChatModal = () => {
+		presentChatModal({
+			keepContentsMounted: true,
+			onWillDismiss: (event) => {
+			  
+			},
+		});
+	};
+
 	return (
 		<>
 			<div
@@ -438,7 +452,7 @@ const Player = ({ audioController, navigateToPath, platform }) => {
 				onOpen={maximize}
 				onHide={minimize}
 				open={fullscreen}
-				className={'player ' + (fullscreen ? 'fullscreen' : 'mini') + ' ' + (shouldPlay ? ' ' + 'playing' : ' ' + 'notPlaying') + (activePodcast ? '' : ' noPodcastPlaying')}
+				className={'player ' + (fullscreen ? 'fullscreen' : 'mini') + ' ' + (shouldPlay ? ' ' + 'playing' : ' ' + 'notPlaying') + (activePodcast ? '' : ' noPodcastPlaying') + (activeEpisode.live ? ' liveEpisode' : '')}
 				style={playerStyle}
 				platform={platform}
 			>
@@ -602,6 +616,9 @@ const Player = ({ audioController, navigateToPath, platform }) => {
 									</div>
 								</div>
 								<div className="playerControls">
+									{ (activeEpisode.live && activeEpisode.chat) &&
+										<div className="button buttonChat" onClick={openChatModal}><IonIcon icon={chatIcon} /></div>
+									}
 									<div className="button buttonSkipBackward" onClick={onSkipBackward}><SVG src={SkipBackwardIcon} /></div>
 									<div className="button buttonRewind" onClick={onBackward}><SVG src={RewindIcon} /></div>
 									{ streamDataLoading &&
@@ -642,7 +659,7 @@ const Player = ({ audioController, navigateToPath, platform }) => {
 					</div>
 				</div>
 				{ fullscreen &&
-					<EpisodeSecondaryActionToolbar activePodcast={activePodcast} activeEpisode={activeEpisode} navigateToPodcast={navigateToPodcast} />
+					<EpisodeSecondaryActionToolbar activePodcast={activePodcast} activeEpisode={activeEpisode} navigateToPodcast={navigateToPodcast} openChatModal={openChatModal} />
 				}
 				{ (false && fullscreen) &&
 					<div className="episodeContent">

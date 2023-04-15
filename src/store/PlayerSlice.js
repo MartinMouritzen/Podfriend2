@@ -63,7 +63,8 @@ export const createPlayerSlice = (set,get) => ({
 			// console.log(podcast);
 			episode = get().getEpisodeByUrl(podcast,episodeUrl);
 
-			// console.log(episode);
+			console.log('Playing episode');
+			console.log(episode);
 
 			if (!episode) {
 				console.log('Episode not found?');
@@ -85,7 +86,9 @@ export const createPlayerSlice = (set,get) => ({
 			}
 		});
 
-		console.log(podcast);
+		// console.log(podcast);
+
+		var currentTime = episode.currentTime;
 
 		set({
 			activePodcast: podcast,
@@ -93,6 +96,9 @@ export const createPlayerSlice = (set,get) => ({
 			shouldPlay: true,
 			loading: true
 		});
+		setTimeout(() => {
+			get().audioSetCurrentTime(currentTime);
+		},50);
 		// get().addEpisodeToContinueListeningList(podcast,episode);
 	},
 	audioPause: () => {

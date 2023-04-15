@@ -21,6 +21,7 @@ const Home = ({  }) => {
 	const loggedIn = useStore((state) => state.loggedIn);
 	const refreshingLatestEpisodes = useStore((state) => state.refreshingLatestEpisodes);
 	
+	const continueListeningEpisodeList = useStore((state) => state.continueListeningEpisodeList);
 
 	const router = useIonRouter();
 	const searchBar = useRef(null);
@@ -44,16 +45,18 @@ const Home = ({  }) => {
 					</IonToolbar>
 				</IonHeader>
 			}
-			<DeviceInfo />
-			<div className='section noPadding'>
-				<div className='sectionInner'>
-					<div className='sectionSubTitle'>Continue</div>
-					<div className='sectionTitle'>listening</div>
+			{ /*<DeviceInfo /> */ }
+			{ continueListeningEpisodeList.length > 0 &&
+				<div className='section noPadding'>
+					<div className='sectionInner'>
+						<div className='sectionSubTitle'>Continue</div>
+						<div className='sectionTitle'>listening</div>
+					</div>
+					<div className="sectionContents noPadding">
+						<ContinueListening backButtonText="Home" />
+					</div>
 				</div>
-				<div className="sectionContents noPadding">
-					<ContinueListening backButtonText="Home" />
-				</div>
-			</div>
+			}
 			{ loggedIn &&
 				<div className='section'>
 					<div className='sectionInner'>

@@ -319,7 +319,7 @@ export const createPodcastSlice = (set, get) => ({
 
 			var secondsLeft = newDuration - newProgress;
 
-			if (secondsLeft < 20 || listenedPercentage > 97) {
+			if (secondsLeft < 20 || listenedPercentage > 95) {
 				activeEpisodeCopy.listened = true;
 			}
 			else {

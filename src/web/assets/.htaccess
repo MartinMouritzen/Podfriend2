@@ -1,0 +1,12 @@
+###########################################
+# Web player
+###########################################
+
+DirectoryIndex index.php
+
+RewriteEngine On
+RewriteRule ^miniplayer - [L,NC] 
+RewriteRule ^fonts - [L,NC] 
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f 
+RewriteRule ^[^/]* ./index.php?path=%{REQUEST_URI} [QSA]

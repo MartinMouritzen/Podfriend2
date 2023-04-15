@@ -72,25 +72,27 @@ const SearchPage = ({ match }) => {
 					</form>
 				</IonToolbar>
 			</IonHeader>
-			{ !searchString || searchString.length <= 2 && 
-				<div style={{ paddingLeft: '16px', paddingRight: '16px' }}>
-					<h2>Browse categories</h2>
-				</div>
-			}
-			{ searchString && searchString.length && searchString.length > 2 &&
-				<div style={{ paddingLeft: '16px', paddingRight: '16px' }}>
-					<h2>Results for &quot;{searchString}&quot;</h2>
+			<div className="searchPage">
+				{ !searchString || searchString.length <= 2 && 
+					<div style={{ paddingLeft: '16px', paddingRight: '16px' }}>
+						<h2>Browse categories</h2>
+					</div>
+				}
+				{ searchString && searchString.length && searchString.length > 2 &&
+					<div style={{ paddingLeft: '16px', paddingRight: '16px' }}>
+						<h2>Results for &quot;{searchString}&quot;</h2>
 
-					{ results && results.length === 0 &&
-						<div className="loading">
-							<IonSpinner name="dots"></IonSpinner>
-						</div>
-					}
-					{ results && results.length > 0 &&
-						<PodcastList backButtonText="Search" podcasts={results} listType='list' />
-					}
-				</div>
-			}
+						{ results && results.length === 0 &&
+							<div className="loading">
+								<IonSpinner name="dots"></IonSpinner>
+							</div>
+						}
+						{ results && results.length > 0 &&
+							<PodcastList backButtonText="Search" podcasts={results} listType='list' />
+						}
+					</div>
+				}
+			</div>
 		</Page>
 	);
 };

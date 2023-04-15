@@ -1,0 +1,40 @@
+.chatPage {
+	.loading {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		flex-direction: column;
+		height: 100%;
+
+		.loadingText {
+			margin-top: 10px;
+		}
+	}
+	.notSupported {
+		padding: 30px;
+
+		.sadPodfriendContainer {
+			text-align: center;
+			.sadPodfriend {
+				max-height: 300px;
+			}
+		}
+	}
+	iframe {
+		width: 100%;
+		height: 100%;
+		border: 0px;
+	}
+	ion-footer {
+		padding: 5px;
+		display: flex;
+		.chatInput {
+			--background: #CECECE;
+			border-radius: 5px;
+			--padding-start: 5px;
+		}
+		ion-button {
+			
+		}
+	}
+}

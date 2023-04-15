@@ -1,11 +1,13 @@
-.loading {
-	display: flex;
-	justify-content: center;
-	align-items: center;
+.searchPage {
+	.loading {
+		display: flex;
+		justify-content: center;
+		align-items: center;
 
-	height: 100px;
+		height: 100px;
 
-	ion-spinner {
-		transform: scale(2);
+		ion-spinner {
+			transform: scale(2);
+		}
 	}
 }

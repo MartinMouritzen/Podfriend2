@@ -1,77 +1,60 @@
-.onboardingScreen {
-	display: flex;
-	flex-direction: column;
-	min-height: 100%;
+.onboardingSwiper {
+	height: 100%;
+	.swiper-slide {
 
-	.steps {
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		height: 40px;
-
-		gap: 10px;
-
-		.step {
-			background-color: rgba(0,0,0,0.2);
-			border-radius: 50%;
-			width: 15px;
-			height: 15px;
-
-			&.active {
-				background-color: var(--primary-color);
-			}
-		}
-	}
-	.onboardingContent {
-		flex: 1;
-		display: flex;
-		flex-direction: column;
-		justify-content: start;
-		align-items: center;
-
-		.onboardingImageContainer {
-			background-color: #3caea3;
-			width: 100%;
-
+		.onboardingContent {
 			display: flex;
-			justify-content: center;
-			align-items: center;
+			flex-direction: column;
 
-			flex: 1;
-			
-			
+			height: 100%;
 
-			img {
-				max-height: 30vh;
-				-webkit-filter: drop-shadow(5px 5px 5px rgba(0,0,0,0.4));
-				filter: drop-shadow(5px 5px 5px rgba(0,0,0,0.4));
-			}
-			@media (min-width: 768px) {
+			.onboardingImageContainer {
+				background-color: #3caea3;
+				width: 100%;
+
+				display: flex;
+				justify-content: center;
+				align-items: center;
+
+				flex: 1;
+				
+				padding-top: 2vh;
+				padding-bottom: 2vh;
+
 				img {
-					max-height: 150px;
+					max-height: 20vh;
+					-webkit-filter: drop-shadow(5px 5px 5px rgba(0,0,0,0.4));
+					filter: drop-shadow(5px 5px 5px rgba(0,0,0,0.4));
+				}
+				@media (min-height: 390px) {
 
+				}
+				@media (min-width: 768px) {
+					img {
+						max-height: 150px;
+
+					}
+				}
+			}
+			.onboardingText {
+				padding: 20px;
+				color: rgba(0,0,0,0.9);
+
+				font-size: 18px;
+
+				padding-bottom: 40px;
+
+				h2 {
+					font-size: 36px;
+					color: rgba(0,0,0,1);
+					margin-bottom: 15px;
+				}
+				ul {
+					li {
+						margin-bottom: 5px;
+					}
 				}
 			}
 		}
-		.onboardingText {
-			padding: 20px;
-			color: rgba(0,0,0,0.9);
-
-			font-size: 18px;
-
-			h2 {
-				font-size: 36px;
-				color: rgba(0,0,0,1);
-				margin-bottom: 15px;
-			}
-			ul {
-				li {
-					margin-bottom: 5px;
-				}
-			}
-		}
-	}
-	.actions {
-		height: 60px;
 	}
 }

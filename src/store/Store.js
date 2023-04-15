@@ -72,13 +72,19 @@ const useStore = create(persist((...a) => ({
 	...createPlaylistSlice(...a),
 	...createWalletSlice(...a),
 	...createReviewSlice(...a),
-	...createServerSyncSlice(...a)
+	...createServerSyncSlice(...a),
+	_hasHydrated: false
 }),{
 	name: 'podfriend-v1',
 	storage: createJSONStorage(() => { return storage; }),
+	onRehydrateStorage: () => () => {
+		console.log('rehydrated!');
+		useStore.setState({ _hasHydrated: true })
+	},
 	// Define what parts we do not want persisted
 	partialize: (state) => {
 		let newState = {...state};
+		delete newState._hasHydrated;
 		delete newState.audioController;
 		delete newState.desktop;
 		delete newState.shouldPlay;

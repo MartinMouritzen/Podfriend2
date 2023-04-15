@@ -1,13 +1,23 @@
 import { useState, useEffect, useRef } from 'react';
 
-import { IonButton, IonButtons, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonListHeader, IonTitle, IonToolbar, IonModal, IonContent, IonFooter } from "@ionic/react";
+import { IonButton, IonButtons, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonListHeader, IonTitle, IonToolbar, IonModal, IonContent, IonFooter, IonPage } from "@ionic/react";
 
 import './onboarding.scss';
 
-const OnboardingStep = ({ children, illustration }) => {
+// Import Swiper React components
+import { Swiper, SwiperSlide } from "swiper/react";
+
+// Import Swiper styles
+import "swiper/css";
+import "swiper/css/pagination";
+
+
+import { Pagination } from "swiper";
+
+const OnboardingStep = ({ children, illustration, backgroundColor }) => {
 	return (
 		<div className="onboardingContent">
-			<div className="onboardingImageContainer">
+			<div className="onboardingImageContainer" style={{ backgroundColor: backgroundColor }}>
 				<img src={illustration} />
 			</div>
 			<div className="onboardingText">
@@ -17,27 +27,39 @@ const OnboardingStep = ({ children, illustration }) => {
 	);
 };
 const Onboarding = ({ children, title, closeModal, skippable = "Close" }) => {
-	const [step,setStep] = useState(1);
+	const [swiperInstance, setSwiperInstance] = useState(null);
+	const [step,setStep] = useState(0);
 
 	const nextStep = () => {
-		setStep(step + 1);
+		swiperInstance.slideNext();
+		/*
+		if (!swiperInstance.isEnd) {
+			swiperInstance.slideTo(swiperInstance.activeIndex + 1);
+		}
+		*/
 	};
 	const prevStep = () => {
-		setStep(step - 1);
+		swiperInstance.slidePrev();
 	};
-
-	const numberOfSteps = children.length;
+	const getActiveStepTitle = (children) => {
+		if (swiperInstance) {
+			return children[swiperInstance.activeIndex].props.title
+		}
+	};
+	const onSlideChanged = () => {
+		setStep(swiperInstance.activeIndex);
+	}
 
 	return (
-		<>
+		<IonPage>
 			<IonHeader>
 				<IonToolbar>
-					{ step > 1 &&
+					{ step !== 0 &&
 						<IonButtons slot="start">
 							<IonButton onClick={prevStep}>Back</IonButton>
 						</IonButtons>
 					}
-					<IonTitle>{children[step -1].props.title}</IonTitle>
+					<IonTitle>{getActiveStepTitle(children)}</IonTitle>
 					{ skippable !== false &&
 						<IonButtons slot="end">
 							<IonButton onClick={closeModal}>{skippable}</IonButton>
@@ -46,6 +68,30 @@ const Onboarding = ({ children, title, closeModal, skippable = "Close" }) => {
 				</IonToolbar>
 			</IonHeader>
 			<IonContent>
+				<Swiper
+					onSwiper={(swiper) => setSwiperInstance(swiper)}
+					onSlideChange={onSlideChanged}
+					slidesPerView={1}
+					slidesPerGroup={1}
+					spaceBetween={0}
+					slidesOffsetBefore={0}
+					slidesOffsetAfter={0}
+					pagination={{
+						clickable: true,
+					}}
+					modules={[Pagination]}
+
+			className="onboardingSwiper"
+				>
+					{children && children.map((content,index) => {
+						return (
+							<SwiperSlide key={'onboardingstep_' + index}>
+								{content}
+							</SwiperSlide>
+						);
+					} ) }
+				</Swiper>
+			{/*
 				<div className="onboardingScreen">
 					{ children && children.map((child) => {
 						console.log(child);
@@ -59,13 +105,19 @@ const Onboarding = ({ children, title, closeModal, skippable = "Close" }) => {
 						)) }
 					</div>
 				</div>
+			*/ }
 			</IonContent>
 			<IonFooter>
 				<IonToolbar>
-					<IonButton expand='block' onClick={nextStep}>Continue</IonButton>
+					{ (swiperInstance && swiperInstance.isEnd) &&
+						<IonButton expand='block' onClick={closeModal}>Finish</IonButton>
+					}
+					{ (swiperInstance && !swiperInstance.isEnd) &&
+						<IonButton expand='block' onClick={nextStep}>Continue</IonButton>
+					}
 				</IonToolbar>
 			</IonFooter>
-		</>
+		</IonPage>
 	);
 };
 export { Onboarding, OnboardingStep };

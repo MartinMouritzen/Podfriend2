@@ -1,6 +1,13 @@
 import { set } from "date-fns";
 
 export const createWalletSlice = (set,get) => ({
+	walletOnboardingShowed: false,
+	updateWalletOnboardingShowed: (newValue) => {
+		console.log('updaing updateWalletOnboardingShowed to: ' + newValue);
+		set({
+			walletOnboardingShowed: newValue
+		});
+	},
 	walletSetupCompleted: false,
 	walletBalance: 0,
 	walletSyncing: false,

@@ -20,6 +20,8 @@
 .player {
 	background-color: var(--miniplayer-background-color);
 	backdrop-filter: var(--miniplayer-backdrop-filter);
+	-webkit-backdrop-filter: var(--miniplayer-backdrop-filter);
+
 	border-top: 1px solid var(--miniplayer-border-color);
 	position: absolute;
 	bottom: 0px;
@@ -103,6 +105,8 @@
 			transition: all 0.4s;
 
 			border-radius: 5px;
+
+			box-shadow: 0px 3px 11px -1px rgb(0 0 0 / 8%);
 		}
 	}
 	.episodeSecondaryActionToolbar {
@@ -416,9 +420,18 @@
 			.titleAndButtons {
 				height: auto;
 
-				.episodeTitle, .podcastName {
+				.podcastName {
 					width: 300px !important;
 					max-width: 300px;
+				}
+				.episodeTitle {
+					width: 300px !important;
+					display: -webkit-box;
+					-webkit-line-clamp: 2;
+					-webkit-box-orient: vertical;
+					white-space: unset;
+					overflow: hidden;
+					margin-bottom: 5px;
 				}
 				.progressAndControls {
 					.progressBar {
@@ -475,7 +488,7 @@
 				width: 0px;
 			}
 		}
-		.buttonSkipBackward, .buttonSkipForward, &.buttonExpand, &.buttonMore {
+		.buttonSkipBackward, .buttonSkipForward, .buttonExpand, .buttonMore, .buttonChat {
 			width: 0px;
 
 			svg {
@@ -516,7 +529,19 @@
 			}
 		}
 	}
-
+	&.liveEpisode {
+		.progressAndControls {
+			.progressBar {
+				display: none;
+			}
+			.buttonSkipBackward, .buttonRewind, .buttonForward, .buttonSkipForward, .buttonMore {
+				display: none !important;
+			}
+			.buttonChat {
+				width: 30px;
+			}
+		}
+	}
 	&.fullscreen {
 		position: absolute;
 		bottom: 0px;
@@ -532,6 +557,9 @@
 		background-color: var(--miniplayer-fullscreen-background-color) !important;
 		/* background-color:  rgba(1,118,229,1) !important; */
 
+		.buttonChat {
+			display: none !important;
+		}
 		.podcastInfo {
 			color: #000000;
 			text-align: center;
@@ -738,7 +766,7 @@
 
 				img {
 					transition: all 0.2s;
-					box-shadow: 0px 3px 11px -1px rgb(0 0 0 / 23%);
+					box-shadow: 0px 3px 11px -1px rgb(0 0 0 / 18%);
 				}
 	
 				/*box-shadow: 0px 0px 39px -12px rgba(0,0,0,0.25);*/

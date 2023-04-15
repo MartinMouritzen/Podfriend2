@@ -208,7 +208,7 @@ const TranscriptLiveArea = ({ transcriptData, rssFeedCurrentEpisode, currentTime
 								if (lineIsActive) {
 									return (
 										<div key={'liveline' + lineIndex} className="liveSegment" style={{
-											backgroundColor: (speakers ? speakers[segment.speaker].color?.backgroundColor : '#EEEEEE' ),
+											backgroundColor: (speakers ? speakers[segment.speaker].color?.backgroundColor : '#000000' ),
 											color: (speakers ? speakers[segment.speaker].color?.textColor : '#FFFFFF')
 										}}>
 											<div>
@@ -335,7 +335,7 @@ const TranscriptLiveArea = ({ transcriptData, rssFeedCurrentEpisode, currentTime
 function transcriptListShouldCache(prevList,nextList) {
 	if (Math.round(nextList.currentTime) != Math.round(prevList.currentTime)) { return false; }
 	if (JSON.stringify(prevList.podcast?.rssFeedContents?.persons) != JSON.stringify(nextList.podcast?.rssFeedContents?.persons)) { return false; }
-	
+
 	return true;
 }
 

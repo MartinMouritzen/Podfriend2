@@ -46,6 +46,8 @@ import { BREAKPOINTS } from 'constants/breakpoints';
 import DesktopPlayList from 'components/PlayList/DesktopPlaylist';
 import DesktopHeader from 'components/WindowFrame/DesktopHeader';
 import AccountModal from 'components/AccountModal/AccountModal';
+import AlbyOauthPage from 'pages/WalletPage/AlbyOauthPage';
+import ContactPage from 'pages/ContactPage/ContactPage';
 
 setupIonicReact({
 	mode: 'ios',
@@ -101,11 +103,13 @@ export default function App({ platform, audioController, desktop = false }) {
 
 	const routes = [
 		<Route path="/" exact={true} render={(props) => <Home {...props} />} />,
+		<Route path="/contact/" render={(props) => <ContactPage {...props} />} />,
 		<Route path="/discover/" render={(props) => <DiscoverPage {...props} />} />,
 		<Route path="/favorites/" render={(props) => <FavoritePage {...props} />} />,
 		<Route path="/playlist/" render={(props) => <Home {...props} />} />,
 		<Route path="/collections/" render={(props) => <Home {...props} />} />,
 		<Route path="/wallet/" render={(props) => <WalletPage {...props} />} />,
+		<Route path="/oauth/alby" render={(props) => <AlbyOauthPage {...props} />} />,
 		<Route path="/search/:searchQuery?" render={(props) => <SearchPage {...props} />} />,
 		<Route exact={true} path="/podcast/:podcastPath/" render={(props) => <PodcastPage {...props} />} />,
 		<Route exact={true} path="/podcast/:podcastPath/reviews/" render={(props) => <ReviewPage {...props} />} />,

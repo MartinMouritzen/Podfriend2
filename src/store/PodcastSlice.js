@@ -288,6 +288,8 @@ export const createPodcastSlice = (set, get) => ({
 			}
 		});
 	},
+	updateProgressSecondsConfig: 10,
+	lastUpdatedProgressToServer: false,
 	updateProgress: () => {
 		var activeEpisode = get().activeEpisode;
 		if (activeEpisode.live) {
@@ -391,6 +393,25 @@ export const createPodcastSlice = (set, get) => ({
 
 			clientStorage.setItem('podcast_cache_' + activePodcastCopy.path,activePodcastCopy);
 
+			var shouldUpdateToServer = false;
+			var lastUpdatedProgressToServer = get().lastUpdatedProgressToServer;
+
+			if (!lastUpdatedProgressToServer) {
+				shouldUpdateToServer = true;
+			}
+			else {
+				
+				var secondsSinceLastEpisodeUpdateToServer = Math.floor(new Date().getTime() - lastUpdatedProgressToServer) / 1000;
+
+				if (secondsSinceLastEpisodeUpdateToServer > get().updateProgressSecondsConfig) {
+					shouldUpdateToServer = true;
+				}
+			}
+
+			if (shouldUpdateToServer) {
+				get().synchronizeEpisodeState();
+			}
+
 			set({
 				activePodcast: activePodcastCopy,
 				activeEpisode: activeEpisodeCopy,
@@ -403,6 +424,22 @@ export const createPodcastSlice = (set, get) => ({
 	***********************************************************************************/
 	lastTrendingPodcastRefresh: false,
 	trendingPodcasts: [],
+
+	retrievePodcastByGuid: async(guids) => {
+		const byGuidUrl = `https://api.podfriend.com/podcasts/byguid/${guids}`;
+
+		try {
+			let rawResults = await fetch(byGuidUrl);
+			let results = await rawResults.json();
+
+			return results;
+		}
+		catch(exception) {
+			console.log('Error getting trending podcasts');
+			console.log(byGuidUrl);
+			console.log(exception);
+		}
+	},
 	__retrieveTrendingPodcasts: async(categoryId,limit = 14) => {
 		const trendingAPIUrl = `https://api.podfriend.com/podcasts/trending/${categoryId ? categoryId : ''}?limit=${limit}`;
 

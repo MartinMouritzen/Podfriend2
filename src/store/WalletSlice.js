@@ -11,11 +11,44 @@ export const createWalletSlice = (set,get) => ({
 	walletSetupCompleted: false,
 	walletBalance: 0,
 	walletSyncing: false,
-	synchronizeWallet: () => {
+	walletToken: false,
+	exchangeCodeToWalletToken: (code) => {
+		const tokenURL = 'https://api.podfriend.com/user/wallet/token/?development=' + (process.env.NODE_ENV === 'development' ? 'true' : 'false') + '&code=' + code;
+		// const tokenURL = 'https://api.podfriend.com/user/wallet/token/?code=' + code;
+		return fetch(tokenURL, {
+			method: "POST",
+			headers: {
+				'Content-Type': 'application/json',
+				'Accept': 'application/json',
+				'Authorization': `Bearer ${get().authToken}`
+			}
+		})
+		.then((resp) => {
+			return resp.json();
+		})
+		.then((response) => {
+			console.log(response);
+		})
+		.catch((exception) => {
+			console.log('Error retrieving wallet token');
+			console.log(exception);
+		});
+	},
+	setWalletToken: (token) => {
+		set({
+			walletToken: token
+		});
+	},
+	/*********************************
+	* 
+	*********************************/
+	legacyWalletBalance: false,
+	legacyWalletSyncing: false,
+	synchronizeLegacyWallet: () => {
 		const walletBalanceURL = 'https://api.podfriend.com/user/wallet/';
 
 		set({
-			walletSyncing: true
+			legacyWalletSyncing: true
 		});
 
 		return fetch(walletBalanceURL, {
@@ -34,8 +67,8 @@ export const createWalletSlice = (set,get) => ({
 			// console.log(response);
 
 			set({
-				walletBalance: response.balance,
-				walletSyncing: false
+				legacyWalletBalance: response.balance,
+				legacyWalletSyncing: false
 			});
 		})
 		.catch((error) => {
@@ -43,14 +76,14 @@ export const createWalletSlice = (set,get) => ({
 			console.log(error);
 
 			set({
-				walletSyncing: false
+				legacyWalletSyncing: false
 			});
 		});
 	},
-	boostPodcast: (valueBlock,boostAmount,overrideDestinations = false,senderName = false,message = false) => {
-		return sendValue(valueBlock,boostAmount,overrideDestinations,'boost',senderName,message);
+	legacyBoostPodcast: (valueBlock,boostAmount,overrideDestinations = false,senderName = false,message = false) => {
+		return get().legacySendValue(valueBlock,boostAmount,overrideDestinations,'boost',senderName,message);
 	},
-	sendValue: (valueBlock,totalAmount,overrideDestinations = false,actionType = 'stream',senderName = false,message = false) => {
+	legacySendValue: (valueBlock,totalAmount,overrideDestinations = false,actionType = 'stream',senderName = false,message = false) => {
 		var recognizedMethod = false;
 		var validDestinations = false;
 
@@ -132,11 +165,11 @@ export const createWalletSlice = (set,get) => ({
 			});
 		}
 	},
-	walletInvoiceLoading: false,
-	walletInvoiceError: false,
-	walletInvoiceId: false,
-	walletInvoiceString: false,
-	walletInvoiceDate: new Date(),
+	legacyWalletInvoiceLoading: false,
+	legacyWalletInvoiceError: false,
+	legacyWalletInvoiceId: false,
+	legacyWalletInvoiceString: false,
+	legacyWalletInvoiceDate: new Date(),
 	getInvoice: (amount) => {
 		set({
 			invoiceLoading: true
@@ -156,11 +189,11 @@ export const createWalletSlice = (set,get) => ({
 		})
 		.then((response) => {
 			set({
-				walletInvoiceLoading: false,
-				walletInvoiceError: false,
-				walletInvoiceId: response['id'],
-				walletInvoiceString: response['payment_request'],
-				walletInvoiceDate: new Date()
+				legacyWalletInvoiceLoading: false,
+				legacyWalletInvoiceError: false,
+				legacyWalletInvoiceId: response['id'],
+				legacyWalletInvoiceString: response['payment_request'],
+				legacyWalletInvoiceDate: new Date()
 			});
 		})
 		.catch((error) => {
@@ -168,8 +201,8 @@ export const createWalletSlice = (set,get) => ({
 			console.log(error);
 
 			set({
-				walletInvoiceError: 'Error getting wallet invoice data.'
+				legacyWalletInvoiceError: 'Error getting wallet invoice data.'
 			});
 		});
-	}
+	},
 });

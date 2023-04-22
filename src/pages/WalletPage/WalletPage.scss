@@ -7,6 +7,36 @@
 	margin-right: auto;
 	max-width: 380px;
 
+	.legacyContainer {
+		margin-top: 20px;
+		margin-bottom: 20px;
+		margin-left: 20px;
+		margin-right: 20px;
+
+		.legacyNotice {
+			display: flex;
+		
+			margin-bottom: 10px;
+		
+			color: #666666;
+		
+			gap: 20px;
+		
+			.iconContainer {
+				font-size: 24px;
+			}
+			.textContainer {
+				h3 {
+					font-size: 16px;
+					font-weight: 500;
+					margin: 0px;
+					margin-bottom: 3px;
+					padding: 0px;
+				}
+			}
+		}
+	}
+
 	ion-list {
 		margin-inline-start: 20px !important;
 		margin-top: 10px !important;

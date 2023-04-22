@@ -1,6 +1,9 @@
 import { IonAvatar, IonContent, IonItem, IonLabel, IonList, IonIcon } from "@ionic/react";
 
-import { lockClosed as lockIcon } from 'ionicons/icons';
+import { lockClosed as lockIcon, mailOutline as mailIcon } from 'ionicons/icons';
+// import { homeOutline as homeIcon, closeSharp as closeIcon, searchOutline as searchIcon, mailOutline as mailIcon, listOutline as collectionsIcon, starOutline as favoriteIcon, walletOutline as walletIcon } from 'ionicons/icons'
+
+import { Link } from 'react-router-dom';
 
 import useStore from 'store/Store';
 
@@ -33,6 +36,22 @@ const AccountPage = ({ dismiss }) => {
 						</IonLabel>
 				</IonItem>
 			</IonList>
+
+			<IonList inset={true}>
+				<Link
+					to={{
+						pathname: '/contact/'
+					}}
+					style={{ textDecoration: 'none' }}
+					onClick={() => { dismiss(); }}
+				>
+					<IonItem >
+						<IonIcon icon={mailIcon} slot="start" />
+						<IonLabel>Contact Podfriend</IonLabel>
+					</IonItem>
+				</Link>
+			</IonList>
+
 			<IonList inset={true}>
 				<IonItem className="ion-text-center" onClick={onSignOutClick}>
 					<IonLabel color="danger">Sign out</IonLabel>

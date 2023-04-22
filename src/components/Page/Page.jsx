@@ -129,6 +129,9 @@ const Page = ({ id = null, title = "Undefined", defaultHeader = true, defaultHre
 							{ loggedIn &&
 								<IonLabel className="userNameLabel">{userData.username}</IonLabel>
 							}
+							{ !loggedIn &&
+								<IonLabel className="userNameLabel">Log in</IonLabel>
+							}
 							{ loggedIn &&
 								<IonIcon slot="icon-only" icon={loggedInIcon} expand="block"></IonIcon>
 							}

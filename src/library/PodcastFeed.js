@@ -137,6 +137,11 @@ class PodcastFeed {
 			rssFeed.funding = podcast['podcast:funding'];
 			rssFeed.images = podcast['podcast:images'];
 
+			if (podcast['podcast:podroll'] && podcast['podcast:podroll'].split) {
+				var podGuids = podcast['podcast:podroll'].split(',');
+				rssFeed.podRoll = podGuids;
+			}
+
 			if (podcast['itunes:category']) {
 				var categories = [];
 				if (Array.isArray(podcast['itunes:category'])) {

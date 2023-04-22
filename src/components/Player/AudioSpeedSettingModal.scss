@@ -1,0 +1,50 @@
+.audioSpeedSettingModal {
+	text-align: center;
+
+	padding-top: 20px;
+
+	ion-range {
+		--bar-height: 4px;
+	}
+
+	h2 {
+		font-weight: bold;
+		margin: 0px;
+		margin-bottom: 5px;
+	}
+	.speedRange {
+		padding: 20px;
+		display: flex;
+		align-items: center;
+		padding: 25px;
+	}
+	.speedRange > div {
+		margin: 5px;
+		font-weight: bold;
+	}
+	.speedButtons {
+		margin-bottom: 20px;
+	}
+	.speedButtonsTitle {
+		margin-bottom: 5px;
+	}
+	.speedButton {
+		background-color: #DDDDDD;
+		border-bottom: 4px solid #CCCCCC;
+		color: #999999;
+		width: 60px;
+		margin-right: 5px;
+		margin-bottom: 5px;
+		text-align: center;
+		padding: 10px;
+	}
+	.closeButtonContainer {
+		text-align: right;
+	}
+	@media only screen and (min-width: 540px) {
+		.audioSpeedSettingModal {
+			width: 80vw;
+			max-width: 600px;
+		}
+	}
+}

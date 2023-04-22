@@ -93,7 +93,7 @@ const MainMenu = () => {
 					<IonItemDivider>
 						<hr />
 					</IonItemDivider>
-					<IonItem lines="none" button routerLink="/podcasts/">
+					<IonItem lines="none" button routerLink="/contact/">
 						<IonIcon icon={mailIcon} slot="start"></IonIcon>
 						<IonLabel>Contact us</IonLabel>
 					</IonItem>

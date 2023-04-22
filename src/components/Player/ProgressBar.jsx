@@ -36,21 +36,21 @@ const ProgressBarSlider = ({ progress, duration, onProgressSliderChange}) => {
 
 	const sliderDragged = ({ detail }) => {
 		if (isDraggingSlider) {
-			console.log('dragging: ' + detail.value);
+			// console.log('dragging: ' + detail.value);
 			setDragValue(detail.value);
 		}
 	};
 
 	const sliderDragStart = ({ detail }) => {
 		setIsDraggingSlider(true);
-		console.log('drag start');
-		console.log(detail.value);
+		// console.log('drag start');
+		// console.log(detail.value);
 	}
 	const sliderDragStopped = ({ detail }) => {
 		setIsDraggingSlider(false);
 
-		console.log('drag end');
-		console.log(detail.value);
+		// console.log('drag end');
+		// console.log(detail.value);
 		var value = detail.value;
 
 		if (value < 0) {

@@ -12,7 +12,8 @@ import {
 	cashOutline as fundsIcon,
 	listOutline as historyIcon,
 	closeCircleOutline as turnOffIcon,
-	helpCircleOutline as helpIcon
+	helpCircleOutline as helpIcon,
+	alertCircleOutline as noticeIcon
 } from 'ionicons/icons';
 
 import { Browser } from '@capacitor/browser';
@@ -27,6 +28,9 @@ const WalletPage = ({  }) => {
 	const walletSetupCompleted = useStore((state) => state.walletSetupCompleted);
 	const walletOnboardingShowed = useStore((state) => state.walletOnboardingShowed);
 	const updateWalletOnboardingShowed = useStore((state) => state.updateWalletOnboardingShowed);
+	const legacyWalletBalance = useStore((state) => state.legacyWalletBalance);
+	const synchronizeLegacyWallet = useStore((state) => state.synchronizeLegacyWallet);
+	
 
 	// console.log(userData);
 
@@ -48,12 +52,21 @@ const WalletPage = ({  }) => {
 				openOnboardingModal();
 				updateWalletOnboardingShowed(true);
 			}
+			synchronizeLegacyWallet();
 		}
 	},[walletOnboardingShowed,_hasHydrated]);
 
 	const onBeginConnectWallet = () => {
+		var albyOathUrl = 'https://getalby.com/oauth?client_id=QBqT68cVBK&redirect_uri=https%3A%2F%2Fwww.podfriend.com%2Foauth%2Falby%2F&scope=account:read%20invoices:create%20invoices:read%20transactions:read%20balance:read%20payments:send';
+		if (process.env.NODE_ENV === 'development') {
+			console.log('Using development Alby address');
+			albyOathUrl = 'https://app.regtest.getalby.com/oauth?client_id=test_client&response_type=code&redirect_uri=http%3A%2F%2Flocalhost:8080%2Foauth%2Falby%2F&scope=account:read%20invoices:create%20invoices:read%20transactions:read%20balance:read%20payments:send';
+		}
+
+		console.log(albyOathUrl);
+
 		Browser.open({
-			url: 'https://getalby.com/oauth?client_id=QBqT68cVBK&redirect_uri=https%3A%2F%2Fwww.podfriend.com%2Foauth%2Falby%2F&scope=account:read%20invoices:create%20invoices:read%20transactions:read%20balance:read%20payments:send',
+			url: albyOathUrl,
 			windowName: '_blank',
 			toolbarColor: '#0176e5'
 		})
@@ -65,9 +78,33 @@ const WalletPage = ({  }) => {
 	return (
 		<Page id="wallet" title="Wallet" className="greyPage" showBackButton={false}>
 			<div className="walletPageContainer">
-				<div className="creditCardContainer">
-					<CreditCard walletBalance={walletBalance} username={walletSetupCompleted ? userData?.username : 'Wallet not connected yet'} />
+				<div>
+					<div className="creditCardContainer">
+						<CreditCard walletBalance={walletBalance} username={walletSetupCompleted ? userData?.username : 'Wallet not connected yet'} />
+					</div>
+					{ legacyWalletBalance > 0 &&
+						<div className="legacyContainer">
+							<div className="legacyNotice">
+								<div className="iconContainer">
+									<IonIcon icon={noticeIcon} />
+								</div>
+								<div className="textContainer">
+									<h3>Legacy value available</h3>
+									You have <b>{legacyWalletBalance}</b> satoshis in your legacy Podfriend wallet.
+								</div>
+							</div>
+							{ walletSetupCompleted &&
+								<IonButton expand="block">Transfer legacy balance to new vallet</IonButton>
+							}
+							{ !walletSetupCompleted &&
+								<div>
+									Connect your Alby wallet to transfer the old balance to your new wallet.
+								</div>
+							}
+						</div>
+					}
 				</div>
+
 				<div className="mobileFriendlyContainer">
 					<IonList lines="full" inset={true} >
 						<IonListHeader>

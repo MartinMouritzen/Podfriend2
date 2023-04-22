@@ -2,6 +2,8 @@ import { windowsStore } from 'process';
 import { createRoot } from 'react-dom/client';
 import App from './App';
 
+import Events from 'library/Events.js';
+
 const container = document.getElementById('root');
 const root = createRoot(container);
 
@@ -13,6 +15,8 @@ let mouseY;
 
 let windowMoving = false;
 let listenToWindowMove = false;
+
+window.Events = Events;
 
 function onDoubleClick(event) {
 	for(var i=0;i<event.path.length;i++) {

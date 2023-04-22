@@ -5,7 +5,7 @@ import useStore from 'store/Store';
 import { BREAKPOINTS } from 'constants/breakpoints';
 import useBreakpoint from 'use-breakpoint';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 
 import DraggablePane from 'components/UI/DraggablePane/DraggablePane';
 
@@ -48,6 +48,9 @@ import PodcastImage from 'components/PodcastImage/PodcastImage';
 import TranscriptLiveArea from './Transcript/TranscriptLiveArea';
 import PodcastUtil from 'library/PodcastUtil';
 import ChatModal from "components/Chat/ChatModal";
+import AudioSpeedSettingModal from './AudioSpeedSettingModal';
+
+import Events from 'library/Events.js';
 
 const Player = ({ audioController, navigateToPath, platform }) => {
 	const { breakpoint } = useBreakpoint(BREAKPOINTS, 'desktop');
@@ -232,9 +235,45 @@ const Player = ({ audioController, navigateToPath, platform }) => {
 		onEmptied: (error) => { /* console.log('onEmptied happened in audio element'); console.log(error); console.log(error.nativeEvent); console.log(error.nativeEvent.message); console.log(error.nativeEvent.code); */  },
 		onStalled: (error) => { /* console.log('onStalled happened in audio element'); console.log(error); console.log(error.nativeEvent); console.log(error.nativeEvent.message); console.log(error.nativeEvent.code); */ }
 	};
+
+	// So we can access the values in the event handlers.
+	const isPlaying = useRef(shouldPlay);
+
 	useEffect(() => {
-		audioController.setAudioElement(audioElement.current);
+		isPlaying.current = shouldPlay;
+	},[shouldPlay]);
+
+	const playOrPause = useCallback(() => {
+		if (isPlaying.current) {
+			audioPause();
+		}
+		else {
+			audioPlay();
+		}
+	},[]);
+
+	useEffect(() => {
+		Events.addListener('PodfriendSetCurrentTime',(param) => { if (isNaN(param)) { return; } setCurrentTime(param) },'Player');
+		Events.addListener('MediaPlayPause',() => { console.log('MediaPlayPause'); playOrPause();  },'Player');
+		Events.addListener('MediaNextTrack',() => {  console.log('MediaNextTrack'); onSkipForward(); },'Player');
+		Events.addListener('MediaPreviousTrack',() => { console.log('MediaPreviousTrack'); onSkipBackward(); },'Player');
+		Events.addListener('MediaRewindTrack',() => {  console.log('MediaRewindTrack'); onBackward(); },'Player');
+		Events.addListener('MediaForwardTrack',() => {  console.log('MediaForwardTrack'); onForward(); },'Player');
+
+		return () => {
+			Events.removeListenersInGroup('Player');
+		};
+	},[]);
+
+	useEffect(() => {
+		if (audioElement.current) {
+			audioController.setAudioElement(audioElement.current);
+		}
 	},[audioElement]);
+
+	useEffect(() => {
+		audioController.setPlaybackRate(playbackSpeed);
+	},[playbackSpeed]);
 
 	useEffect(() => {
 		if (audioElement.paused && shouldPlay) {
@@ -374,21 +413,21 @@ const Player = ({ audioController, navigateToPath, platform }) => {
 					text: 'Set audio speed',
 					icon: speedIcon,
 					data: {
-						action: 'website'
+						action: 'playbackSpeed'
 					}
 				},
 				{
 					text: 'Set sleep timer',
 					icon: alarmIcon,
 					data: {
-						action: 'website'
+						action: 'sleepTimer'
 					}
 				},
 				{
 					text: 'Share episode',
 					icon: shareIcon,
 					data: {
-						action: 'website'
+						action: 'share'
 					}
 				},
 				{
@@ -418,12 +457,32 @@ const Player = ({ audioController, navigateToPath, platform }) => {
 				if (detail?.data?.action === 'website') {
 					window.open(podcastData.link,"_blank");
 				}
+				else if (detail?.data?.action === 'playbackSpeed') {
+					openPlaybackSpeedModal();
+				}
+				else if (detail?.data?.action === 'sleepTimer') {
+
+				}
+				else if (detail?.data?.action === 'share') {
+
+				}
 			},
 			onDidDismiss: ({ detail }) => {
-				console.log('pressed action sheet button');
-				console.log(detail);
+				
 			},
 		})
+	};
+
+	const [playbackSpeedModalPresent, playbackSpeedModalDismiss] = useIonModal(AudioSpeedSettingModal, {
+		onDismiss: (data, role) => playbackSpeedModalDismiss(data, role)
+	});
+
+	const openPlaybackSpeedModal = () => {
+		playbackSpeedModalPresent({
+			initialBreakpoint: 0.5,
+			breakpoints: [0, 0.5,1],
+			canDismiss: true
+		});
 	};
 
 	const [presentChatModal, dismissChatModal] = useIonModal(ChatModal, {

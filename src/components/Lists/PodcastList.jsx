@@ -9,15 +9,6 @@ const PodcastList = ({ podcasts, listType = 'scroll', filterString = '', backBut
 		console.log('yay');
 	};
 
-	const slideOpts = {
-		slidesPerView: 'auto',
-		zoom: false,
-		grabCursor: true,
-		spaceBetween: 20,
-		slidesOffsetBefore: 20,
-		ionSlideTap: onClick
-	};
-
 	if (listType === 'scroll') {
 		return (
 			<CoverCarousel

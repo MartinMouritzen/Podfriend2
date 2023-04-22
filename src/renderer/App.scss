@@ -10,6 +10,8 @@
 	--primary-color-light: #3d95e8;
 	--primary-color-dark: #00366B;
 
+	--secondary-color-text: #333333;
+
 	--ion-color-secondary: #f3f8ff;
 	--ion-color-secondary-contrast: #0f6fff;
 	--ion-color-secondary-shade: #dbeaff;
@@ -147,6 +149,11 @@ ion-content {
 	@media (min-width: 1024px) {
 		display: block !important;
 	}
+}
+.centerPage {
+	max-width: 700px;
+	margin-left: auto;
+	margin-right: auto;
 }
 .greyPage {
 	--background: var(--grey-page-background);

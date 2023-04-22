@@ -32,6 +32,7 @@ import {
 	micSharp as companyIcon,
 } from 'ionicons/icons';
 import LiveEpisodes from "./LiveEpisodes";
+import PodRoll from "./PodRoll";
 
 const PodcastPage = ({ match }) => {
 	const [actionButtonsRef, { x, y, width: actionButtonsWidth }] = useDimensions();
@@ -62,6 +63,7 @@ const PodcastPage = ({ match }) => {
 	const [podcastLocation,setPodcastLocation] = useState(false);
 	const [showPodcastLocation,setShowPodcastLocation] = useState(false);
 	const [persons,setPersons] = useState(false);
+	const [podRoll,setPodRoll] = useState(false);
 	const [liveItems,setLiveItems] = useState(false);
 	
 	const location = useLocation();
@@ -89,6 +91,13 @@ const PodcastPage = ({ match }) => {
 		}
 	},[activePodcast.path]);
 
+	useEffect(() => {
+		if (podcastData && activePodcast.path == podcastPath) {
+			podcastData.configSelectedSortOrder = activePodcast.configSelectedSortOrder;
+			podcastData.configSelectedSeason = activePodcast.configSelectedSeason;
+		}
+	},[activePodcast.configSelectedSortOrder,activePodcast.configSelectedSeason]);
+
 	// console.log(podcastData.rssFeedContents);
 
 	useEffect(() => {
@@ -102,6 +111,7 @@ const PodcastPage = ({ match }) => {
 		if (!podcastRSSData) {
 			console.log('No podcastRSData');
 			setPersons(false);
+			setPodRoll(false);
 			setPodcastLocation(false);
 			setLiveItems(false);
 			return;
@@ -117,19 +127,32 @@ const PodcastPage = ({ match }) => {
 		else {
 			setPodcastLocation(false);
 		}
+
+		if (podcastRSSData.podRoll) {
+			setPodRoll(podcastRSSData.podRoll);
+		}
+		else {
+			setPodRoll(false);
+		}
+
 		if (podcastRSSData.persons) {
 			// console.log('Feed has persons');
 			// console.log(podcastRSSData.persons);
 			setPersons(podcastRSSData.persons);
 		}
 		else {
-			console.log('Feed doesn\'t have persons');
+			// console.log('Feed doesn\'t have persons');
 			setPersons(false);
 		}
 	},[JSON.stringify(podcastRSSData)]);
 
 	const refreshPodcast = () => {
-		return retrievePodcastFromServer(podcastPath,podcastData)
+		var podcastDataToUse = podcastData
+		if (activePodcast.path == podcastData.path) {
+			var podcastDataToUse = activePodcast;
+		}
+
+		return retrievePodcastFromServer(podcastPath,podcastDataToUse)
 		.then((podcastDataFromServer) => {
 			setPodcastData(podcastDataFromServer);
 			setPodcastState('loaded');
@@ -491,6 +514,12 @@ const PodcastPage = ({ match }) => {
 					<div className="personContainer">
 						<h2>Creators and guests behind the podcast</h2>
 						<PodcastPersons persons={persons} />
+					</div>
+				}
+				{ podRoll !== false &&
+					<div className="personContainer">
+						<h2>This podcast recommends</h2>
+						<PodRoll podRoll={podRoll} />
 					</div>
 				}
 				{ (false && podcastState === 'loading') &&

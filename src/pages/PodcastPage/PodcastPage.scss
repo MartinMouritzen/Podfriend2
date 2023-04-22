@@ -1,5 +1,7 @@
-h3 {
-	margin-left: 20px;
+.podcastPage {
+	h3 {
+		margin-left: 20px;
+	}
 }
 .podcastHeader {
 	display: flex;
@@ -160,6 +162,8 @@ h3 {
 .podcastExtraContent {
 	margin-left: 20px;
 	margin-right: 20px;
+
+	padding-bottom: 40px;
 }
 .liveItem {
 	background-color: #F9F9FF;

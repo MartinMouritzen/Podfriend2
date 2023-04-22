@@ -21,7 +21,15 @@ export const createPlayerSlice = (set,get) => ({
 	shouldPlay: false,
 	isPlaying: false,
 	isLoading: false,
+	/**********************************************************************************
+	* Playback speed
+	***********************************************************************************/
 	playbackSpeed: 1,
+	setPlaybackSpeed: (speed) => {
+		set({
+			playbackSpeed: speed
+		});
+	},
 	/**********************************************************************************
 	* Audio functions
 	***********************************************************************************/
@@ -65,7 +73,11 @@ export const createPlayerSlice = (set,get) => ({
 
 			console.log('Playing episode');
 			console.log(episode);
-
+			if (episode && episode.currentTime == null) {
+				console.log(podcast);
+				console.log(activePodcast);
+				console.log(episodeUrl);
+			}
 			if (!episode) {
 				console.log('Episode not found?');
 				console.log(episodeUrl);
@@ -248,7 +260,7 @@ export const createPlayerSlice = (set,get) => ({
 		console.log(activePodcast);
 
 		if (activePodcast.configSelectedSortOrder === 'old') {
-			for(var i=activePodcast.episodes.length - 1;i>0;i--) {
+			for(var i=activePodcast.episodes.length - 1;i>=0;i--) {
 				if (nextEpisodeIsAfterCurrent) {
 					if (activePodcast.episodes[i].episodeType !== 'trailer') {
 						console.log('found it!');

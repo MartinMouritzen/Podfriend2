@@ -69,8 +69,14 @@ class WebAudioController extends AudioController {
 			if (!playbackRate || Number.isNaN(playbackRate)) {
 				playbackRate = 1;
 			}
-
-			this.audioElement.playbackRate = playbackRate;
+			try {
+				this.audioElement.playbackRate = playbackRate;
+			}
+			catch(exception) {
+				console.log('Error happened in WebAudioController.setPlaybackRate');
+				console.log(playbackRate);
+				console.log(exception);
+			}
 		}
 	}
 	/**

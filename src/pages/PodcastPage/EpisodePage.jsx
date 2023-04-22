@@ -34,8 +34,8 @@ const EpisodePage = ({ match, audioController }) => {
 	const podcastPath = match.params.podcastPath;
 	const episodeId = match.params.episodeId;
 
-	const [episode,setEpisode] = useState();
-	const [podcast,setPodcast] = useState();
+	const [episode,setEpisode] = useState(false);
+	const [podcast,setPodcast] = useState(false);
 
 	const location = useLocation();
 
@@ -141,6 +141,13 @@ const EpisodePage = ({ match, audioController }) => {
 		}
 	}
 
+	// Hack for now, we need to do it in the actual code when parsing.
+	useEffect(() => {
+		setTimeout(() => {
+			document.querySelectorAll(".description a").forEach(a => a.setAttribute("target", "_blank"))
+		},1000);
+	},[]);
+
 	const backButtonText = location?.state?.podcast ? location.state.podcast.name : podcast ? podcast.name : 'Back';
 
 	return (
@@ -179,24 +186,28 @@ const EpisodePage = ({ match, audioController }) => {
 								</IonToolbar>
 							</IonHeader>
 							<h3>{podcast?.name}</h3>
-							<div style={{ marginTop: 10 }}>
-								Released
+							<div style={{ marginTop: 10, color: '#666666' }}>
+								Episode released {new Date(episode.date).toLocaleDateString(false,{ weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
 							</div>
-
-							<div className="episodeButtons">
-								{ (shouldPlay && activeEpisode.url === episode.url) &&
-									<IonButton onClick={onPauseClick}>
-										<IonIcon icon={pauseIcon} slot="start" />
-										Pause episode
-									</IonButton>
-								}
-								{ (!shouldPlay || (activeEpisode.url !== episode.url)) &&
-									<IonButton onClick={onPlayClick}>
-										<IonIcon icon={playIcon} slot="start" />
-										Play episode
-									</IonButton>	
-								}
-							</div>
+							{ episode === false &&
+								<IonSkeletonText />
+							}
+							{ episode !== false &&
+								<div className="episodeButtons">
+									{ (shouldPlay && activeEpisode.url === episode.url) &&
+										<IonButton onClick={onPauseClick}>
+											<IonIcon icon={pauseIcon} slot="start" />
+											Pause episode
+										</IonButton>
+									}
+									{ (!shouldPlay || (activeEpisode.url !== episode.url)) &&
+										<IonButton onClick={onPlayClick}>
+											<IonIcon icon={playIcon} slot="start" />
+											Play episode
+										</IonButton>	
+									}
+								</div>
+							}
 						</div>
 					</div>
 				</div>

@@ -2,8 +2,6 @@ import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonButtons, IonMe
 
 import { useRef, useState, useEffect, useCallback } from 'react';
 
-import AccountModal from "components/AccountModal/AccountModal";
-
 import useBreakpoint from 'use-breakpoint';
 
 import BottomMenu from "components/BottomMenu/BottomMenu";
@@ -91,10 +89,11 @@ const Page = ({ id = null, title = "Undefined", defaultHeader = true, defaultHre
 
 	const loggedIn = useStore((state) => state.loggedIn);
 	const userData = useStore((state) => state.userData);
+	const setShowingLoginModal = useStore((state) => state.setShowingLoginModal);
 
 	const random = Math.random();
-	const modalString = "open-account-modal-" + random;
-
+	// const modalString = "open-account-modal-" + random;
+	const modalString = "open-account-modal";
 	const [ contentNodeRef ] = useHookWithRefCallback(setScrollableContentRef);
 
 	/*
@@ -125,7 +124,7 @@ const Page = ({ id = null, title = "Undefined", defaultHeader = true, defaultHre
 					</IonButtons>
 					<IonTitle>{title}</IonTitle>
 					<IonButtons slot="end" className="ionButtons">
-						<IonButton id={modalString}>
+						<IonButton onClick={() => { setShowingLoginModal(true); }}>
 							{ loggedIn &&
 								<IonLabel className="userNameLabel">{userData.username}</IonLabel>
 							}
@@ -158,7 +157,6 @@ const Page = ({ id = null, title = "Undefined", defaultHeader = true, defaultHre
 				}
 				{children}
 				<div className="playerPagePadding" style={{ height: 90 }}></div>
-				<AccountModal trigger={modalString} />
 			</IonContent>
 			{ showBottomMenu &&
 				<BottomMenu />

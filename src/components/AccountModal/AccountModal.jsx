@@ -1,6 +1,6 @@
 import { useRef, useState, useEffect } from "react";
 
-import { IonModal, IonContent, IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonNav } from "@ionic/react";
+import { IonModal, IonContent, IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonNav, useIonModal, IonPage } from "@ionic/react";
 import LoginIndex from "./LoginIndex";
 
 import useStore from 'store/Store';
@@ -8,21 +8,61 @@ import useStore from 'store/Store';
 import './AccountModal.scss'
 import AccountPage from "./AccountPage";
 
-const AccountModal = ({ trigger, canDismiss = true }) => {
+const AccountModal = ({  }) => {
 
 	const page = useRef(null);
 	const modal = useRef(null);
 	const [presentingElement, setPresentingElement] = useState(null);
 
-	const loggedIn = useStore((state) => state.loggedIn);
+	const showingLoginModal = useStore((state) => state.showingLoginModal);
+	const setShowingLoginModal = useStore((state) => state.setShowingLoginModal);
 	
 	useEffect(() => {
 		setPresentingElement(page.current);
 	}, []);
 
-	const dismiss = () => {
-		modal.current?.dismiss();
+	
+
+
+
+
+	// console.log(loggedIn + ':' + creatingUser);
+	const [accountModalPresent, accountModalDismiss] = useIonModal(AccountModalInner, {
+		dismiss: (data,role) => { accountModalDismiss(data, role); },
+	});
+
+	useEffect(() => {
+		if (showingLoginModal) {
+			openModal();
+		}
+		else {
+			closeModal();
+		}
+	},[showingLoginModal]);
+
+	const closeModal = () => {
+		accountModalDismiss();
+	};
+	const openModal = () => {
+		accountModalPresent({
+			backdropBreakpoint: 0.5,
+			backdropDismiss: true,
+			initialBreakpoint: 1,
+			breakpoints: [0,1],
+			canDismiss: true,
+			
+			onDidDismiss: (event) => {
+				// setShowingLoginModal(false);
+			},
+			onWillDismiss: (event) => {
+				setShowingLoginModal(false);
+			},
+		});
 	}
+	return null;
+}
+const AccountModalInner = ({ dismiss } ) => {
+	const loggedIn = useStore((state) => state.loggedIn);
 
 	const [creatingUser,setCreatingUser] = useState(false);
 
@@ -30,16 +70,15 @@ const AccountModal = ({ trigger, canDismiss = true }) => {
 		setCreatingUser(loggedIn === false);
 	},[loggedIn]);
 
+
 	const onDismiss = () => {
 		if (loggedIn) {
 			setCreatingUser(false);
 		}
 	};
 
-	// console.log(loggedIn + ':' + creatingUser);
-
 	return (
-		<IonModal ref={modal} trigger={trigger} presentingElement={presentingElement} canDismiss={canDismiss} onDidDismiss={onDismiss}>
+		<IonPage>
 			{ (loggedIn && !creatingUser) &&
 				<IonHeader>
 					<IonToolbar>
@@ -58,7 +97,7 @@ const AccountModal = ({ trigger, canDismiss = true }) => {
 			{ (loggedIn && !creatingUser) &&
 				<AccountPage dismiss={dismiss} />
 			}
-		</IonModal>
+		</IonPage>
 	);
 }
 export default AccountModal;

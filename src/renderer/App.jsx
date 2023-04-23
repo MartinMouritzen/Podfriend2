@@ -120,22 +120,23 @@ export default function App({ platform, audioController, desktop = false }) {
 	].map((Route, index) => ({ ...Route, key: index }));
 
 	return (
-		<>
+		<RouterUsed ref={router}>
 			<IonApp className={'platform_' + platform}>
 				{ platform === 'desktop' &&
 					<DesktopHeader />
 				}
 				<Player audioController={audioController} navigateToPath={navigateToPath} platform={platform} />
 				<div className="menuShadow" style={{ display: 'none' }}>&nbsp;</div>
-				<RouterUsed ref={router}>
+				
 					<IonSplitPane contentId="main" when={showSplitPane}>
 						<MainMenu />
 						<IonRouterOutlet id="main">
 							{routes}
 						</IonRouterOutlet>
 					</IonSplitPane>
-				</RouterUsed>
+					<AccountModal />
+				
 			</IonApp>
-		</>
+		</RouterUsed>
 	);
 }

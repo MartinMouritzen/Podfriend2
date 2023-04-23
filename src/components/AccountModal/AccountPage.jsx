@@ -11,8 +11,6 @@ const AccountPage = ({ dismiss }) => {
 	const userData = useStore((state) => state.userData);
 	const userNotLoggedIn = useStore((state) => state.userNotLoggedIn);
 
-	console.log(userData);
-
 	const onAccountChangeClicked = () => {
 		alert('Account editing will be implemented soon');
 	};

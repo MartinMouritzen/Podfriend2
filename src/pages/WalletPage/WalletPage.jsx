@@ -23,6 +23,7 @@ import WalletModal from "components/Wallet/WalletModal";
 
 const WalletPage = ({  }) => {
 	const _hasHydrated = useStore((state) => state._hasHydrated);
+	const loggedIn = useStore((state) => state.loggedIn);
 	const userData = useStore((state) => state.userData);
 	const walletBalance = useStore((state) => state.walletBalance);
 	const walletSetupCompleted = useStore((state) => state.walletSetupCompleted);
@@ -31,6 +32,7 @@ const WalletPage = ({  }) => {
 	const legacyWalletBalance = useStore((state) => state.legacyWalletBalance);
 	const synchronizeLegacyWallet = useStore((state) => state.synchronizeLegacyWallet);
 	
+	const setShowingLoginModal = useStore((state) => state.setShowingLoginModal);
 
 	// console.log(userData);
 
@@ -73,6 +75,10 @@ const WalletPage = ({  }) => {
 		.then(() => {
 			console.log('Wallet window opened');
 		});
+	};
+
+	const onLoginClicked = () => {
+		setShowingLoginModal(true);
 	};
 
 	return (
@@ -122,7 +128,13 @@ const WalletPage = ({  }) => {
 								</IonItem>
 							</>
 						}
-						{ !walletSetupCompleted &&
+						{ !walletSetupCompleted && !loggedIn &&
+							<IonItem detail={true} onClick={onLoginClicked}>
+								<IonIcon icon={historyIcon} slot="start" />
+								Log in to connect wallet
+							</IonItem>
+						}
+						{ !walletSetupCompleted && loggedIn &&
 							<IonItem detail={true} onClick={onBeginConnectWallet}>
 								<IonIcon icon={historyIcon} slot="start" />
 								Connect to Alby wallet

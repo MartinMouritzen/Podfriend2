@@ -61,7 +61,7 @@ const TranscriptSegment = ({ avatar, initials, color, speakerName, position, cur
 							}
 						}
 						return (
-							<div key={'line' + index} className={'line ' + extraClass + (lineIsActive ? ' active' : '')} onClick={() => { setCurrentTime(line.startTime); }} dangerouslySetInnerHTML={{__html:line.body}}>
+							<div startTime={line.startTime} endTime={line.endTime} key={'line' + index} className={'line ' + extraClass + (lineIsActive ? ' active' : '')} onClick={() => { setCurrentTime(line.startTime); }} dangerouslySetInnerHTML={{__html:line.body}}>
 								
 							</div>
 						);

@@ -25,6 +25,7 @@ const CoverCarousel = ({ type, podcasts, backButtonText }) => {
 			spaceBetween={10}
 			slidesOffsetBefore={10}
 			slidesOffsetAfter={10}
+			touchStartForcePreventDefault={true}
 			/* navigation={('ontouchstart' in window ? false : true)} */
 			navigation={{
 				nextEl: '.swiper-button-next',

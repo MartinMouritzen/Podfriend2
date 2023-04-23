@@ -338,6 +338,9 @@ const Player = ({ audioController, navigateToPath, platform }) => {
 					if (rssFeedCurrentEpisode.transcript[i].type == 'application/srt' || rssFeedCurrentEpisode.transcript[i].type == 'text/srt') {
 						useTranscript = rssFeedCurrentEpisode.transcript[i];
 					}
+					else if (rssFeedCurrentEpisode.transcript[i].type == 'application/json' || rssFeedCurrentEpisode.transcript[i].type == 'text/json') {
+						useTranscript = rssFeedCurrentEpisode.transcript[i];
+					}
 				}
 				if (!useTranscript) {
 					useTranscript = rssFeedCurrentEpisode.transcript[0];

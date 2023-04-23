@@ -23,5 +23,11 @@ export const createUISlice = (set, get) => ({
 		var desktop = get().desktop;
 		desktop.closeApplication();
 	},
-	latestSearches: []
+	latestSearches: [],
+	showingLoginModal: false,
+	setShowingLoginModal: (show) => {
+		set({
+			showingLoginModal: show
+		});
+	}
 });

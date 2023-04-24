@@ -134,7 +134,7 @@ export default function App({ platform, audioController, desktop = false }) {
 							{routes}
 						</IonRouterOutlet>
 					</IonSplitPane>
-					<AccountModal />
+					<AccountModal breakpoint={breakpoint} />
 				
 			</IonApp>
 		</RouterUsed>

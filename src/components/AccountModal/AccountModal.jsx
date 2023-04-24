@@ -8,8 +8,7 @@ import useStore from 'store/Store';
 import './AccountModal.scss'
 import AccountPage from "./AccountPage";
 
-const AccountModal = ({  }) => {
-
+const AccountModal = ({ breakpoint }) => {
 	const page = useRef(null);
 	const modal = useRef(null);
 	const [presentingElement, setPresentingElement] = useState(null);
@@ -20,11 +19,6 @@ const AccountModal = ({  }) => {
 	useEffect(() => {
 		setPresentingElement(page.current);
 	}, []);
-
-	
-
-
-
 
 	// console.log(loggedIn + ':' + creatingUser);
 	const [accountModalPresent, accountModalDismiss] = useIonModal(AccountModalInner, {
@@ -47,8 +41,8 @@ const AccountModal = ({  }) => {
 		accountModalPresent({
 			backdropBreakpoint: 0.5,
 			backdropDismiss: true,
-			initialBreakpoint: 1,
-			breakpoints: [0,1],
+			initialBreakpoint: breakpoint === 'desktop' ? undefined : 1,
+			breakpoints: breakpoint === 'desktop' ? undefined : [0,1],
 			canDismiss: true,
 			
 			onDidDismiss: (event) => {

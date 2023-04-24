@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { IonButton, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonToolbar, IonTitle, IonButtons, IonNavLink, IonContent, IonBackButton, IonCheckbox } from "@ionic/react";
 
-import { mailOutline as mailIcon, chevronBackOutline as backIcon, checkmarkCircleOutline as checkMark, lockClosedOutline as passwordIcon } from 'ionicons/icons';
+import { mailOutline as mailIcon, chevronBackOutline as backIcon, checkmarkCircleOutline as checkMark, lockClosedOutline as passwordIcon, closeCircleOutline as closeIcon } from 'ionicons/icons';
 import { useState } from "react";
 
 import LoginPage from "./LoginPage";
@@ -13,15 +13,11 @@ const LoginIndex = ({ dismiss }) => {
 
 	return (
 		<>
-			<IonHeader className="blueModalHeader ion-no-border">
-				<IonToolbar>
-					
-				</IonToolbar>
-			</IonHeader>
 			<IonContent>
 				<div className="loginPage modalPage">
 					<div className="teaser">
 						<div className="teaserContent">
+							{ /* <IonLabel className='backLink' onClick={dismiss}><IonIcon icon={closeIcon} style={{ position: 'relative', top: 2 }} /> <IonLabel>Close</IonLabel></IonLabel> */ }
 							<h2>Personalize your listening</h2>
 							<p>
 								Make the most of Podfriend

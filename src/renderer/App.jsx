@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { Capacitor } from '@capacitor/core';
 
@@ -48,6 +48,7 @@ import DesktopHeader from 'components/WindowFrame/DesktopHeader';
 import AccountModal from 'components/AccountModal/AccountModal';
 import AlbyOauthPage from 'pages/WalletPage/AlbyOauthPage';
 import ContactPage from 'pages/ContactPage/ContactPage';
+import LoadingScreen from 'components/UI/LoadingScreen';
 
 setupIonicReact({
 	mode: 'ios',
@@ -63,6 +64,10 @@ export default function App({ platform, audioController, desktop = false }) {
 	const { breakpoint } = useBreakpoint(BREAKPOINTS, 'desktop');
 
 	const showSplitPane = breakpoint === 'desktop';
+
+	const [readyToShow,setReadyToShow] = useState(false);
+
+	const _hasHydrated = useStore((state) => state._hasHydrated);
 
 	const loggedIn = useStore((state) => state.loggedIn);
 	const setAudioController = useStore((state) => state.setAudioController);
@@ -81,11 +86,15 @@ export default function App({ platform, audioController, desktop = false }) {
 	},[]);
 
 	useEffect(() => {
-		if (loggedIn) {
+		setReadyToShow(_hasHydrated);
+	},[_hasHydrated]);
+
+	useEffect(() => {
+		if (_hasHydrated && loggedIn) {
 			console.log('synchronizePodcasts();');
 			synchronizePodcasts();
 		}
-	},[loggedIn]);
+	},[loggedIn,_hasHydrated]);
 
 	const router = useRef(false);
 	const navigateToPath = (path) => {
@@ -98,8 +107,10 @@ export default function App({ platform, audioController, desktop = false }) {
 	};
 
 	useEffect(() => {
-		authenticateUser();
-	},[authToken]);
+		if (_hasHydrated && authToken) {
+			authenticateUser();
+		}
+	},[authToken,_hasHydrated]);
 
 	const routes = [
 		<Route path="/" exact={true} render={(props) => <Home {...props} />} />,
@@ -122,19 +133,26 @@ export default function App({ platform, audioController, desktop = false }) {
 	return (
 		<RouterUsed ref={router}>
 			<IonApp className={'platform_' + platform}>
-				{ platform === 'desktop' &&
-					<DesktopHeader />
+				{ !readyToShow &&
+					<LoadingScreen />
 				}
-				<Player audioController={audioController} navigateToPath={navigateToPath} platform={platform} />
-				<div className="menuShadow" style={{ display: 'none' }}>&nbsp;</div>
-				
-					<IonSplitPane contentId="main" when={showSplitPane}>
-						<MainMenu />
-						<IonRouterOutlet id="main">
-							{routes}
-						</IonRouterOutlet>
-					</IonSplitPane>
-					<AccountModal breakpoint={breakpoint} />
+				{ readyToShow &&
+					<>
+						{ platform === 'desktop' &&
+							<DesktopHeader />
+						}
+						<Player audioController={audioController} navigateToPath={navigateToPath} platform={platform} />
+						<div className="menuShadow" style={{ display: 'none' }}>&nbsp;</div>
+						
+						<IonSplitPane contentId="main" when={showSplitPane}>
+							<MainMenu />
+							<IonRouterOutlet id="main">
+								{routes}
+							</IonRouterOutlet>
+						</IonSplitPane>
+						<AccountModal breakpoint={breakpoint} />
+					</>
+				}
 				
 			</IonApp>
 		</RouterUsed>

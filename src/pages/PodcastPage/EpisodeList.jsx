@@ -8,28 +8,22 @@ import './EpisodeList.scss';
 
 import EpisodeItem from './EpisodeItem';
 
-const EpisodeList = ({ podcastData, podcastPath, episodes, showNumberOfEpisodes = 4, inset = false }) => {
-	const [selectedSeason,setSelectedSeason] = useState(0);
-	const [selectedSortOrder,setSelectedSortOrder] = useState('new');
+const EpisodeList = ({ podcastData, podcastPath, episodes, showNumberOfEpisodes = 4, inset = false, setActiveEpisodeIsShownInList = false }) => {
 	const [sortedEpisodes,setSortedEpisodes] = useState([]);
 	const [seasons,setSeasons] = useState([]);
 	const [trailers,setTrailers] = useState([]);
 
+	const selectedSeason = useStore((state) => state.podcasts[podcastPath] ? state.podcasts[podcastPath].selectedSeason : undefined);
+	const sortOrder = useStore((state) => state.podcasts[podcastPath] ? state.podcasts[podcastPath].sortOrder : undefined);
+
 	const episodeCountShowMoreTrigger = 20;
 
-	const updatePodcastConfig = useStore((state) => state.updatePodcastConfig);
+	const updatePodcastAttributes = useStore((state) => state.updatePodcastAttributes);
 	const activePodcast = useStore((state) => state.activePodcast);
 	const activeEpisode = useStore((state) => state.activeEpisode);
 	const shouldPlay = useStore((state) => state.shouldPlay);
 
-	if (activePodcast.path == podcastData.path) {
-		podcastData = activePodcast;
-	}
-
 	const reorderEpisodes = () => {
-		// console.log(podcastData);
-		// console.log(podcastData.receivedFromServer);
-
 		let seasonCount = 0;
 		let rawSeasons = [];
 		let trailers = [];
@@ -37,6 +31,10 @@ const EpisodeList = ({ podcastData, podcastPath, episodes, showNumberOfEpisodes 
 		setSeasons([]);
 		setTrailers([]);
 		setSortedEpisodes([]);
+
+		var shouldUpdateConfig = false;
+
+		let seasonNumbers = false;
 
 		if (Array.isArray(episodes)) {
 			episodes.forEach((episode,index) => {
@@ -57,27 +55,22 @@ const EpisodeList = ({ podcastData, podcastPath, episodes, showNumberOfEpisodes 
 					rawSeasons[seasonNumber].push(episode);
 				}
 			});
-			let seasonNumbers = Object.keys(rawSeasons);
+			seasonNumbers = Object.keys(rawSeasons);
 			seasonCount = rawSeasons.length;
 			setSeasons(rawSeasons);
-			setSelectedSeason(podcastData.configSelectedSeason ? podcastData.configSelectedSeason : seasonNumbers[seasonNumbers.length - 1]);
-			console.log(`setSelectedSeason: ${podcastData.configSelectedSeason ? podcastData.configSelectedSeason : seasonNumbers[seasonNumbers.length - 1]}`);
-		}
-		
-		if (podcastData.configSelectedSortOrder) {
-			console.log('selected order: ' + podcastData.configSelectedSortOrder);
-			setSelectedSortOrder(podcastData.configSelectedSortOrder);
-		}
-		else {
-			// If it's a seasonal podcast, we want to sort old to new
-			if (seasonCount > 1) {
-				console.log('oef1');
-				setSelectedSortOrder('old');
+
+			if (!selectedSeason) {
+				shouldUpdateConfig = true;
 			}
-			else {
-				console.log('oef2');
-				setSelectedSortOrder('new');
-			}
+		}
+		if (!sortOrder) {
+			shouldUpdateConfig = true;
+		}
+		if (shouldUpdateConfig) {
+			updatePodcastAttributes(podcastPath,{
+				selectedSeason: selectedSeason ? selectedSeason : seasonNumbers ? seasonNumbers[seasonNumbers.length - 1] : undefined,
+				sortOrder: sortOrder ? sortOrder : seasonCount > 1 ? 'old' : 'new'
+			});
 		}
 	};
 
@@ -90,34 +83,31 @@ const EpisodeList = ({ podcastData, podcastPath, episodes, showNumberOfEpisodes 
 			return;
 		}
 		var seasonEpisodes = seasons[selectedSeason].slice();
-		setSortedEpisodes(selectedSortOrder === 'new' ? seasonEpisodes : seasonEpisodes.reverse());
-	},[seasons,selectedSeason,selectedSortOrder]);
+		setSortedEpisodes(sortOrder === 'new' ? seasonEpisodes : seasonEpisodes.reverse());
+	},[seasons,selectedSeason,sortOrder]);
 
 	const onSeasonChange = (event) => {
 		console.log(event);
-		updatePodcastConfig({
-			guid: podcastData.guid,
-			podcastPath: podcastData.path,
-			season: event.detail.value
-		});
-		console.log(event.detail.value);
-		console.trace();
-		setSelectedSeason(event.detail.value);
+		updatePodcastAttributes(
+			podcastData.path,
+			{
+				selectedSeason: event.detail.value
+			}
+		);
 	};
 
 	const onSortOrderChange = (event) => {
-		updatePodcastConfig({
-			guid: podcastData.guid,
-			podcastPath: podcastData.path,
-			sortOrder: event.detail.value
-		});
-		console.log(event.detail.value);
-		setSelectedSortOrder(event.detail.value);
+		updatePodcastAttributes(
+			podcastPath,
+			{
+				sortOrder: event.detail.value
+			}
+		);
 	};
 
 	return (
 		<div className="episodeListOuter">
-			<h1>Episode list</h1>
+			<h2 className="podcastPageSubHeader">Episode list</h2>
 			<div className="episodeListActions">
 				{ seasons.length > 1 &&
 					<IonSelect
@@ -145,7 +135,7 @@ const EpisodeList = ({ podcastData, podcastPath, episodes, showNumberOfEpisodes 
 				<IonSelect
 					className="sortOrderSelect"
 					interface="action-sheet"
-					selectedText={selectedSortOrder === 'new' ? 'Newest first' : 'Oldest first'}
+					selectedText={sortOrder === 'new' ? 'Newest first' : 'Oldest first'}
 					onIonChange={onSortOrderChange}
 				>
 					<IonItem>
@@ -161,16 +151,21 @@ const EpisodeList = ({ podcastData, podcastPath, episodes, showNumberOfEpisodes 
 			<IonList lines="full" inset={inset} className="episodeList">
 		{ seasons.map((episodes,seasonIndex) => {
 			if (selectedSeason == seasonIndex && sortedEpisodes) {
+				var foundActiveEpisode = false;
 				var shownEpisodes = 0;
-				return sortedEpisodes.map((episode,episodeIndex) => {
+				var episodeList = sortedEpisodes.map((episode,episodeIndex) => {
 					shownEpisodes++;
 
 					if (sortedEpisodes.length > episodeCountShowMoreTrigger && showNumberOfEpisodes > 0 && shownEpisodes > showNumberOfEpisodes) {
 						return;
 					}
+					if (activeEpisode.guid === episode.guid) {
+						foundActiveEpisode = true;
+					}
 
 					// var realEpisode = false;
 					// Find the "real" episode object.
+					/*
 					if (podcastData && podcastData.episodes) {
 						for (var i=0;i<podcastData.episodes.length;i++) {
 							if (podcastData.episodes[i].url == episode.url) {
@@ -178,32 +173,24 @@ const EpisodeList = ({ podcastData, podcastPath, episodes, showNumberOfEpisodes 
 							}
 						}
 					}
-
-					/*
-					if (episode.guid === 'Buzzsprout-11756765') {
-						console.log(podcastData.episodes);
-						console.log(episode.currentTime);
-						console.log(episode);
-					}
 					*/
-
 					return <EpisodeItem
 						key={episode.guid ? episode.guid : episode.url}
-						id={episode.id}
 						guid={episode.guid}
 						title={episode.title}
 						description={episode.description}
 						image={episode.image}
-						currentTime={episode.currentTime}
-						duration={episode.duration}
-						url={episode.url}
+						podcastPath={podcastPath}
 						podcastData={podcastData}
-						episode={activeEpisode.url === episode.url ? activeEpisode : episode}
-						shouldPlay={shouldPlay}
-						selected={activeEpisode.url === episode.url}
-						isActiveEpisode={activeEpisode.url === episode.url}
+						episode={episode}
+						selected={activeEpisode.guid === episode.guid}
+						isActiveEpisode={activeEpisode.guid === episode.guid}
 					/>;
-				})
+				});
+				if (setActiveEpisodeIsShownInList) {
+					setActiveEpisodeIsShownInList(foundActiveEpisode);
+				}
+				return episodeList;
 			}
 		})}
 		</IonList>
@@ -213,7 +200,7 @@ const EpisodeList = ({ podcastData, podcastPath, episodes, showNumberOfEpisodes 
 				<div style={{ padding: '10px', textAlign: 'right' }}>
 					<IonButton id="open-episode-modal" fill="clear">Show all episodes ({sortedEpisodes.length})</IonButton>
 
-					<AllEpisodesModal podcastData={podcastData} seasons={seasons} selectedSeason={selectedSeason} sortedEpisodes={sortedEpisodes} activePodcast={activePodcast} activeEpisode={activeEpisode} trigger="open-episode-modal" />
+					<AllEpisodesModal podcastPath={podcastPath} podcastData={podcastData} seasons={seasons} selectedSeason={selectedSeason} sortedEpisodes={sortedEpisodes} activePodcast={activePodcast} activeEpisode={activeEpisode} trigger="open-episode-modal" />
 				</div>
 			}
 		</div>
@@ -226,7 +213,7 @@ const EpisodeList = ({ podcastData, podcastPath, episodes, showNumberOfEpisodes 
 /************************************************
 * All episodes modal list
 ************************************************/
-const AllEpisodesModal = ({ podcastData, trigger, seasons, selectedSeason, sortedEpisodes, activePodcast, activeEpisode }) => {
+const AllEpisodesModal = ({ podcastPath, podcastData, trigger, seasons, selectedSeason, sortedEpisodes, activePodcast, activeEpisode }) => {
 	const page = useRef(null);
 	const modal = useRef(null);
 	const [presentingElement, setPresentingElement] = useState(null);
@@ -259,20 +246,17 @@ const AllEpisodesModal = ({ podcastData, trigger, seasons, selectedSeason, sorte
 					{ seasons.map((episodes,seasonIndex) => {
 						if (selectedSeason == seasonIndex && sortedEpisodes) {
 							return sortedEpisodes.map((episode,episodeIndex) => {
-								const isSelected = activePodcast.url === podcastData.url && activeEpisode.id == episode.id;
+								const isSelected = activePodcast.url === podcastData.url && activeEpisode.guid == episode.guid;
 								return <EpisodeItem
-									key={episode.guid ? episode.guid : episode.url}
-									id={episode.id}
+									podcastPath={podcastPath}
+									key={episode.guid}
 									guid={episode.guid}
 									title={episode.title}
 									description={episode.description}
 									image={episode.image}
-									currentTime={episode.currentTime}
-									duration={episode.duration}
 									url={episode.url}
 									podcastData={podcastData}
 									episode={activeEpisode.url === episode.url ? activeEpisode : episode}
-									shouldPlay={shouldPlay}
 									selected={activeEpisode.url === episode.url}
 									isActiveEpisode={activeEpisode.url === episode.url}
 								/>;

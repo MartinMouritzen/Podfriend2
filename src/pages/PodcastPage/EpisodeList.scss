@@ -2,11 +2,6 @@
 	display: flex;
 	justify-content: space-between;
 }
-.episodeListOuter {
-	h1 {
-		margin-left: 20px;
-	}
-}
 .episodeList {
 	a {
 		text-decoration: none;
@@ -52,6 +47,7 @@
 }
 .episode {
 	align-items: flex-start;
+	border-left: 3px solid transparent;
 
 	&.listened {
 		--background: #F6F6F6;
@@ -94,13 +90,14 @@
 		-webkit-box-orient: vertical;
 
 
-		img {
+		.cover {
+			transition: all 0.2s;
 			margin-top: 0px;
 			margin-right: 6px;
 		}
 	}
 
-	img, ion-img, .coverLoading {
+	.cover, ion-img, .coverLoading {
 		margin-top: 10px;
 
 	}
@@ -181,6 +178,10 @@
 	}
 
 	&.selected {
+		border-left: 3px solid var(--primary-color);
+		.cover {
+			
+		}
 		h2 {
 			
 		}

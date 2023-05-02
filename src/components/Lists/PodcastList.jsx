@@ -5,10 +5,6 @@ import { Link } from 'react-router-dom';
 import CoverCarousel from './CoverCarousel';
 
 const PodcastList = ({ podcasts, listType = 'scroll', filterString = '', backButtonText = false, displayLoadingCovers = 10 }) => {
-	const onClick = () => {
-		console.log('yay');
-	};
-
 	if (listType === 'scroll') {
 		return (
 			<CoverCarousel
@@ -23,7 +19,7 @@ const PodcastList = ({ podcasts, listType = 'scroll', filterString = '', backBut
 		<div className={'podcastGrid ' + listType}>
 			{ (podcasts === false && displayLoadingCovers !== false) &&  Array.apply(null, { length: displayLoadingCovers }).map((e,i) => {
 				return (
-					<IonSkeletonText style={{ width: 200, height: 200 }} />
+					<IonSkeletonText key={'loadingCover' + i} style={{ width: 200, height: 200 }} />
 				);
 			} ) }
 			{ podcasts !== false && podcasts.map((podcast) => {
@@ -46,7 +42,7 @@ const PodcastList = ({ podcasts, listType = 'scroll', filterString = '', backBut
 				return (
 					<Link
 						to={{
-							pathname: '/podcast/' + podcast.path,
+							pathname: '/podcast/' + podcast.path + '/',
 							state: {
 								podcast: podcast,
 								backButtonText: backButtonText ? backButtonText : false
@@ -59,7 +55,7 @@ const PodcastList = ({ podcasts, listType = 'scroll', filterString = '', backBut
 							<PodcastImage
 								podcastPath={podcast.path}
 								imageErrorText={podcast.name}
-								src={podcast.artworkUrl100 ? podcast.artworkUrl100 : podcast.image}
+								src={podcast.artworkUrl600 ? podcast.artworkUrl600 : podcast.image}
 								className='cover'
 								width={imageWidth}
 								height={imageWidth}

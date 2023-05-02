@@ -1,8 +1,8 @@
+import produce from 'immer'
+
 import structuredClone from '@ungap/structured-clone';
 
 import ClientStorage from './ClientStorage';
-
-const clientStorage = new ClientStorage();
 
 import PodcastUtil from 'library/PodcastUtil';
 
@@ -17,6 +17,16 @@ import DOMPurify from 'dompurify';
 **/
 
 export const createPodcastSlice = (set, get) => ({
+	podcasts: {},
+	addPodcastToCache: (path,podcast) => {
+		if (!path) {
+			console.log('No path given in PodcastSlice.addPodcastToCache');
+			console.log(path);
+			console.log(podcast);
+			return;
+		}
+		ClientStorage.setItem('podcast_cache_' + path,podcast);
+	},
 	/**********************************************************************************
 	* Continue listening and latest podcasts
 	***********************************************************************************/
@@ -27,6 +37,15 @@ export const createPodcastSlice = (set, get) => ({
 
 		var podcastToStore = structuredClone(podcast);
 		delete podcastToStore.episodes;
+
+		/*
+		// We only want to store as little as possible
+		var podcastToStore = {
+			path: podcast.path,
+			image: 
+			dateFollowed: new Date()
+		};
+		*/
 
 		continueListeningEpisodeList.unshift({
 			podcastName: podcast.name,
@@ -64,16 +83,13 @@ export const createPodcastSlice = (set, get) => ({
 			continueListeningEpisodeList: continueListeningEpisodeList
 		});
 	},
-	deletePodcastFromContinueListeningList: (episode) => {
-		var continueListeningEpisodeList = [...get().continueListeningEpisodeList];
-		for(var i=continueListeningEpisodeList.length - 1;i>=0;i--) {
-			if (continueListeningEpisodeList[i]['episode'].guid == episode.guid) {
-				continueListeningEpisodeList.splice(i,1);
-			}
-		}
-		set({
-			continueListeningEpisodeList: continueListeningEpisodeList
-		});
+	deletePodcastFromContinueListeningList: (episodeGuid) => {
+		set(
+			produce((state) => {
+				const index = state.continueListeningEpisodeList.findIndex(continueListeningEpisode => continueListeningEpisode.episodeGuid === episodeGuid);
+				state.continueListeningEpisodeList.splice(index,1);
+			})
+		);
 	},
 	/**********************************************************************************
 	* Favorite settings
@@ -87,47 +103,82 @@ export const createPodcastSlice = (set, get) => ({
 	/**********************************************************************************
 	* Following
 	***********************************************************************************/
-	followedPodcasts: [],
+	getFollowedPodcastList: () => {
+		var podcasts = get().podcasts;
+		var list = [];
+		// get().followedPodcasts.forEach((followedPodcast) => {
+		var followedPodcasts = get().followedPodcasts;
+		for (const [podcastPath,followedPodcast] of Object.entries(followedPodcasts)) {
+			var podcast = structuredClone(podcasts[podcastPath]);
+
+			if (podcast) {
+				podcast.dateFollowed = followedPodcast.dateFollowed;
+			
+				list.push(podcast);
+			}
+		}
+		return list;
+	},
+	followedPodcasts: {},
 	isPodcastFollowed: (podcastPath) => {
-		let isFollowed = false;
-		get().followedPodcasts.forEach((podcast,index) => {
-			if (podcast.path == podcastPath) {
-				isFollowed = true;
+		if (get().followedPodcasts[podcastPath]) {
+			return true;
+		}
+		return false;
+	},
+	followMultiplePodcast: (podcasts) => {
+		set(
+			produce((state) => {
+				podcasts.forEach((podcastData) => {
+					if (!state.followedPodcasts[podcastData.path]) {
+						state.followedPodcasts[podcastData.path] = {
+							dateFollowed: podcastData.addedDate ? podcastData.addedDate : new Date()
+						};
+					}
+				});
+			})
+		);
+
+		/*
+		var followedPodcasts = structuredClone(get().followedPodcasts);
+
+		podcasts.forEach((podcast) => {
+			if (get().isPodcastFollowed(podcast.path) === false) {
+				var podcastToStore = structuredClone(podcast);
+				delete podcastToStore.episodes;
+				podcastToStore.dateFollowed = new Date();
+
+				followedPodcasts.push(podcastToStore);
 			}
 		});
-		return isFollowed;
-	},
-	followPodcast: (podcast) => {
-		if (!podcast || !podcast.path) {
-			return;
-		}
-		if (get().isPodcastFollowed(podcast.path) === false) {
-			// Removing the episodes before putting the array in. We don't want to waste a ton of space.
-			var podcastToStore = structuredClone(podcast);
-			delete podcastToStore.episodes;
-
-			podcastToStore.dateFollowed = new Date();
-
-			var followedPodcasts = get().followedPodcasts;
-			followedPodcasts.push(podcastToStore);
-	
-
-			set({
-				followedPodcasts: followedPodcasts
-			});
-		}
-	},
-	unfollowPodcast: (podcast) => {
-		if (!podcast) {
-			return;
-		}
-        const newFollowList = get().followedPodcasts.filter((i) => i.path !== podcast.path);
-        set({
-			followedPodcasts: newFollowList
+		set({
+			followedPodcasts: followedPodcasts
 		});
+		*/
+	},
+	followPodcast: (podcastPath) => {
+		if (!podcastPath) { return; }
+		set(
+			produce((state) => {
+				if (!state.followedPodcasts[podcastPath]) {
+					state.followedPodcasts[podcastPath] = {
+						dateFollowed: new Date()
+					};
+				}
+			})
+		)
+	},
+	unfollowPodcast: (podcastPath) => {
+		if (!podcastPath) { return; }
+
+		set(
+			produce((state) => {
+				delete state.followedPodcasts[podcastPath];
+			})
+		)
 	},
 	updateFollowedPodcastListeningDate: (podcast) => {
-		var followedPodcasts = [...get().followedPodcasts];
+		var followedPodcasts = get().followedPodcasts;
 
 		var foundIndex = false;
 		followedPodcasts.forEach((followedPodcast,index) => {
@@ -135,15 +186,14 @@ export const createPodcastSlice = (set, get) => ({
 				foundIndex = index;
 			}
 		});
-		if (foundIndex !== false) {
-			console.log('updating last listened date of followed podcast');
-			console.log(followedPodcasts[foundIndex]);
-			followedPodcasts[foundIndex].lastListened = new Date();
-		}
 
-        set({
-			followedPodcasts: followedPodcasts
-		});
+		if (foundIndex) {
+			set(
+				produce((state) => {
+					state.followedPodcasts[foundIndex].lastListened = new Date();
+				})
+			)
+		}
 	},
 	/**********************************************************************************
 	* Latest episodes
@@ -184,8 +234,8 @@ export const createPodcastSlice = (set, get) => ({
 			return new Promise((resolve,reject) => {
 				// console.log(subscribedPodcasts);
 				var feedPaths = [];
-				for(var i=0;i<followedPodcasts.length;i++) {
-					feedPaths.push(followedPodcasts[i].path);
+				for (const [podcastPath,followedPodcast] of Object.entries(followedPodcasts)) {
+					feedPaths.push(podcastPath);
 				}
 
 				try {
@@ -196,7 +246,9 @@ export const createPodcastSlice = (set, get) => ({
 					})
 					.then((episodes) => {
 						if (episodes.error) {
-							return reject();
+							console.log('episode error');
+							console.log(episodes);
+							return reject(episodes.error);
 						}
 						else {
 							set({
@@ -213,7 +265,7 @@ export const createPodcastSlice = (set, get) => ({
 						set({
 							refreshingLatestEpisodes: false
 						});
-						return reject();
+						return reject(exception);
 					});
 
 				}
@@ -223,7 +275,7 @@ export const createPodcastSlice = (set, get) => ({
 					});
 					console.log('Error fetching latest episodes2');
 					console.log(exception);
-					return reject();
+					return reject(exception);
 				}
 			});
 		}
@@ -231,215 +283,23 @@ export const createPodcastSlice = (set, get) => ({
 	/**********************************************************************************
 	* Details about specific podcast, like sorting, season etc.
 	***********************************************************************************/
-	updatePodcastAttributes: ({ podcastData, attributes }) => {
-		var activePodcast = get().activePodcast;
-		/*
-		console.log('Updating attributes');
-		console.log(activePodcast);
-		console.log(podcastData);
-		console.log(attributes);
-		*/
-
-		if (activePodcast.guid === podcastData.guid) {
-			var activePodcastCopy = structuredClone(activePodcast);
-			for (const [key, value] of Object.entries(attributes)) {
-				activePodcastCopy[key] = value;
-			}
-			set({
-				activePodcast: activePodcastCopy
-			});
-			clientStorage.setItem('podcast_cache_' + activePodcastCopy.path,activePodcastCopy);
-		}
-		else {
-			return clientStorage.getPodcast(podcastData.path)
-			.then((podcastCache) => {
+	updatePodcastAttributes: (podcastPath, attributes) => {
+		set(
+			produce((state) => {
+				if (!state.podcasts[podcastPath]) {
+					console.log('No path in updatePodcastAttributes: ' + podcastPath);
+					state.podcasts[podcastPath] = {};
+				}
 				for (const [key, value] of Object.entries(attributes)) {
-					podcastCache[key] = value;
+					state.podcasts[podcastPath][key] = value;
 				}
-				clientStorage.setItem('podcast_cache_' + podcastData.path,podcastCache);
-			});
-		}
-	},
-	updatePodcastConfig: ({ guid, podcastPath, season = false, sortOrder = false }) => {
-		const activePodcast = get().activePodcast;
-
-		return (activePodcast.path == podcastPath ? Promise.resolve(activePodcast) : clientStorage.getPodcast(podcastPath))
-		.then((podcastCache) => {
-			if (season) {
-				podcastCache.configSelectedSeason = season;
-			}
-			if (sortOrder) {
-				podcastCache.configSelectedSortOrder = sortOrder;
-			}
-			clientStorage.setItem('podcast_cache_' + podcastPath,podcastCache);
-	
-			if (activePodcast.guid === guid) {
-				var activePodcastCopy = structuredClone(podcastCache);
-
-				if (season) {
-					activePodcastCopy.configSelectedSeason = season;
-				}
-				if (sortOrder) {
-					activePodcastCopy.configSelectedSortOrder = sortOrder;
-				}
-				set({
-					activePodcast: activePodcastCopy
-				});
-			}
-		});
-	},
-	updateProgressSecondsConfig: 10,
-	lastUpdatedProgressToServer: false,
-	updateProgress: () => {
-		var activeEpisode = get().activeEpisode;
-		if (activeEpisode.live) {
-			return;
-		}
-
-		var currentDuration = get().audioController.getDuration();
-		var newProgress = get().audioController.getCurrentTime();
-		var newDuration = isNaN(currentDuration) ? activeEpisode.duration : currentDuration;
-		let listenedPercentage = (100 * newProgress) / newDuration;
-
-		/*
-		// We only want to update if the difference is over a second, or if we're at the very end of the episode (to make sure we capture when the episode ends)
-		var difference = Math.abs(activeEpisode.currentTime - newProgress);
-		if (difference < 1 || listenedPercentage >= 97) {
-			return;
-		}
-		*/
-
-		var activePodcast = get().activePodcast;
-
-		if (activePodcast ) {
-			var activePodcastCopy = structuredClone(activePodcast);
-			var activeEpisodeCopy = structuredClone(activeEpisode);
-
-			activeEpisodeCopy.currentTime = newProgress;
-			activeEpisodeCopy.duration = newDuration;
-			activeEpisodeCopy.listenedPercentage = listenedPercentage;
-
-			var secondsLeft = newDuration - newProgress;
-
-			if (secondsLeft < 20 || listenedPercentage > 95) {
-				activeEpisodeCopy.listened = true;
-			}
-			else {
-				// activeEpisodeCopy.listened = false;
-			}
-			var continueListeningEpisodeListCopy = structuredClone(get().continueListeningEpisodeList);
-			// console.log(continueListeningEpisodeListCopy);
-
-			if (listenedPercentage > 2) {
-				// Update the continue listening list, so it can display new time left.
-				var found = false;
-				for(var i=continueListeningEpisodeListCopy.length - 1;i>=0;i--) {
-					if (!continueListeningEpisodeListCopy[i]) {
-						continue;
-					}
-					if (continueListeningEpisodeListCopy[i]['episode'].guid == activeEpisodeCopy.guid) {
-						found = i;
-						if (activeEpisodeCopy.listened) {
-
-						}
-						else {
-							continueListeningEpisodeListCopy[i]['episode'].currentTime = newProgress;
-							continueListeningEpisodeListCopy[i]['episode'].duration = newDuration;
-							continueListeningEpisodeListCopy[i]['episode'].listenedPercentage = listenedPercentage;
-						}
-					}
-				}
-				if (secondsLeft < 20 || listenedPercentage > 97) {
-					if (found !== false) {
-						console.log(secondsLeft);
-						console.log(listenedPercentage);
-						console.log('removing episode at index: ' + found);
-						continueListeningEpisodeListCopy.splice(found,1);
-					}
-				}
-				else if (found === false) {
-					console.log('adding episode');
-					get().addEpisodeToContinueListeningList(activePodcastCopy,activeEpisodeCopy);
-					continueListeningEpisodeListCopy = structuredClone(get().continueListeningEpisodeList);
-				}
-			}
-
-
-			if (activePodcastCopy.episodes) {
-				activePodcastCopy.episodes.forEach((episode,index) => {
-					if (episode.url === activeEpisodeCopy.url) {
-						// console.log(episode);
-						// console.log(activeEpisodeCopy);
-						//if (activeEpisodeCopy.listened) {
-						//	console.log('setting listened episodes in activepodcast');
-						//}
-
-						activePodcastCopy.episodes[index] = activeEpisodeCopy;
-					}
-				});
-			}
-
-			// console.log('updating progress');
-			// console.log(activePodcastCopy);
-			// console.log(activeEpisodeCopy);
-
-			// newActivePodcast.episodes[]
-
-			// console.log(activeEpisodeCopy.currentTime);
-			// console.log(activePodcastCopy);
-
-			// console.log('saved new episode duration');
-			// console.log(activePodcastCopy);
-
-			clientStorage.setItem('podcast_cache_' + activePodcastCopy.path,activePodcastCopy);
-
-			var shouldUpdateToServer = false;
-			var lastUpdatedProgressToServer = get().lastUpdatedProgressToServer;
-
-			if (!lastUpdatedProgressToServer) {
-				shouldUpdateToServer = true;
-			}
-			else {
-				
-				var secondsSinceLastEpisodeUpdateToServer = Math.floor(new Date().getTime() - lastUpdatedProgressToServer) / 1000;
-
-				if (secondsSinceLastEpisodeUpdateToServer > get().updateProgressSecondsConfig) {
-					shouldUpdateToServer = true;
-				}
-			}
-
-			if (shouldUpdateToServer) {
-				get().synchronizeEpisodeState();
-			}
-
-			set({
-				activePodcast: activePodcastCopy,
-				activeEpisode: activeEpisodeCopy,
-				continueListeningEpisodeList: continueListeningEpisodeListCopy
-			});
-		}
+			})
+		)
 	},
 	/**********************************************************************************
 	* Trending podcasts
 	***********************************************************************************/
 	lastTrendingPodcastRefresh: false,
-	trendingPodcasts: [],
-
-	retrievePodcastByGuid: async(guids) => {
-		const byGuidUrl = `https://api.podfriend.com/podcasts/byguid/${guids}`;
-
-		try {
-			let rawResults = await fetch(byGuidUrl);
-			let results = await rawResults.json();
-
-			return results;
-		}
-		catch(exception) {
-			console.log('Error getting trending podcasts');
-			console.log(byGuidUrl);
-			console.log(exception);
-		}
-	},
 	__retrieveTrendingPodcasts: async(categoryId,limit = 14) => {
 		const trendingAPIUrl = `https://api.podfriend.com/podcasts/trending/${categoryId ? categoryId : ''}?limit=${limit}`;
 
@@ -472,17 +332,22 @@ export const createPodcastSlice = (set, get) => ({
 				shouldUpdate = true;
 			}
 		}
-		if (shouldUpdate) {
-			console.log('Should refresh trending podcasts.');
-			
-			get().__retrieveTrendingPodcasts(false,limit)
-			.then((results) => {
-				set({
-					trendingPodcasts: results,
-					lastTrendingPodcastRefresh: new Date()
+		return ClientStorage.getItem('trending_podcasts_all')
+		.then((trendingPodcasts) => {
+			if (shouldUpdate || !trendingPodcasts) {
+				console.log('Should refresh trending podcasts.');
+				
+				get().__retrieveTrendingPodcasts(false,limit)
+				.then((trendingPodcasts) => {
+					ClientStorage.setItem('trending_podcasts_all',trendingPodcasts)
+
+					set({
+						lastTrendingPodcastRefresh: new Date()
+					});
 				});
-			});
-		}
+			}
+			return trendingPodcasts;
+		});
 	},
 	/**********************************************************************************
 	* Searching
@@ -516,7 +381,7 @@ export const createPodcastSlice = (set, get) => ({
 
 	},
 	/**********************************************************************************
-	* Podcast retrieval
+	* Episodes
 	***********************************************************************************/
 	getEpisodeByUrl: (podcast,episodeUrl) => {
 		for (var i=0;i<podcast.episodes.length;i++) {
@@ -526,36 +391,21 @@ export const createPodcastSlice = (set, get) => ({
 			}
 		}
 	},
+	/**********************************************************************************
+	* Podcast retrieval
+	***********************************************************************************/
 	fetchingPodcast: false,
 	fetchAbortController: null,
-	getPodcastFromCache: (podcastPath) => {
-		return clientStorage.getPodcast(podcastPath)
-		.then((podcastCache) => {
-			if (podcastCache) {
-				var shouldUpdateCache = false;
+	loadPodcast: (podcastPath) => {
+		return get().podcasts[podcastPath];
+	},
+	getPodcastAttribute: (podcastPath,key) => {
+		var podcast = get().podcasts[podcastPath];
 
-				if (!podcastCache.podcastSeasonType) {
-					let episodeInfo = PodcastUtil.parseEpisodes(podcastCache.episodes);
-
-					podcastCache.podcastSeasonType = episodeInfo.podcastSeasonType;
-					shouldUpdateCache = true;
-				}
-				if (!podcastCache.configSelectedSortOrder || typeof podcastCache.configSelectedSortOrder === 'undefined') {
-					if (podcastCache.podcastSeasonType === 'season') {
-						podcastCache.configSelectedSortOrder = 'old';
-					}
-					else {
-						podcastCache.configSelectedSortOrder = 'new';
-					}
-					shouldUpdateCache = true;
-				}
-				if (shouldUpdateCache) {
-					clientStorage.setItem(podcastPath,podcastCache);
-				}
-				return podcastCache;
-			}
-			return false;
-		});
+		if (podcast) {
+			return podcast[key];
+		}
+		return false;
 	},
 	shouldPodcastUpdate: (podcastCache) => {
 		var shouldUpdate = false;
@@ -576,174 +426,209 @@ export const createPodcastSlice = (set, get) => ({
 		}
 		return shouldUpdate;
 	},
-	retrievePodcastFromServer: (podcastPath,podcastCache) => {
+	__managePodcastResults: (data,podcastPath,isSyncedPodcast = false) => {
+			// console.log('Received new version of: ' + data.name);
+
+			if (!isSyncedPodcast) {
+				data.receivedFromServer = new Date();
+				data.receivedFromServerText = data.receivedFromServer.toString();
+			}
+
+			data.safeDescription = DOMPurify.sanitize(data.description, {
+				ALLOWED_TAGS: [
+					'p','br','ol','ul','li','b','a'
+				  ]
+			});
+			data.descriptionNoHTML = DOMPurify.sanitize(data.description, {
+				ALLOWED_TAGS: [
+					
+				]
+			});
+
+			if (data && data.episodes) {
+				for (var i=0;i<data.episodes.length;i++) {
+					if (!data.episodes[i].descriptionNoHTML && data.episodes[i].description) {
+						data.episodes[i].descriptionNoHTML = DOMPurify.sanitize(data.episodes[i].description, {
+							ALLOWED_TAGS: [
+								
+							  ]
+						});
+					}
+					if (!data.episodes[i].safeDescription && data.episodes[i].description) {
+						data.episodes[i].safeDescription = DOMPurify.sanitize(data.episodes[i].description, {
+							ALLOWED_TAGS: [
+								'p','br','ol','ul','li','b','a','strong'
+							  ]
+						});
+					}
+				}
+			}
+			return data;
+	},
+	retrievePodcastByGuid: async(guids) => {
+		const byGuidUrl = `https://api.podfriend.com/podcasts/byguid/${guids}`;
+
+		try {
+			let rawResults = await fetch(byGuidUrl);
+			let results = await rawResults.json();
+
+			return results;
+		}
+		catch(exception) {
+			console.log('Error getting trending podcasts');
+			console.log(byGuidUrl);
+			console.log(exception);
+		}
+	},
+	retrievePodcastByPath: (podcastPath) => {
 		var podcastAPIURL = "https://api.podfriend.com/podcast/" + podcastPath;
 
-		let abortController = new AbortController();
-
-		// If we are in the process of fetching already we need to abort.
-		if (get().fetchingPodcast) {
-			if (get().fetchAbortController) {
-
-			}
-		}
-
 		return fetch(podcastAPIURL, {
-			method: "GET",
-			headers: {
-				'Content-Type': 'application/json',
-				'Accept': 'application/json',
-				'Authorization': `Bearer ${get().authToken}`
-			},
-			signal: abortController.signal
+			method: "GET"
 		})
 		.then((resp) => {
 			return resp.json()
 		})
 		.then((data) => {
+			return data;
+		});
+	},
+	__updatePodcastState: (podcastPath,podcastData,podcastState,stateAttributes = false) => {
+		var seasonType = podcastState?.seasonType;
+		var sortOrder = podcastState?.sortOrder
+;
+		if (!podcastState || !podcastState.seasonType) {
+			let episodeInfo = PodcastUtil.parseEpisodes(podcastData.episodes);
+
+			seasonType = episodeInfo.podcastSeasonType;
+		}
+		if (!podcastState || !podcastState.sortOrder) {
+			sortOrder = seasonType === 'season' ? 'old' : 'new';
+		}
+
+		set(
+			produce((state) => {
+				if (!state.podcasts[podcastPath]) {
+					state.podcasts[podcastPath] = {};
+				}
+				state.podcasts[podcastPath].path = podcastPath;
+				state.podcasts[podcastPath].name = podcastData.name;
+				state.podcasts[podcastPath].guid = podcastData.guid;
+				state.podcasts[podcastPath].author = podcastData.author;
+				state.podcasts[podcastPath].description = podcastData.description;
+				state.podcasts[podcastPath].image = podcastData.artworkUrl600 ? podcastData.artworkUrl600 : podcastData.image;
+				state.podcasts[podcastPath].categories = podcastData.categories;
+				state.podcasts[podcastPath].lastUpdated = new Date();
+				state.podcasts[podcastPath].seasonType = seasonType;
+				state.podcasts[podcastPath].sortOrder = sortOrder;
+				if (stateAttributes) {
+					for (const [key,value] of Object.entries(stateAttributes)) {
+						if (!state.podcasts[podcastPath][key]) {
+							state.podcasts[podcastPath][key] = value;
+						}
+					}
+				}
+
+				if (!state.podcasts[podcastPath].episodes) {
+					state.podcasts[podcastPath].episodes = {}
+				}
+			})
+		)
+	},
+	getPodcastFromCache: (podcastPath) => {
+		return ClientStorage.getPodcast(podcastPath)
+		.then((podcastData) => {
+			if (podcastData) {
+				var podcastState = get().podcasts[podcastPath];
+				if (!podcastState) {
+					get().__updatePodcastState(podcastPath,podcastData,podcastState);
+				}
+				return podcastData;
+			}
+			return false;
+		});
+	},
+	retrievePodcastFromServer: (podcastPath) => {
+		return get().retrievePodcastByPath(podcastPath)
+		.then((data) => {
 			if (data.error) {
 				console.log('Error fetching podcast in Redux::fetchPodcast');
 				console.log(data.error);
 				
-				return Promise.reject('Error fetching podcast: ' + podcastPath);
+				return Promise.reject('Error fetching podcast: ' + podcastIdentifier);
 			}
-			else {
-				console.log('Received new version of: ' + data.name);
-				data.receivedFromServer = new Date();
-				data.receivedFromServerText = data.receivedFromServer.toString();
 
-				data.safeDescription = DOMPurify.sanitize(data.description, {
-					ALLOWED_TAGS: [
-						'p','br','ol','ul','li','b','a'
-					  ]
-				});
-				data.descriptionNoHTML = DOMPurify.sanitize(data.description, {
-					ALLOWED_TAGS: [
-						
-					]
-				});
-				// Copy over configuration options from the cache
-				console.log('Copy over configuration options from the cache');
-				console.log(podcastCache);
+			var podcastData = get().__managePodcastResults(data,podcastPath);
 
-				if (podcastCache) {
-					data.configSelectedSeason = podcastCache.configSelectedSeason;
-					data.configSelectedSortOrder = podcastCache.configSelectedSortOrder;
-					data.lastOriginalRSSFeedUpdate = podcastCache.lastOriginalRSSFeedUpdate;
-					data.rssFeedContents = podcastCache.rssFeedContents;
-				}
-				if (!data.podcastSeasonType) {
-					let episodeInfo = PodcastUtil.parseEpisodes(data.episodes);
-					// console.log(episodeInfo);
+			get().addPodcastToCache(podcastPath,podcastData);
 
-					data.podcastSeasonType = episodeInfo.podcastSeasonType;
-				}
-				if (!data.configSelectedSortOrder || typeof data.configSelectedSortOrder === 'undefined') {
-					if (data.podcastSeasonType === 'season') {
-						data.configSelectedSortOrder = 'old';
-					}
-					else {
-						data.configSelectedSortOrder = 'new';
-					}
-				}
-				
+			var podcastState = get().podcasts[podcastPath];
+			get().__updatePodcastState(podcastPath,podcastData,podcastState);
 
-				if (data && data.episodes) {
-					for (var i=0;i<data.episodes.length;i++) {
-						if (!data.episodes[i].descriptionNoHTML) {
-							data.episodes[i].descriptionNoHTML = DOMPurify.sanitize(data.episodes[i].description, {
-								ALLOWED_TAGS: [
-									
-								  ]
-							});
-						}
-						if (!data.episodes[i].safeDescription) {
-							data.episodes[i].safeDescription = DOMPurify.sanitize(data.episodes[i].description, {
-								ALLOWED_TAGS: [
-									'p','br','ol','ul','li','b','a','strong'
-								  ]
-							});
-						}
-						// // Recreate listened states THIS SHOULD BE TEMPORARY UNTIL WE CAN GET IT FROM THE SERVER
-						if (podcastCache && podcastCache.episodes) {
-							for (var x=0;x<podcastCache.episodes.length;x++) {
-								if (data.episodes[i].url == podcastCache.episodes[x].url) {
-									if (!data.episodes[i].currentTime) {
-										data.episodes[i].currentTime = podcastCache.episodes[x].currentTime;
-									}
-									if (!data.episodes[i].listened) {
-										data.episodes[i].listened = podcastCache.episodes[x].listened;
-									}
-									break;
-								}
-							}
-						}
-					}
-				}
-
-				if (get().activePodcast.path === podcastPath) {
-					set({
-						activePodcast: data
-					});
-				}
-				// console.log('Saving podcast: ' + data.path);
-				// console.log(data);
-				clientStorage.setItem('podcast_cache_' + data.path,data);
-
-				return data;
-			}
+			return data;
 		});
 	},
-	retrieveOriginalPodcastFeed: (podcastData,overruleCache = false) => {
-		var podcastFeed = new PodcastFeed(podcastData.feedUrl);
+	retrieveOriginalPodcastFeed: (podcastPath,feedUrl,overruleCache = false) => {
+		var podcastFeed = new PodcastFeed(feedUrl);
 		var shouldUpdate = false;
 
-		if (!podcastData.lastOriginalRSSFeedUpdate || !podcastData.rssFeedContents) {
-			console.log('Original RSS not cached');
-			console.log(podcastData.lastOriginalRSSFeedUpdate);
-			console.log(podcastData.rssFeedContents);
-			shouldUpdate = true;
-		}
-		else {
-			var minutesSinceLastUpdate = Math.floor((Math.abs(new Date() - new Date(podcastData.lastOriginalRSSFeedUpdate)) / 1000) / 60);
-				
-			if (isNaN(minutesSinceLastUpdate) || minutesSinceLastUpdate > 5) {
-				console.log('Original RSS minutesSinceLastUpdate: ' + minutesSinceLastUpdate);
+		return ClientStorage.getItem('podcast_rssfeed_cache_' + podcastPath)
+		.then((rssFeedCache) => {
+			var lastRSSFeedUpdate = get().podcasts[podcastPath].lastRSSFeedUpdate;
+
+			if (overruleCache || !lastRSSFeedUpdate || !rssFeedCache) {
+				console.log('Original RSS not cached');
+				console.log(lastRSSFeedUpdate);
+				console.log(rssFeedCache);
 				shouldUpdate = true;
 			}
-		}
-		if (!shouldUpdate) {
-			console.log('Original RSS Feed cached');
-			return Promise.resolve(podcastData.rssFeedContents);
-		}
-		else {
-			console.log('Fetching original RSS feed to scan for changes.: ' + podcastData.feedUrl);
-			return podcastFeed.parse()
-			.then((feed) => {
-				if (feed) {
-					console.log('Fetching original RSS feed to scan for changes. - Done');
-
-					feed.uuid = uuidv4();
-
-					get().updatePodcastAttributes({
-						podcastData: podcastData,
-						attributes: {
-							rssFeedContents: feed,
-							lastOriginalRSSFeedUpdate: new Date()
-						}
-					});
-					return Promise.resolve(feed);
+			else {
+				var minutesSinceLastUpdate = Math.floor((Math.abs(new Date() - new Date(lastRSSFeedUpdate)) / 1000) / 60);
+					
+				if (isNaN(minutesSinceLastUpdate) || minutesSinceLastUpdate > 5) {
+					console.log('Original RSS minutesSinceLastUpdate: ' + minutesSinceLastUpdate);
+					shouldUpdate = true;
 				}
-				else {
-					console.log('PodcsatFeed.parse resulted in no feed');
-					return Promise.reject();
-				}
-			})
-			.catch((error) => {
-				console.error('Error parsing RSS feed: ');
-				console.error(error);
-			});
-		}
+			}
+			if (!shouldUpdate) {
+				console.log('Original RSS Feed cached');
+				return Promise.resolve(rssFeedCache);
+			}
+			else {
+				console.log('Fetching original RSS feed to scan for changes.: ' + feedUrl);
+				return podcastFeed.parse()
+				.then((feed) => {
+					if (feed) {
+						console.log('Fetching original RSS feed to scan for changes. - Done');
+
+						feed.uuid = uuidv4();
+
+						ClientStorage.setItem('podcast_rssfeed_cache_' + podcastPath,feed);
+
+						set(
+							produce((state) => {
+								state.podcasts[podcastPath].lastRSSFeedUpdate = new Date();
+							})
+						)
+						return Promise.resolve(feed);
+					}
+					else {
+						console.log('PodcastFeed.parse resulted in no feed');
+						return Promise.reject();
+					}
+				})
+				.catch((error) => {
+					console.error('Error parsing RSS feed: ');
+					console.error(error);
+				});
+			}
+		})
+		.catch((exception) => {
+			console.log('Error happened retrieving original RSS feed');
+			console.log(podcastPath);
+			console.log(feedUrl);
+			console.log(exception);
+		});
 	},
 	getPodcast: (podcastPath) => {
 		var startTime = performance.now();
@@ -751,7 +636,7 @@ export const createPodcastSlice = (set, get) => ({
 		return get().getPodcastFromCache(podcastPath)
 		.then((podcastCache) => {
 			var shouldUpdate = get().shouldPodcastUpdate(podcastCache);
-	
+
 			if (!shouldUpdate) {
 				console.log('Using cache for podcast: ' + podcastPath);
 				return podcastCache;

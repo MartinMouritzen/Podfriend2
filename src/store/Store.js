@@ -1,4 +1,4 @@
-import create from 'zustand';
+import { create } from 'zustand';
 import produce from 'immer';
 
 // import { IDBStorage } from './IDBStorage';
@@ -24,12 +24,16 @@ const storage = {
     return (await get(name)) || null
   },
   setItem: async (name, value) => {
+	set(name, value);
+	/*
+	console.log('%cSetting item', 'background: #CECECE; color: #999999, padding: 2px;');
 	try {
     	await set(name, value)
 	}
 	catch(exception) {
 		console.log(exception);
 	}
+	*/
   },
   removeItem: async (name) => {
     await del(name)
@@ -78,7 +82,6 @@ const useStore = create(persist((...a) => ({
 	name: 'podfriend-v1',
 	storage: createJSONStorage(() => { return storage; }),
 	onRehydrateStorage: () => () => {
-		console.log('rehydrated!');
 		useStore.setState({ _hasHydrated: true })
 	},
 	// Define what parts we do not want persisted

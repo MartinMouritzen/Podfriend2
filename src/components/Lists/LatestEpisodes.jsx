@@ -26,6 +26,8 @@ const LatestEpisodes = ({ backButtonText = false }) => {
 
 	const activeEpisode = useStore((state) => state.activeEpisode);
 
+	const loggedIn = useStore((state) => state.loggedIn);
+
 	const playEpisode = useStore((state) => state.playEpisode);
 	const audioPlay = useStore((state) => state.audioPlay);
 	const audioPause = useStore((state) => state.audioPause);
@@ -39,7 +41,7 @@ const LatestEpisodes = ({ backButtonText = false }) => {
 			audioPlay();
 		}
 		else {
-			playEpisode(false,url,episode.live ? episode : false,podcastPath);
+			playEpisode(podcastPath,podcastData,episode.guid,episode.live ? episode : false);
 		}
 	};
 	const onPause = () => {
@@ -47,21 +49,23 @@ const LatestEpisodes = ({ backButtonText = false }) => {
 	};
 
 	useEffect(() => {
-		retrieveLatestEpisodes()
-		.catch((exception) => {
-			console.log('Error happened when retrieving latest episodes');
-			console.log(exception);
-		});
-		/*
-		.then((episodes) => {
-			setLatestEpisodes(episodes);
-		})
-		.catch((exception) => {
-			console.log('exception in latestEpisodes');
-			console.log(exception);
-		});
-		*/
-	},[]);
+		if (loggedIn) {
+			retrieveLatestEpisodes()
+			.catch((exception) => {
+				console.log('Error happened when retrieving latest episodes');
+				console.log(exception);
+			});
+			/*
+			.then((episodes) => {
+				setLatestEpisodes(episodes);
+			})
+			.catch((exception) => {
+				console.log('exception in latestEpisodes');
+				console.log(exception);
+			});
+			*/
+		}
+	},[loggedIn]);
 
 	return (
 		<Swiper

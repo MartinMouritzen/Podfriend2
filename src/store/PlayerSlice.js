@@ -1,5 +1,7 @@
 import structuredClone from '@ungap/structured-clone';
 
+import produce from 'immer'
+
 export const createPlayerSlice = (set,get) => ({
 	/**********************************************************************************
 	* Player UI
@@ -33,28 +35,22 @@ export const createPlayerSlice = (set,get) => ({
 	/**********************************************************************************
 	* Audio functions
 	***********************************************************************************/
-	playEpisode: async (podcast,episodeUrl,live = false, podcastPath = false) => {
+	playEpisode: async (podcastPath,podcastData,episodeGuid,live = false) => {
+		get().audioIsLoading();
 		// console.log(podcast);
 		// console.log(episodeUrl);
-		episodeUrl = episodeUrl.url ? episodeUrl.url : episodeUrl;
+		// episodeUrl = episodeUrl.url ? episodeUrl.url : episodeUrl;
 
 		// console.log('podcast');
 		// console.log(podcast);
 
-		if (!podcast) {
-			podcast = await get().getPodcast(podcastPath);
-		}
-
-		const activePodcast = get().activePodcast;
-
-		// console.log('activePodcast');
-		// console.log(activePodcast);
-
-		if (podcast.path === activePodcast.path) {
-			console.log('podcast was the active podcast');
-			podcast = structuredClone(activePodcast);
-		}
 		let episode = false;
+
+		if (podcastData === false) {
+			console.log('No podcastdata. Retrieving it.');
+			podcastData = await get().getPodcast(podcastPath);
+			console.log(podcastData);
+		}
 
 		if (live) {
 			console.log(live);
@@ -68,43 +64,124 @@ export const createPlayerSlice = (set,get) => ({
 			};
 		}
 		else {
-			// console.log(podcast);
-			episode = get().getEpisodeByUrl(podcast,episodeUrl);
+			if (!podcastData.episodes) {
+				console.log('No episodes in podcastdata when trying to play episode. Trying to get it from server (' + podcastPath + ')');
+				podcastData = await get().retrievePodcastFromServer(podcastPath);
+			}
+			episode = podcastData.episodes.find(e => e.guid === episodeGuid);
+		}
+		
+		if (episode) {
+			// console.log(episode);
+			// console.log(get().podcasts[podcastPath].episodes[episodeGuid].currentTime);
+			// var episodeState = get().
+			// return;
+			set(
+				produce((state) => {
+					state.activePodcast = podcastData;
+					state.activePodcastPath = podcastPath;
+					state.activeEpisodeGuid = episodeGuid;
+					state.activeEpisode = episode;
+					state.podcasts[podcastPath].lastListened = new Date();
+					if (!state.podcasts[podcastPath].episodes[episodeGuid]) {
+						state.podcasts[podcastPath].episodes[episodeGuid] = {};
+					}
+					state.podcasts[podcastPath].episodes[episodeGuid].lastPlayed = new Date();
+					state.shouldPlay = true;
+					state.loading = true;
+				})
+			)
+			/*
+			setTimeout(() => {
+				get().audioSetCurrentTime(get().podcasts[podcastPath].episodes[episodeGuid].currentTime ? get().podcasts[podcastPath].episodes[episodeGuid].currentTime : 0);
+			},50);
+			*/
+
+			/*
+			setTimeout(() => {
+				if (state.podcasts[podcastPath].episodes[episodeGuid]) {
+					get().audioSetCurrentTime(state.podcasts[podcastPath].episodes[episodeGuid].currentTime);
+				}
+			},50);
+			*/
+		}
+		else {
+			console.log('Error happened in playEpisode. Could not find episode');
+			console.log(podcastData);
+			console.log(episodeGuid);
+		}
+
+		// var podcastState = get().podcasts[podcastPath];
+
+		return;
+
+		
+
+		// const activePodcast = get().activePodcast;
+
+		// console.log('activePodcast');
+		// console.log(activePodcast);
+
+		if (live) {
+			console.log(live);
+			episode = {
+				title: live.title,
+				url: live.enclosure?.url,
+				chat: live.chat,
+				image: (live['itunes:image'] && live['itunes:image'].href) ? live['itunes:image'].href : live['podcast:images'] ? live['podcast:images'].srcset : false,
+				guid: live.guid['#text'] ? live.guid['#text'] : live.guid,
+				live: true
+			};
+		}
+		else {
+			// episode = get().getEpisodeByUrl(podcast,episodeUrl);
+			episode = podcastState.episodes[episode.guid];
 
 			console.log('Playing episode');
 			console.log(episode);
 			if (episode && episode.currentTime == null) {
 				console.log(podcast);
-				console.log(activePodcast);
-				console.log(episodeUrl);
+				// console.log(activePodcast);
+				console.log(episodeGuid);
 			}
 			if (!episode) {
 				console.log('Episode not found?');
-				console.log(episodeUrl);
+				console.log(episodeGuid);
 				console.log(podcast);
 				return;
 			}
-			if (episode.listened === true) {
-				// episode.currentTime = 0;
-				// Todo, update online here too.
-			}
 		}
 
-		get().updateFollowedPodcastListeningDate(podcast);
-		get().updatePodcastAttributes({
-			podcastData: podcast,
-			attributes: {
+		/*
+		get().updateFollowedPodcastListeningDate(podcastPath);
+		get().updatePodcastAttributes(
+			podcast.path,
+			{
 				lastListened: new Date()
 			}
-		});
+		);
+		*/
+
+		/*
+		set(
+			produce((state) => {
+				state.podcasts.push({
+					path: podcastPath,
+					dateFollowed: new Date()
+				})
+			})
+		)
+		*/
 
 		// console.log(podcast);
 
 		var currentTime = episode.currentTime;
 
 		set({
-			activePodcast: podcast,
-			activeEpisode: episode,
+			activePodcastPath: podcast.path,
+			activeEpisodeGuid: episode.guid,
+			// activePodcast: podcast,
+			// activeEpisode: episode,
 			shouldPlay: true,
 			loading: true
 		});
@@ -205,18 +282,20 @@ export const createPlayerSlice = (set,get) => ({
 		const activePodcast = get().activePodcast;
 		const activeEpisode = get().activeEpisode;
 
+		var podcastState = get().podcasts[get().activePodcastPath];
+		var activeEpisodeState = get().podcasts[get().activePodcastPath].episodes[get().activeEpisodeGuid];
+
 		var foundNextEpisode = false;
 		var nextEpisodeIsAfterCurrent = false;
 
-		console.log(activePodcast);
+		
 
-		if (activePodcast.configSelectedSortOrder === 'old') {
+		if (podcastState.sortOrder === 'old') {
 			for(var i=0;i<activePodcast.episodes.length;i++) {
 				if (nextEpisodeIsAfterCurrent) {
 					if (activePodcast.episodes[i].episodeType !== 'trailer') {
-						console.log('found it!');
 						foundNextEpisode = true;
-						get().playEpisode(activePodcast,activePodcast.episodes[i].url);
+						get().playEpisode(activePodcast.path,activePodcast,activePodcast.episodes[i].guid);
 						break;
 					}
 				}
@@ -230,7 +309,7 @@ export const createPlayerSlice = (set,get) => ({
 				if (nextEpisodeIsAfterCurrent) {
 					if (activePodcast.episodes[i].episodeType !== 'trailer') {
 						foundNextEpisode = true;
-						get().playEpisode(activePodcast,activePodcast.episodes[i].url);
+						get().playEpisode(activePodcast.path,activePodcast,activePodcast.episodes[i].guid);
 						break;
 					}
 				}
@@ -248,6 +327,9 @@ export const createPlayerSlice = (set,get) => ({
 		const activePodcast = get().activePodcast;
 		const activeEpisode = get().activeEpisode;
 
+		var podcastState = get().podcasts[get().activePodcastPath];
+		var activeEpisodeState = get().podcasts[get().activePodcastPath].episodes[get().activeEpisodeGuid];
+
 		var percentage = (100 * audioController.getCurrentTime()) / audioController.getDuration();
 
 		if (percentage > 75) {
@@ -257,17 +339,14 @@ export const createPlayerSlice = (set,get) => ({
 		var foundNextEpisode = false;
 		var nextEpisodeIsAfterCurrent = false;
 
-		console.log(activePodcast);
-
-		if (activePodcast.configSelectedSortOrder === 'old') {
+		if (podcastState.sortOrder === 'old') {
 			for(var i=activePodcast.episodes.length - 1;i>=0;i--) {
 				if (nextEpisodeIsAfterCurrent) {
 					if (activePodcast.episodes[i].episodeType !== 'trailer') {
-						console.log('found it!');
 						foundNextEpisode = true;
 						console.log(activePodcast);
 						console.log(activePodcast.episodes[i]);
-						get().playEpisode(activePodcast,activePodcast.episodes[i].url);
+						get().playEpisode(activePodcast.path,activePodcast,activePodcast.episodes[i].guid);
 						break;
 					}
 				}
@@ -281,7 +360,7 @@ export const createPlayerSlice = (set,get) => ({
 				if (nextEpisodeIsAfterCurrent) {
 					if (activePodcast.episodes[i].episodeType !== 'trailer') {
 						foundNextEpisode = true;
-						get().playEpisode(activePodcast,activePodcast.episodes[i].url);
+						get().playEpisode(activePodcast.path,activePodcast,activePodcast.episodes[i].guid);
 						break;
 					}
 				}
@@ -296,8 +375,16 @@ export const createPlayerSlice = (set,get) => ({
 	},
 	setCurrentTime: (seconds) => {
 		get().audioController.setCurrentTime(seconds);
+		get().updateProgress();
 	},
-	changeActiveEpisode: (podcast,episode) => {
+	changeActiveEpisode: (podcast,episode,episodeState) => {
+		if (!podcast || !episode || !episodeState) {
+			console.log('changeActiveEpisode missing either podcast, episode or episodeState');
+			console.log(podcast);
+			console.log(episode);
+			console.log(episodeState);
+			return;
+		}
 		var audioController = get().audioController;
 		
 		if (audioController) {
@@ -309,11 +396,11 @@ export const createPlayerSlice = (set,get) => ({
 					.then(() => {
 						var currentTime = 0;
 
-						if (episode.currentTime) {
-							var percentageListened = (100 * episode.currentTime) / episode.duration;
+						if (episodeState && episodeState.currentTime) {
+							var percentageListened = (100 * episodeState.currentTime) / episodeState.duration;
 							
 							if (percentageListened < 95) {
-								currentTime = episode.currentTime;
+								currentTime = episodeState.currentTime;
 							}
 						}
 						// console.log('setting time: ' + currentTime);
@@ -332,7 +419,7 @@ export const createPlayerSlice = (set,get) => ({
 		}
 		else {
 			setTimeout(() => {
-				get().changeActiveEpisode(podcast,episode);
+				get().changeActiveEpisode(podcast,episode,episodeState);
 			},50);
 		}
 	},
@@ -343,7 +430,7 @@ export const createPlayerSlice = (set,get) => ({
 		});
 	},
 	audioIsReady: () => {
-		let newDuration = get().audioController.getDuration();
+		// let newDuration = get().audioController.getDuration();
 		// console.log('OnloadedMetaData. duration: ' + newDuration + ', episodeid: ' + this.props.activeEpisode.id);
 
 		// alert(this.props.audioController.audioElement.current.currentTime);
@@ -366,6 +453,141 @@ export const createPlayerSlice = (set,get) => ({
 		});
 	},
 	/**********************************************************************************
+	* Progress related
+	***********************************************************************************/
+	updateProgressSecondsConfig: 10,
+	lastUpdatedProgressToServer: false,
+	updateProgress: () => {
+		var activeEpisode = get().activeEpisode;
+		if (activeEpisode.live) {
+			return;
+		}
+		var activePodcast = get().activePodcast;
+
+		var activeEpisodeState = get().podcasts[get().activePodcastPath].episodes[get().activeEpisodeGuid];
+
+		var currentDuration = get().audioController.getDuration();
+		var newProgress = get().audioController.getCurrentTime();
+		var newDuration = isNaN(currentDuration) ? activeEpisodeState.duration : currentDuration;
+		let listenedPercentage = (100 * newProgress) / newDuration;
+
+		var secondsLeft = newDuration - newProgress;
+
+		if (get().loggedIn) {
+			// Update state to server.
+			var shouldUpdateToServer = false;
+			var lastUpdatedProgressToServer = get().lastUpdatedProgressToServer;
+
+			if (!lastUpdatedProgressToServer) {
+				shouldUpdateToServer = true;
+			}
+			else {
+				var secondsSinceLastEpisodeUpdateToServer = Math.floor(new Date().getTime() - lastUpdatedProgressToServer) / 1000;
+
+				if (secondsSinceLastEpisodeUpdateToServer > get().updateProgressSecondsConfig) {
+					shouldUpdateToServer = true;
+				}
+			}
+
+			if (shouldUpdateToServer) {
+				console.log('Updating progress to server');
+				get().synchronizeEpisodeState();
+			}
+		}
+		set(
+			produce((state) => {
+				state.podcasts[activePodcast.path].episodes[activeEpisode.guid].currentTime = newProgress;
+				state.podcasts[activePodcast.path].episodes[activeEpisode.guid].duration = newDuration;
+				state.podcasts[activePodcast.path].episodes[activeEpisode.guid].listenedPercentage = listenedPercentage;
+
+				
+				
+
+				if (secondsLeft < 20 || listenedPercentage > 95) {
+					state.podcasts[activePodcast.path].episodes[activeEpisode.guid].listened = true;
+				}
+
+				if (newProgress > 10) {
+					if (!state.continueListeningEpisodeList) {
+						state.continueListeningEpisodeList = [];
+					}
+					const index = state.continueListeningEpisodeList.findIndex(continueListeningEpisode => continueListeningEpisode.episodeGuid === activeEpisode.guid);
+
+					// If the episode is already in there, and not the first, let's remove it
+					if ((index !== -1 && index !== 0) || (index === 0 && (secondsLeft < 20 || listenedPercentage > 95))) {
+						state.continueListeningEpisodeList.splice(index,1);
+					}
+
+
+					// We don't want to (re)add the episode if it's already listened
+					if (secondsLeft >= 20 && listenedPercentage <= 95) {
+						// If episode is not in there (which means we're going to add it), and the list is larger than our max, we remove one element
+						if (index === -1 && state.continueListeningEpisodeList.length > state.continueListeningEpisodeListMaxSize) {
+							state.continueListeningEpisodeList.pop();
+						}
+						// If the index is 0, we will just update the dateListened. But if not, we'll add the episode.
+						if (index === 0) {
+							state.continueListeningEpisodeList[index].dateListened = new Date();
+						}
+						if (index !== 0) {
+							state.continueListeningEpisodeList.unshift({
+								podcastPath: activePodcast.path,
+								dateListened: new Date(),
+								episodeGuid: activeEpisode.guid,
+								title: activeEpisode.title,
+								image: activeEpisode.image,
+								description: activeEpisode.descriptionNoHTML.substring(0,100)
+							})
+						}
+					}
+					
+					/*
+					if (!(state.continueListeningEpisodeList.length > 0 && state.continueListeningEpisodeList[0].episodeGuid === activeEpisode.guid)) {
+						var found = false;
+						state.continueListeningEpisodeList.forEach((continueListeningEpisode,index) => {
+							if (continueListeningEpisode.guid === activeEpisode.guid) {
+								found = index;
+							}
+						});
+						if (found) {
+							state.continueListeningEpisodeList.splice(index,1);
+						}
+						// state.continueListeningEpisodeList = state.continueListeningEpisodeList.filter(checkEpisode => checkEpisode.guid !== activeEpisode.guid);
+
+						state.continueListeningEpisodeList.unshift({
+							podcastPath: activePodcast.path,
+							dateListened: new Date(),
+							episodeGuid: activeEpisode.guid,
+							title: activeEpisode.title,
+							image: activeEpisode.image,
+							description: activeEpisode.descriptionNoHTML.substring(0,100)
+						})
+					}
+					*/
+				}
+
+					// get().addEpisodeToContinueListeningList(activePodcastCopy,activeEpisodeCopy);
+				/*
+				const episodeIndex = state.activePodcast.episodes.findIndex((el) => el.guid === activeEpisode.guid);
+				if (found) {
+					state.continueListeningEpisodeList[found].currentTime = newProgress;
+				}
+				state.podcasts[activePodcast.path].episodes[episodeIndex].currentTime = newProgress;
+				state.podcasts[activePodcast.path].episodes[episodeIndex].duration = newDuration;
+				state.podcasts[activePodcast.path].episodes[episodeIndex].listenedPercentage = listenedPercentage;
+
+				state.activeEpisode.currentTime = newProgress;
+				state.activeEpisode.duration = newDuration;
+				state.activeEpisode.listenedPercentage = listenedPercentage;
+				if (secondsLeft < 20 || listenedPercentage > 95) {
+					state.activeEpisode.listened = true;
+					state.activePodcast.episodes[episodeIndex].listened = true;
+				}
+				*/
+			})
+		)
+	},
+	/**********************************************************************************
 	* Episode related
 	***********************************************************************************/
 	goToNextEpisode: () => {
@@ -380,6 +602,8 @@ export const createPlayerSlice = (set,get) => ({
 	/**********************************************************************************
 	* Active podcast states
 	***********************************************************************************/
+	activePodcastPath: false,
+	activeEpisodeGuid: false,
 	activePodcast: false,
 	activeEpisode: false
 });

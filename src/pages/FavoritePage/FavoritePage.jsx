@@ -13,13 +13,16 @@ import { IonSearchbar, IonToolbar, IonHeader, IonTitle, IonButtons, IonButton, I
 const FavoritePage = () => {
 	const [present] = useIonActionSheet();
 
+	const loggedIn = useStore((state) => state.loggedIn);
 	const synchronizePodcasts = useStore((state) => state.synchronizePodcasts);
+
+	const getFollowedPodcastList = useStore((state) => state.getFollowedPodcastList);
 
 	const favoriteSortOrder = useStore((state) => state.favoriteSortOrder);
 	const setFavoriteSortOrder = useStore((state) => state.setFavoriteSortOrder);
 
-	const followedPodcasts = useStore((state) => state.followedPodcasts);
-	const [orderedFollowedPodcasts,setOrderedFollowedPodcasts] = useState(followedPodcasts);
+	const followedPodcastGuids = useStore((state) => state.followedPodcasts);
+	const [orderedFollowedPodcasts,setOrderedFollowedPodcasts] = useState(false);
 
 	const [filterString,setFilterString] = useState('');
 
@@ -28,6 +31,8 @@ const FavoritePage = () => {
 	}
 
 	const sortFavoritePodcasts = () => {
+		var followedPodcasts = getFollowedPodcastList();
+
 		if (favoriteSortOrder === 'latest') {
 			var sortByLatest = followedPodcasts.slice().sort((a, b) => {
 				return new Date(b.dateFollowed) - new Date(a.dateFollowed);
@@ -60,9 +65,16 @@ const FavoritePage = () => {
 	useEffect(() => {
 		console.log('change sorting order');
 		sortFavoritePodcasts();
-	},[JSON.stringify(followedPodcasts),favoriteSortOrder]);
+	},[JSON.stringify(followedPodcastGuids),favoriteSortOrder]);
 
 	const onRefreshFavorites = (event) => {
+		if (!loggedIn) {
+			// Show toast that user is not logged in, so can't sync favorites
+			if (event && event.detail && event.detail.complete) {
+				event.detail.complete();
+			}
+			return;
+		}
 		var startTime = new Date();
 
 		synchronizePodcasts()

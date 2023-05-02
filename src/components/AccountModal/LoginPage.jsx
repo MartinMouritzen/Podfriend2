@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { IonButton, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonToolbar, IonTitle, IonButtons, IonNavLink, IonContent, IonBackButton, IonCheckbox } from "@ionic/react";
 
 import { mailOutline as mailIcon, chevronBackOutline as backIcon, checkmarkCircleOutline as checkMark, lockClosedOutline as passwordIcon } from 'ionicons/icons';
@@ -46,7 +46,7 @@ const LoginPage = ({ dismiss }) => {
 
 	return (
 		<>
-			<IonHeader className="blueModalHeader ion-no-border">
+			<IonHeader className="blueModalHeader ion-no-border hideWhenKeyboardShown">
 				<IonToolbar>
 				<IonButtons slot="start">
 					<IonBackButton></IonBackButton>
@@ -54,20 +54,19 @@ const LoginPage = ({ dismiss }) => {
 				
 				</IonToolbar>
 			</IonHeader>
-			<IonContent>
+			<IonContent className="blueContent">
 				<div className="loginPage modalPage">
-					<div className="teaser">
+					<div className="teaser hideWhenKeyboardShown">
 						<div className="teaserContent">
 							<IonNavLink routerDirection='back' className='backLink'><IonIcon icon={backIcon} /> <IonLabel>Back</IonLabel></IonNavLink>
 							<h2>Welcome back friend</h2>
-
 						</div>
 					</div>
 					<div className="content">
-						<div className="secondTeaser">
+						<div className="secondTeaser hideWhenKeyboardShown">
 							Let's get you signed in and start listening!
 						</div>
-						<img src={BlueOnBlueWave} className="wave" />
+						<img src={BlueOnBlueWave} className="wave hideWhenKeyboardShown" />
 						<div className="darkBlueContent">
 							<form>
 								<IonItem>

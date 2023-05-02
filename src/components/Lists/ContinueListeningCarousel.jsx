@@ -25,24 +25,7 @@ import { Navigation, Pagination } from "swiper";
 
 const ContinueListening = ({ backButtonText = false }) => {
 	const continueListeningEpisodeList = useStore((state) => state.continueListeningEpisodeList);
-	const deletePodcastFromContinueListeningList = useStore((state) => state.deletePodcastFromContinueListeningList);
 
-	const playEpisode = useStore((state) => state.playEpisode);
-	const audioPlay = useStore((state) => state.audioPlay);
-	const audioPause = useStore((state) => state.audioPause);
-	const activeEpisode = useStore((state) => state.activeEpisode);
-
-	const onPlay = (podcastPath,podcastData,episode,url) => {
-		if (activeEpisode.url === url) {
-			audioPlay();
-		}
-		else {
-			playEpisode(false,url,episode.live ? episode : false,podcastPath);
-		}
-	};
-	const onPause = () => {
-		audioPause();
-	};
 
 	if (continueListeningEpisodeList === false || !continueListeningEpisodeList.length || continueListeningEpisodeList.length === 0) {
 		return (
@@ -72,66 +55,97 @@ const ContinueListening = ({ backButtonText = false }) => {
 
 			className="coverSwiper"
 		>
-			{ continueListeningEpisodeList !== false && continueListeningEpisodeList.map((podcastData) => {
-				if (!podcastData) {
-					return;
-				}
-				const episode = podcastData.episode;
-				const timeLeft = podcastData.episode.duration - podcastData.episode.currentTime;
-
+			{ continueListeningEpisodeList !== false && continueListeningEpisodeList.map((continueListeningEpisode) => {
 				return (
-					<SwiperSlide key={episode.guid ? episode.guid : episode.url}>
-						<div onClick={() => { onPlay(podcastData.podcastPath,podcastData,episode,episode.url) }} className={'podcastItem hasProgressBar expandedEpisode'}>
-							<div className="deleteFromList" onClick={(event) => { event.stopPropagation(); event.preventDefault(); deletePodcastFromContinueListeningList(episode); return false; }}><IonIcon icon={removeIcon} /></div>
-							<PodcastImage
-								podcastPath={podcastData.podcastPath}
-								width={400}
-								height={400}
-								coverWidth={120}
-								coverHeight={120}
-								imageErrorText={episode.title}
-								src={episode.image ? episode.image : podcastData.podcast ? podcastData.podcast?.artworkUrl600 ? podcastData.podcast?.artworkUrl600 : podcastData.podcast?.image : false}
-								fallBackImage={false}
-								className={'cover'}
-								asBackground={true}
-								loadingComponent={() => <IonSkeletonText animated={true} className="coverLoading" />}
-							/>
-							{ !!podcastData.episode.duration &&
-								<div className="episodeDuration">{TimeUtil.fancyTimeFormat(podcastData.episode.duration)}</div>
-							}
-							{ (podcastData.episode.duration && !podcastData.episode.live) && 
-								<div className="episodeProgressBarOuter">
-									{ !!podcastData.episode.listenedPercentage &&
-										<div className="episodeProgressBarInner" style={{ width: Math.round(podcastData.episode.listenedPercentage) + '%' }} />
-									}
-								</div>
-							}
-							<div className='podcastInfo'>
-								<div className="podcastName">{podcastData.podcastName}</div>
-								<div className='title'>
-									{podcastData.episode.title}
-								</div>
-								<div className='description' dangerouslySetInnerHTML={{__html:podcastData.episode.descriptionNoHTML}}>
-
-								</div>
-								
-									<div className='author'>
-										{ podcastData.episode.duration &&
-											<>{TimeUtil.fancyTimeLeft(timeLeft)} left</>
-										}
-										{ (!podcastData.episode.duration && podcastData.episode.live) && 
-											<>Live episode</>
-										}
-									</div>
-								
-							</div>
-						</div>
+					<SwiperSlide key={continueListeningEpisode.episodeGuid}>
+						<ContinueListeningEpisode
+							podcastPath={continueListeningEpisode.path}
+							continueListeningEpisode={continueListeningEpisode}
+						/>
 					</SwiperSlide>
 				);
 			})}
 			<div className="swiper-button-prev"></div>
 			<div className="swiper-button-next"></div>
 		</Swiper>
+	);
+};
+const ContinueListeningEpisode = ({ podcastPath, continueListeningEpisode }) => {
+	const deletePodcastFromContinueListeningList = useStore((state) => state.deletePodcastFromContinueListeningList);
+
+	const playEpisode = useStore((state) => state.playEpisode);
+	const audioPlay = useStore((state) => state.audioPlay);
+	const audioPause = useStore((state) => state.audioPause);
+	const activeEpisode = useStore((state) => state.activeEpisode);
+
+	var podcastPath = continueListeningEpisode.podcastPath;
+	var episodeGuid = continueListeningEpisode.episodeGuid;
+
+	const onPlay = (podcastPath,episode) => {
+		if (activeEpisode.guid === episodeGuid) {
+			audioPlay();
+		}
+		else {
+			playEpisode(podcastPath,false,episodeGuid,episode.live ? episode : false);
+		}
+	};
+	const onPause = () => {
+		audioPause();
+	};
+
+	const podcastData =  useStore((state) => state.podcasts[podcastPath]);
+
+	const episode = podcastData.episodes[episodeGuid];
+	const timeLeft = episode.duration - episode.currentTime;
+
+	return (
+		<div onClick={() => { onPlay(podcastPath,episode) }} className={'podcastItem hasProgressBar expandedEpisode' + (activeEpisode.guid === episodeGuid ? ' active' : '')}>
+			<div className="deleteFromList" onClick={(event) => { event.stopPropagation(); event.preventDefault(); deletePodcastFromContinueListeningList(episodeGuid); return false; }}>
+				<IonIcon icon={removeIcon} />
+			</div>
+			<PodcastImage
+				podcastPath={podcastData.podcastPath}
+				width={400}
+				height={400}
+				coverWidth={120}
+				coverHeight={120}
+				imageErrorText={continueListeningEpisode.title}
+				src={continueListeningEpisode.image ? continueListeningEpisode.image : podcastData.image}
+				fallBackImage={false}
+				className={'cover'}
+				asBackground={true}
+				loadingComponent={() => <IonSkeletonText animated={true} className="coverLoading" />}
+			/>
+			{ !!episode.duration &&
+				<div className="episodeDuration">{TimeUtil.fancyTimeLeft(timeLeft)} left</div>
+			}
+			{ (episode.duration && !episode.live) && 
+				<div className="episodeProgressBarOuter">
+					{ !!episode.listenedPercentage &&
+						<div className="episodeProgressBarInner" style={{ width: Math.round(episode.listenedPercentage) + '%' }} />
+					}
+				</div>
+			}
+			<div className='podcastInfo'>
+				<div className="podcastName">{podcastData.name}</div>
+				<div className='title'>
+					{continueListeningEpisode.title}
+				</div>
+				<div className='description' dangerouslySetInnerHTML={{__html:continueListeningEpisode.description}}>
+
+				</div>
+				
+					<div className='author'>
+						{ episode.duration &&
+							<>{TimeUtil.fancyTimeFormat(episode.duration)}</>
+						}
+						{ (!episode.duration && episode.live) && 
+							<>Live episode</>
+						}
+					</div>
+				
+			</div>
+		</div>
 	);
 };
 export default ContinueListening;

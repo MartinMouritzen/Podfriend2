@@ -40,6 +40,7 @@
 		"@capacitor/core": "^4.0.1",
 		"@capacitor/device": "^4.1.0",
 		"@capacitor/ios": "4.0.1",
+		"@capacitor/keyboard": "^4.1.1",
 		"@ionic/react": "^6.2.1",
 		"@ionic/react-router": "^6.2.1",
 		"@ungap/structured-clone": "^1.0.2",

@@ -10,7 +10,6 @@ import { IonButton, IonButtons, IonHeader, IonIcon, IonItem, IonLabel, IonList, 
 import './WalletPage.scss';
 
 const AlbyOauthPage = ({  }) => {
-	const _hasHydrated = useStore((state) => state._hasHydrated);
 	const userData = useStore((state) => state.userData);
 
 	const exchangeCodeToWalletToken = useStore((state) => state.exchangeCodeToWalletToken);
@@ -19,18 +18,16 @@ const AlbyOauthPage = ({  }) => {
 	const location = useLocation();
 
 	useEffect(() => {
-		if (_hasHydrated) {
-			var searchParams = new URLSearchParams(location.search);
-			var code = searchParams.get('code');
-			if (code) {
-				console.log('We have a code. Let us exchange it to a token');
-				exchangeCodeToWalletToken(code)
-				.then((token) => {
-					setWalletToken(token);
-				});
-			}
+		var searchParams = new URLSearchParams(location.search);
+		var code = searchParams.get('code');
+		if (code) {
+			console.log('We have a code. Let us exchange it to a token');
+			exchangeCodeToWalletToken(code)
+			.then((token) => {
+				setWalletToken(token);
+			});
 		}
-	},[_hasHydrated,location]);
+	},[location]);
 
 	return (
 		<Page id="wallet" title="Alby to Podfriend" showBackButton={false}>

@@ -22,7 +22,6 @@ import './WalletPage.scss';
 import WalletModal from "components/Wallet/WalletModal";
 
 const WalletPage = ({  }) => {
-	const _hasHydrated = useStore((state) => state._hasHydrated);
 	const loggedIn = useStore((state) => state.loggedIn);
 	const userData = useStore((state) => state.userData);
 	const walletBalance = useStore((state) => state.walletBalance);
@@ -49,14 +48,12 @@ const WalletPage = ({  }) => {
 	};
 
 	useEffect(() => {
-		if (_hasHydrated) {
-			if (walletOnboardingShowed === false) {
-				openOnboardingModal();
-				updateWalletOnboardingShowed(true);
-			}
-			synchronizeLegacyWallet();
+		if (walletOnboardingShowed === false) {
+			openOnboardingModal();
+			updateWalletOnboardingShowed(true);
 		}
-	},[walletOnboardingShowed,_hasHydrated]);
+		synchronizeLegacyWallet();
+	},[walletOnboardingShowed]);
 
 	const onBeginConnectWallet = () => {
 		var albyOathUrl = 'https://getalby.com/oauth?client_id=QBqT68cVBK&redirect_uri=https%3A%2F%2Fwww.podfriend.com%2Foauth%2Falby%2F&scope=account:read%20invoices:create%20invoices:read%20transactions:read%20balance:read%20payments:send';
@@ -94,19 +91,21 @@ const WalletPage = ({  }) => {
 								<div className="iconContainer">
 									<IonIcon icon={noticeIcon} />
 								</div>
-								<div className="textContainer">
-									<h3>Legacy value available</h3>
-									You have <b>{legacyWalletBalance}</b> satoshis in your legacy Podfriend wallet.
+								<div>
+									<div className="textContainer">
+										<h3>Legacy value available</h3>
+										You have <b>{legacyWalletBalance}</b> satoshis in your legacy Podfriend wallet.
+									</div>
+									{ walletSetupCompleted &&
+										<IonButton expand="block">Transfer legacy balance to new vallet</IonButton>
+									}
+									{ !walletSetupCompleted &&
+										<div>
+											Connect your Alby wallet to transfer the old balance to your new wallet.
+										</div>
+									}
 								</div>
 							</div>
-							{ walletSetupCompleted &&
-								<IonButton expand="block">Transfer legacy balance to new vallet</IonButton>
-							}
-							{ !walletSetupCompleted &&
-								<div>
-									Connect your Alby wallet to transfer the old balance to your new wallet.
-								</div>
-							}
 						</div>
 					}
 				</div>

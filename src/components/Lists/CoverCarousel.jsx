@@ -20,7 +20,6 @@ const CoverCarousel = ({ type, podcasts, backButtonText }) => {
 	return (
 		<Swiper
 			slidesPerView='auto'
-			resistance={false}
 			slidesPerGroup={1}
 			slidesPerGroupAuto={true}
 			spaceBetween={10}
@@ -38,7 +37,7 @@ const CoverCarousel = ({ type, podcasts, backButtonText }) => {
 			modules={[Navigation, Pagination]}
 			className="coverSwiper"
 		>
-			{ podcasts !== false && podcasts.map((podcast) => {
+			{ podcasts !== false && podcasts !== null && podcasts.map((podcast) => {
 				return (
 
 						<SwiperSlide key={podcast.path}>

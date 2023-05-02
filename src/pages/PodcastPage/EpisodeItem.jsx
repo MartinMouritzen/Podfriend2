@@ -27,13 +27,17 @@ import PodcastImage from 'components/PodcastImage/PodcastImage';
 /************************************************
 * Episode item 
 ************************************************/
-const EpisodeItem = ({ podcastData, episode, guid, id, title, description, image, currentTime, duration, url, selected, isActiveEpisode, shouldPlay }) => {
+const EpisodeItem = ({ podcastPath, podcastData, episode, guid, id, title, description, image, selected, isActiveEpisode }) => {
 	const [episodeTitle,setEpisodeTitle] = useState(title);
 	const [episodeDescription,setEpisodeDescription] = useState(description);
 
+	const shouldPlay = useStore((state) => state.shouldPlay);
 	const playEpisode = useStore((state) => state.playEpisode);
 	const audioPlay = useStore((state) => state.audioPlay);
 	const audioPause = useStore((state) => state.audioPause);
+
+	const episodeState = useStore((state) => (state.podcasts && state.podcasts[podcastPath] && state.podcasts[podcastPath].episodes) ? state.podcasts[podcastPath].episodes[guid] : false);
+	// console.log(episodeState);
 
 	const addEpisodeToPlaylistStart = useStore((state) => state.addEpisodeToPlaylistStart);
 	const addEpisodeToPlaylistEnd = useStore((state) => state.addEpisodeToPlaylistEnd);
@@ -47,10 +51,13 @@ const EpisodeItem = ({ podcastData, episode, guid, id, title, description, image
 		}));
 	},[title, description]);
 
-	var totalMinutes = Math.round(episode.duration / 60);
-	var minutesLeft = episode.currentTime ? Math.round((episode.duration - episode.currentTime) / 60) : totalMinutes;
+	const duration = episodeState?.duration ? episodeState.duration : episode.duration;
+	const currentTime = episodeState?.currentTime ? episodeState.currentTime : 0;
+
+	var totalMinutes = Math.round(duration / 60);
+	var minutesLeft = currentTime ? Math.round((duration - currentTime) / 60) : totalMinutes;
 	
-	var progressPercentage = episode.currentTime ? (100 * episode.currentTime) / episode.duration : 0;
+	var progressPercentage = currentTime ? (100 * currentTime) / duration : 0;
 	if (progressPercentage > 100) {
 		progressPercentage = 100;
 	}
@@ -94,19 +101,20 @@ const EpisodeItem = ({ podcastData, episode, guid, id, title, description, image
 		else {
 			console.log('---------------- changing episode ----------------');
 			console.log(podcastData);
-			playEpisode(podcastData,url);
+			playEpisode(podcastData.path,podcastData,guid);
 		}
 	};
 	const onPause = () => {
 		audioPause();
 	};
+	// console.log(episodeState);
 
 	return (
 		<IonItemSliding ref={episodeItemOptionElement} disabled={true}>
 			<IonItem
 				key={id}
 	//			onClick={() => { onEpisodeSelect(episode); }}
-				className={'episode' + (selected ? ' selected' : '') + (episode.listened ? ' listened' : '')}
+				className={'episode' + (selected ? ' selected' : '') + (episodeState?.listened ? ' listened' : '')}
 			>
 				<div>
 					<PodcastImage
@@ -122,7 +130,7 @@ const EpisodeItem = ({ podcastData, episode, guid, id, title, description, image
 						asBackground={true}
 						loadingComponent={() => <IonSkeletonText animated={true} className="coverLoading" />}
 					/>
-					{ episode.listened &&
+					{ episodeState?.listened &&
 						<div className="listenedMarker"><IonIcon icon={listenedIcon} /></div>
 					}
 				</div>
@@ -139,17 +147,27 @@ const EpisodeItem = ({ podcastData, episode, guid, id, title, description, image
 					>
 						<p className="date">
 							{format(episode.date ? new Date(episode.date) : new Date(),'MMM d, yyyy')}
-							<span className='agoText'>({formatDistance(new Date(episode.date), new Date())} ago)</span>
-							{ episode.listened === true &&
+							{ episode.date &&
+								<span className='agoText'>({formatDistance(new Date(episode.date), new Date())} ago)</span>
+							}
+							{ episodeState?.listened &&
 								<span className="listenedLabel"><IonIcon icon={checkmarkCircle} /> Listened</span>
 							}
 						</p>
 						<h2>
-							{ (selected && shouldPlay) &&
-								<img src={AudioPlayingIcon} /> 
-							}
-							{ (selected && !shouldPlay) &&
-								<IonIcon icon={selectedIcon} style={{ marginLeft: '4px', marginRight: '9px', pointerEvents: 'none' }} />
+							{ selected && 
+								<div style={{ display: 'inline-block', height: 17, width: 20 }}>
+									{ (selected && shouldPlay) &&
+										<div style={{ display: 'inline-block',  }}>
+											<img src={AudioPlayingIcon} style={{ height: 17, marginRight: 9, position: 'relative', top: 2 }} /> 
+										</div>
+									}
+									{ (selected && !shouldPlay) &&
+										<div style={{ display: 'inline-block' }}>
+											<IonIcon icon={selectedIcon} style={{ marginRight: '9px', pointerEvents: 'none', position: 'relative', top: 2 }} />
+										</div>
+									}
+								</div>
 							}
 							{ episodeTitle }</h2>
 						<p className="description" dangerouslySetInnerHTML={{__html:episodeDescription}}></p>
@@ -174,10 +192,10 @@ const EpisodeItem = ({ podcastData, episode, guid, id, title, description, image
 								<span>{totalMinutes} min</span>
 							}
 							{ (!isNaN(minutesLeft) && minutesLeft != totalMinutes) && 
-								<span>{Math.round((episode.duration - episode.currentTime) / 60)} of {totalMinutes} min left</span>
+								<span>{Math.round((duration - currentTime) / 60)} of {totalMinutes} min left</span>
 							}
 							{ isNaN(minutesLeft) &&
-								<span>{episode.currentTime} - {episode.duration}</span>
+								<span>{currentTime} - {duration}</span>
 							}
 						</div>
 					</div>
@@ -192,7 +210,7 @@ const EpisodeItem = ({ podcastData, episode, guid, id, title, description, image
 		</IonItemSliding>
 	);
 }
-
+/*
 function episodeShouldCache(prevEpisode,nextEpisode) {
 	if (nextEpisode.isActiveEpisode) { return false; }
 	if (prevEpisode.isActiveEpisode) { return false; }
@@ -212,3 +230,5 @@ function episodeShouldCache(prevEpisode,nextEpisode) {
 }
 
 export default memo(EpisodeItem, episodeShouldCache);
+*/
+export default EpisodeItem;

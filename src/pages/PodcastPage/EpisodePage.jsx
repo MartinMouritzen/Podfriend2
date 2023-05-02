@@ -51,8 +51,6 @@ const EpisodePage = ({ match, audioController }) => {
 	const activePodcast = useStore((state) => state.activePodcast);
 	const activeEpisode = useStore((state) => state.activeEpisode);
 
-	const retrieveOriginalPodcastFeed = useStore((state) => state.retrieveOriginalPodcastFeed);
-
 	const shouldPlay = useStore((state) => state.shouldPlay);
 
 	const playbackSpeed = useStore((state) => state.playbackSpeed);	
@@ -62,7 +60,6 @@ const EpisodePage = ({ match, audioController }) => {
 	const audioPlay = useStore((state) => state.audioPlay);
 	const audioPause = useStore((state) => state.audioPause);
 
-	const updateProgress = useStore((state) => state.updateProgress);
 	const streamDataLoading = useStore((state) => state.streamDataLoading);
 
 	const playEpisode = useStore((state) => state.playEpisode);
@@ -137,7 +134,7 @@ const EpisodePage = ({ match, audioController }) => {
 			audioPlay();
 		}
 		else {
-			playEpisode(podcast,episode.url);
+			playEpisode(podcast.path,podcastData,episode.guid);
 		}
 	}
 

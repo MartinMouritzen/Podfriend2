@@ -1,25 +1,17 @@
 import localForage from "localforage";
 
 class ClientStorage {
-	/**
-	*
-	*/
-	constructor() {
-		console.log('Default ClientStorage');
-	}
-	getPodcast(podcastPath) {
+	static getPodcast(podcastPath) {
 		return this.getItem('podcast_cache_' + podcastPath);
 	}
 	/**
 	*
 	*/
-	setItem(key,value) {
+	static setItem(key,value) {
 		return localForage.setItem(key,value)
-		/*
 		.then((value) => {
-			console.log('ClientStorage.setItem success: ' + value);
+			// console.log('ClientStorage.setItem success: ' + value);
 		})
-		*/
 		.catch((error) => {
 			console.log('Clienstorage.setItem error!');
 			console.log(error);
@@ -28,19 +20,19 @@ class ClientStorage {
 	/**
 	*
 	*/
-	getItem(key) {
+	static getItem(key) {
 		return localForage.getItem(key);
 	}
 	/**
 	*
 	*/
-	removeItem(key) {
+	static removeItem(key) {
 		return localForage.removeItem(key);
 	}
 	/**
 	*
 	*/
-	clear() {
+	static clear() {
 		return localForage.clear();
 	}
 }

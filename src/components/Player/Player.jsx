@@ -58,8 +58,13 @@ const Player = ({ audioController, navigateToPath, platform }) => {
 	const audioElement = useRef(null);
 	const scrollChild = useRef(null);
 
+	const activePodcastPath = useStore((state) => state.activePodcastPath);
+	const activeEpisodeGuid = useStore((state) => state.activeEpisodeGuid);
+
 	const activePodcast = useStore((state) => state.activePodcast);
 	const activeEpisode = useStore((state) => state.activeEpisode);
+
+	const episodeState = useStore((state) => state.podcasts[state.activePodcastPath]?.episodes[state.activeEpisodeGuid]);
 
 	const retrieveOriginalPodcastFeed = useStore((state) => state.retrieveOriginalPodcastFeed);
 
@@ -131,7 +136,9 @@ const Player = ({ audioController, navigateToPath, platform }) => {
 
 	};
 	const onTimeUpdate = () => {
-		updateProgress();
+		if (!streamDataLoading && shouldPlay) {
+			updateProgress();
+		}
 	};
 	const onEnded = () => {
 
@@ -156,7 +163,7 @@ const Player = ({ audioController, navigateToPath, platform }) => {
 	*
 	*/
 	const onProgressSliderChange = (value) => {
-		var placeInTrack = value * activeEpisode.duration / 100;
+		var placeInTrack = value * episodeState.duration / 100;
 
 		clearTimeout(progressTimeoutId.current);
 
@@ -168,7 +175,7 @@ const Player = ({ audioController, navigateToPath, platform }) => {
 	}
 
 	const generateTimeHash = () => {
-		return '#t=' + Math.round(activeEpisode.currentTime ? activeEpisode.currentTime : 0);
+		return '#t=' + Math.round(episodeState && episodeState.currentTime ? episodeState.currentTime : 0);
 	};
 	const addUserAgentToUrl = (fileUrl) => {
 		if (!fileUrl) { return; }
@@ -177,7 +184,7 @@ const Player = ({ audioController, navigateToPath, platform }) => {
 			resourceUrl.searchParams.delete('_from');
 			resourceUrl.searchParams.append('_from','podfriend.com');
 			resourceUrl.searchParams.append('_guid',activeEpisode.statsId);
-			return resourceUrl.toString();
+			return resourceUrl.toString() + generateTimeHash();
 		}
 		catch (exception) {
 			console.log('addUserAgentToUrlException');
@@ -217,11 +224,14 @@ const Player = ({ audioController, navigateToPath, platform }) => {
 		preload: "auto",
 		disableRemotePlayback: true,
 		onError: (error) => {
-			console.log('Error happened in audio element on ' + new Date());
-			console.log(error); console.log(error.nativeEvent);
-			console.log(error.nativeEvent.message);
-			console.log(error.nativeEvent.code);
-			console.log(error.currentTarget);
+			if (activeEpisode && activeEpisode.url) {
+				console.log('Error happened in audio element on ' + new Date());
+				console.log(error);
+				console.log(error.nativeEvent);
+				console.log(error.nativeEvent.message);
+				console.log(error.nativeEvent.code);
+				console.log(error.currentTarget);
+			}
 
 			// var errorSpecified = Object.keys(Object.getPrototypeOf(error.currentTarget.error)).find(key => error.currentTarget.error[key] === error.currentTarget.error.code);
 			// console.log(errorSpecified);
@@ -292,14 +302,16 @@ const Player = ({ audioController, navigateToPath, platform }) => {
 		setSegmentVisible('playing');
 		setChapters(false);
 
-		changeActiveEpisode(activePodcast,activeEpisode);
+		changeActiveEpisode(activePodcast,activeEpisode,episodeState);
 
-		retrieveOriginalPodcastFeed(activePodcast)
-		.then((feed) => {
-			console.log('new original feed in player');
-			console.log(feed);
-		});
-	},[activeEpisode.url]);
+		if (activePodcast) {
+			retrieveOriginalPodcastFeed(activePodcast.path,activePodcast.feedUrl)
+			.then((feed) => {
+				console.log('new original feed in player');
+				console.log(feed);
+			});
+		}
+	},[activeEpisodeGuid]);
 
 	useEffect(() => {
 		setSegmentVisible('playing');
@@ -368,12 +380,15 @@ const Player = ({ audioController, navigateToPath, platform }) => {
 	},[JSON.stringify(rssFeedCurrentEpisode)]);
 
 	useEffect(() => {
+		if (!episodeState) {
+			return;
+		}
 		var foundChapter = false;
 
-		if (activeEpisode.currentTime > 0) {
+		if (episodeState.currentTime > 0) {
 			// First we walk through to find the active chapter
 			for(var i=0;i<chapters.length;i++) {
-				if (chapters[i].startTime <= activeEpisode.currentTime) {
+				if (chapters[i].startTime <= episodeState.currentTime) {
 					// Let's make sure we get the latest chapter
 					if (!foundChapter || foundChapter.startTime < chapters[i].startTime) {
 						foundChapter = chapters[i];
@@ -384,7 +399,7 @@ const Player = ({ audioController, navigateToPath, platform }) => {
 		if (foundChapter != currentChapter) {
 			setCurrentChapter(foundChapter);
 		}
-	},[JSON.stringify(chapters),Math.round(activeEpisode.currentTime)]);
+	},[JSON.stringify(chapters),Math.round(episodeState?.currentTime)]);
 
 	const navigateToPodcast = () => {
 		navigateToPath('/podcast/' + activePodcast.path + '/');
@@ -405,7 +420,6 @@ const Player = ({ audioController, navigateToPath, platform }) => {
 		}
 	},[segmentVisible]);
 
-	// var playerStyle = { backgroundColor: darkVibrantColor, borderTop: '1px solid ' + darkVibrantColor };
 	var playerStyle = {};
 
 	const [actionSheetPresent] = useIonActionSheet();
@@ -433,13 +447,6 @@ const Player = ({ audioController, navigateToPath, platform }) => {
 						action: 'share'
 					}
 				},
-				{
-					text: 'Go to podcast page',
-					icon: goIcon,
-					data: {
-						action: 'website'
-					}
-				},
 				/*
 				{
 					text: 'Add season to playlist',
@@ -458,7 +465,7 @@ const Player = ({ audioController, navigateToPath, platform }) => {
 			],
 			onWillDismiss: ({ detail }) => {
 				if (detail?.data?.action === 'website') {
-					window.open(podcastData.link,"_blank");
+					// window.open(activePodcast.link,"_blank");
 				}
 				else if (detail?.data?.action === 'playbackSpeed') {
 					openPlaybackSpeedModal();
@@ -514,13 +521,13 @@ const Player = ({ audioController, navigateToPath, platform }) => {
 				onOpen={maximize}
 				onHide={minimize}
 				open={fullscreen}
-				className={'player ' + (fullscreen ? 'fullscreen' : 'mini') + ' ' + (shouldPlay ? ' ' + 'playing' : ' ' + 'notPlaying') + (activePodcast ? '' : ' noPodcastPlaying') + (activeEpisode.live ? ' liveEpisode' : '')}
+				className={'player ' + (fullscreen ? 'fullscreen' : 'mini') + ' ' + (shouldPlay ? ' ' + 'playing' : ' ' + 'notPlaying') + (activePodcastPath ? '' : ' noPodcastPlaying') + (activeEpisode.live ? ' liveEpisode' : '')}
 				style={playerStyle}
 				platform={platform}
 			>
 				{ audioController.useBrowserAudioElement === true &&
 					<audio {...audioElementProps}>
-						<source src={addUserAgentToUrl(activeEpisode.url) + generateTimeHash()} type={activeEpisode.type ? activeEpisode.type : 'audio/mpeg'} />
+						<source src={addUserAgentToUrl(activeEpisode.url)} type={activeEpisode.type ? activeEpisode.type : 'audio/mpeg'} />
 					</audio>
 				}
 				<div className="mainPlayerComponents">
@@ -622,7 +629,7 @@ const Player = ({ audioController, navigateToPath, platform }) => {
 								</Swiper>
 							</div>
 							{ transcriptData &&
-								<TranscriptLiveArea rssFeedCurrentEpisode={rssFeedCurrentEpisode} transcriptData={transcriptData} currentTime={activeEpisode.currentTime} podcast={activePodcast} chapters={chapters} setCurrentTime={setCurrentTime} />
+								<TranscriptLiveArea rssFeedCurrentEpisode={rssFeedCurrentEpisode} transcriptData={transcriptData} currentTime={episodeState.currentTime} podcast={activePodcast} chapters={chapters} setCurrentTime={setCurrentTime} />
 							}
 							{ false &&
 								<div style={{ color: '#000000', padding: 10 }}>
@@ -666,15 +673,15 @@ const Player = ({ audioController, navigateToPath, platform }) => {
 							<div className="progressAndControls">
 								<div className="progressBar">
 									<div className="progressText">
-										{TimeUtil.formatPrettyDurationText(activeEpisode.currentTime)}
+										{TimeUtil.formatPrettyDurationText(episodeState?.currentTime)}
 									</div>
 									<ProgressBar
-										progress={activeEpisode.currentTime}
-										duration={activeEpisode.duration}
+										progress={episodeState?.currentTime}
+										duration={episodeState?.duration}
 										onProgressSliderChange={onProgressSliderChange}
 									/>
-									<div className="durationText" title={TimeUtil.formatPrettyDurationText(activeEpisode.duration - activeEpisode.progress) + ' left.'}>
-										{TimeUtil.formatPrettyDurationText(activeEpisode.duration)}
+									<div className="durationText" title={TimeUtil.formatPrettyDurationText(episodeState?.duration - episodeState?.progress) + ' left.'}>
+										{TimeUtil.formatPrettyDurationText(episodeState?.duration)}
 									</div>
 								</div>
 								<div className="playerControls">
@@ -684,15 +691,15 @@ const Player = ({ audioController, navigateToPath, platform }) => {
 									<div className="button buttonSkipBackward" onClick={onSkipBackward}><SVG src={SkipBackwardIcon} /></div>
 									<div className="button buttonRewind" onClick={onBackward}><SVG src={RewindIcon} /></div>
 									{ streamDataLoading &&
-										<div className="button buttonLoad" onClick={onPauseClicked} style={{ /* backgroundColor: vibrantColor */ }} ><img src={LoadingIcon} /></div>
+										<div className="button buttonLoad" onClick={onPauseClicked}  ><img src={LoadingIcon} /></div>
 									}
 									{ streamDataLoading === false &&
 										<>
 										{ shouldPlay &&
-											<div className="button buttonPause" onClick={onPauseClicked} style={{ /* backgroundColor: vibrantColor */ }}><SVG src={PauseIcon} /></div>
+											<div className="button buttonPause" onClick={onPauseClicked} ><SVG src={PauseIcon} /></div>
 										}
 										{ shouldPlay === false &&
-											<div className="button buttonPlay" onClick={onPlayClicked} style={{ /* backgroundColor: vibrantColor */ }}><SVG src={PlayIcon} /></div>
+											<div className="button buttonPlay" onClick={onPlayClicked} ><SVG src={PlayIcon} /></div>
 										}
 										</>
 									}

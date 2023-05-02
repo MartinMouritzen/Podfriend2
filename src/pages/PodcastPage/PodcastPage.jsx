@@ -1,4 +1,4 @@
-import { IonHeader, IonToolbar, IonTitle, IonSkeletonText, IonButton, IonIcon, useIonActionSheet, IonItem, IonChip } from "@ionic/react";
+import { IonHeader, IonToolbar, IonTitle, IonSkeletonText, IonButton, IonIcon, useIonActionSheet, IonItem, IonChip, IonList } from "@ionic/react";
 import Page from "components/Page/Page";
 import PodcastImage from "components/PodcastImage/PodcastImage";
 import { useState, useEffect, useRef } from "react";
@@ -33,11 +33,13 @@ import {
 } from 'ionicons/icons';
 import LiveEpisodes from "./LiveEpisodes";
 import PodRoll from "./PodRoll";
+import EpisodeItem from "./EpisodeItem";
 
 const PodcastPage = ({ match }) => {
 	const [actionButtonsRef, { x, y, width: actionButtonsWidth }] = useDimensions();
 
 	const activePodcast = useStore((state) => state.activePodcast);
+	const activeEpisode = useStore((state) => state.activeEpisode);
 
 	const getPodcastFromCache = useStore((state) => state.getPodcastFromCache);
 	const shouldPodcastUpdate = useStore((state) => state.shouldPodcastUpdate);
@@ -47,9 +49,9 @@ const PodcastPage = ({ match }) => {
 	const unfollowPodcast = useStore((state) => state.unfollowPodcast);
 	const isPodcastFollowed = useStore((state) => state.isPodcastFollowed);
 
-	const [podcastSeasonType,setPodcastSeasonType] = useState('episodic');
-
 	const podcastPath = match.params.podcastPath;
+
+	const seasonType =  useStore((state) => state.podcasts[podcastPath] ? state.podcasts[podcastPath].seasonType : undefined);
 
 	const [podcastRSSData,setPodcastRSSData] = useState(false);
 
@@ -59,6 +61,7 @@ const PodcastPage = ({ match }) => {
 	const [podcastData,setPodcastData] = useState(false);
 
 	const [showReviews,setShowReviews] = useState(false);
+	const [activeEpisodeIsShownInList,setActiveEpisodeIsShownInList] = useState(false);
 
 	const [podcastLocation,setPodcastLocation] = useState(false);
 	const [showPodcastLocation,setShowPodcastLocation] = useState(false);
@@ -71,38 +74,19 @@ const PodcastPage = ({ match }) => {
 	const [actionSheetPresent] = useIonActionSheet();
 
 	const onFollowPodcast = () => {
-		followPodcast(podcastData);
+		followPodcast(podcastData.path);
 		setPodcastIsFollowed(true);
 	};
 	const onUnfollowPodcast = () => {
-		unfollowPodcast(podcastData);
+		unfollowPodcast(podcastData.path);
 		setPodcastIsFollowed(false);
 	};
 
-	useEffect(() => {
-		// console.log('time to get live RSS data');
-	},[podcastData.url]);
-
-	useEffect(() => {
-		if (activePodcast.path == podcastPath) {
-			setPodcastData(activePodcast);
-			// setPodcastState('loaded');
-			// console.log(activePodcast);
-		}
-	},[activePodcast.path]);
-
-	useEffect(() => {
-		if (podcastData && activePodcast.path == podcastPath) {
-			podcastData.configSelectedSortOrder = activePodcast.configSelectedSortOrder;
-			podcastData.configSelectedSeason = activePodcast.configSelectedSeason;
-		}
-	},[activePodcast.configSelectedSortOrder,activePodcast.configSelectedSeason]);
-
-	// console.log(podcastData.rssFeedContents);
-
+	/*
 	useEffect(() => {
 		setPodcastRSSData(podcastData.rssFeedContents);
 	},[podcastData.rssFeedContents?.uuid]);
+	*/
 
 	useEffect(() => {
 		console.log('Original RSS Feed contents changed');
@@ -147,12 +131,7 @@ const PodcastPage = ({ match }) => {
 	},[JSON.stringify(podcastRSSData)]);
 
 	const refreshPodcast = () => {
-		var podcastDataToUse = podcastData
-		if (activePodcast.path == podcastData.path) {
-			var podcastDataToUse = activePodcast;
-		}
-
-		return retrievePodcastFromServer(podcastPath,podcastDataToUse)
+		return retrievePodcastFromServer(podcastPath)
 		.then((podcastDataFromServer) => {
 			setPodcastData(podcastDataFromServer);
 			setPodcastState('loaded');
@@ -166,31 +145,19 @@ const PodcastPage = ({ match }) => {
 		});
 	}
 	const loadPodcast = async (podcastPath,ignoreCache = false) => {
-		/*
-		if (location?.state?.podcast) {
-			console.log('We have a podcast in state');
-			console.log(location.state.podcast);
-			setPodcastData(location.state.podcast);
-			setPodcastState('loaded');
-		}
-		else {
-			*/
-			setPodcastState('loading');
-			setPodcastData(false);
-		// }
-
-		console.log('Loading podcast');
-
 		try {
 			if (activePodcast.path === podcastPath) {
 				setPodcastData(activePodcast);
-				// setPodcastState('loaded');
+				setPodcastState('loaded');
+			}
+			else {
+				setPodcastState('loading');
+				setPodcastData(false);
 			}
 			getPodcastFromCache(podcastPath)
 			.then((podcastCache) => {
-				console.log('Podcast cache');
-				console.log(podcastCache);
 				if (podcastCache) {
+					console.log('we had a cache');
 					setPodcastData(podcastCache);
 					setPodcastState('loaded');
 				}
@@ -198,7 +165,7 @@ const PodcastPage = ({ match }) => {
 		
 				if (shouldUpdate) {
 					console.log('Podcast should update');
-					retrievePodcastFromServer(podcastPath,podcastCache)
+					retrievePodcastFromServer(podcastPath)
 					.then((podcastDataFromServer) => {
 						setPodcastData(podcastDataFromServer);
 						setPodcastState('loaded');
@@ -211,11 +178,6 @@ const PodcastPage = ({ match }) => {
 						setPodcastState('error');
 					});
 				}
-			})
-			.catch((exception) => {
-				setPodcastState('error');
-				console.log('Error in getPodcast (2)');
-				console.log(exception);
 			});
 		}
 		catch (exception) {
@@ -227,14 +189,14 @@ const PodcastPage = ({ match }) => {
 
 	useEffect(() => {
 		if (podcastState === 'loaded') {
-			retrieveOriginalPodcastFeed(podcastData)
+			retrieveOriginalPodcastFeed(podcastData.path,podcastData.feedUrl)
 			.then((feed) => {
 				console.log('new original feed');
 				console.log(feed);
 				setPodcastRSSData(feed);
 			});
 		}
-	},[podcastData.receivedFromServerText]);
+	},[podcastData?.receivedFromServerText]);
 
 	const scrollableContentRef = useRef(null);
 	const setScrollableContentRef = (ref) => {
@@ -435,10 +397,10 @@ const PodcastPage = ({ match }) => {
 							}
 							<IonButton id="lastEpisodeButton" fill={podcastIsFollowed === true ? 'solid' : 'outline'}>
 								<IonIcon slot="start" icon={playIcon}></IonIcon>
-								{ podcastSeasonType === 'episodic' &&
+								{ seasonType === 'episodic' &&
 									<>Latest</>
 								}
-								{ podcastSeasonType === 'season' &&
+								{ seasonType === 'season' &&
 									<>First</>
 								}
 									{ actionButtonsWidth > 310 &&
@@ -492,11 +454,30 @@ const PodcastPage = ({ match }) => {
 					</div>
 				</div>
 				<div>
+					{ (!activeEpisodeIsShownInList && (activePodcast.guid === podcastData.guid)) &&
+						<div className="episodeListOuter">
+							<h2 className="podcastPageSubHeader">Currently playing</h2>
+							<IonList lines="full" inset={false} className="episodeList">
+							<EpisodeItem
+								key={activeEpisode.guid}
+								guid={activeEpisode.guid}
+								title={activeEpisode.title}
+								description={activeEpisode.description}
+								image={activeEpisode.image}
+								podcastPath={podcastPath}
+								podcastData={podcastData}
+								episode={activeEpisode}
+								selected={true}
+								isActiveEpisode={true}
+							/>
+							</IonList>
+						</div>
+					}
 					{ liveItems &&
 						<LiveEpisodes podcastData={podcastData} liveItems={liveItems} />
 					}
 					{ podcastState === 'loaded' &&
-						<EpisodeList podcastPath={podcastData.path} podcastData={podcastData} episodes={podcastData.episodes} />
+						<EpisodeList podcastPath={podcastData.path} podcastData={podcastData} episodes={podcastData.episodes} setActiveEpisodeIsShownInList={setActiveEpisodeIsShownInList} />
 					}
 					{ podcastState === 'loading' &&
 						<div className="episodeListOuter">

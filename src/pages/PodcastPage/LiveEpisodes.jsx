@@ -24,7 +24,7 @@ const LiveItem = ({ podcastData, liveItem }) => {
 	const shouldPlay = useStore((state) => state.shouldPlay);
 
 	const playLiveEpisode = () => {
-		playEpisode(podcastData,liveItem.enclosure.url,liveItem);
+		playEpisode(podcastData.path,podcastData,liveItem.guid,liveItem);
 	};
 
 	const formatEpisodeStatusText = () => {

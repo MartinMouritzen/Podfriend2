@@ -4,12 +4,10 @@ import { format } from 'date-fns';
 
 import ClientStorage from './ClientStorage';
 
-const clientStorage = new ClientStorage();
-
 export const createReviewSlice = (set, get) => ({
 	fetchingReviews: false,
 	loadReviewsCache: (podcastGuid) => {
-		return clientStorage.getItem('podcast_reviews_cache_' + podcastGuid)
+		return ClientStorage.getItem('podcast_reviews_cache_' + podcastGuid)
 		.then((reviewsCache) => {
 			var shouldUpdate = false;
 
@@ -81,7 +79,7 @@ export const createReviewSlice = (set, get) => ({
 					data.reviews[i].reviewDate = new Date(data.reviews[i].reviewDate); // format(, 'yyyy-MM-dd HH-mm-ss'); // format(data.reviews[i].reviewDate);
 				}
 				
-				clientStorage.setItem('podcast_reviews_cache_' + podcastGuid,data);
+				ClientStorage.setItem('podcast_reviews_cache_' + podcastGuid,data);
 
 				return Promise.resolve(data);
 			}

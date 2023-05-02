@@ -458,9 +458,18 @@ ion-menu {
 .podcastGrid, .coverSwiper {
 	&.podcastGrid {
 		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(185px, 1fr));
+		grid-template-columns: repeat(auto-fill, minmax(146px, 1fr));
+
+		@media (min-width: 900px) {
+			grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+		}
+		@media (min-width: 1600px) {
+			grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+		}
+
 		grid-column-gap: 10px;
 	}
+
 
 	a {
 		text-decoration: none;
@@ -691,8 +700,6 @@ ion-menu {
 		height: 120px;
 	}
 	&.scroll, &.grid {
-		margin-left: 10px;
-		margin-right: 10px;
 		gap: 5px;
 		.podcastItem {
 			
@@ -745,6 +752,26 @@ ion-menu {
 				max-width: 150px;
 
 
+			}
+		}
+		&.active {
+			background-color: var(--primary-color);
+
+			.podcastName {
+				background-color: rgba(255,255,255,0.12);
+				color: rgba(255,255,255,0.87);
+			}
+			.title {
+				color: #FFFFFF !important;
+			}
+			.author {
+				color: rgba(255,255,255,0.9) !important;
+			}
+			.description {
+				color: rgba(255,255,255,0.7) !important;
+			}
+			.date {
+				color: #FFFFFF;
 			}
 		}
 
@@ -912,9 +939,13 @@ ion-modal {
 		}
 	}
 }
+.blueContent {
+	--background: var(--primary-color);
+}
 .modalPage {
 	display: flex;
-	height: 100%;
+
+	min-height: 100%;
 
 	flex-direction: column;
 

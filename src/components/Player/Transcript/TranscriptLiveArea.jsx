@@ -83,16 +83,20 @@ const TranscriptLiveArea = ({ transcriptData, rssFeedCurrentEpisode, currentTime
 					var avatar = false;
 					var role = false;
 					if (persons || episodePersons) {
-						for(var x=0;x<persons.length;x++) {
-							if (persons[x]["#text"] == segment.speaker) {
-								avatar = persons[x].img;
-								role = persons[x].role;
+						if (persons) {
+							for(var x=0;x<persons.length;x++) {
+								if (persons[x]["#text"] == segment.speaker) {
+									avatar = persons[x].img;
+									role = persons[x].role;
+								}
 							}
 						}
-						for(var x=0;x<episodePersons.length;x++) {
-							if (episodePersons[x]["#text"] == segment.speaker) {
-								avatar = episodePersons[x].img;
-								role = episodePersons[x].role;
+						if (episodePersons) {
+							for(var x=0;x<episodePersons.length;x++) {
+								if (episodePersons[x]["#text"] == segment.speaker) {
+									avatar = episodePersons[x].img;
+									role = episodePersons[x].role;
+								}
 							}
 						}
 					}

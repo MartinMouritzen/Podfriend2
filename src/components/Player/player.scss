@@ -197,7 +197,7 @@
 		ion-range::part(pin) {
 			background-color: var(--primary-color);
 			color: #FFFFFF;
-			width: 50px;
+			width: 60px;
 			height: 24px;
 		
 			display: flex;
@@ -305,16 +305,25 @@
 			
 						svg {
 							width: 35px;
-							height: 35px !important;
+							height: 25px !important;
 							fill: var(--miniplayer-button-color);
 						}
+						@media (min-width: 370px) {
+							width: 35px;
+							height: 35px !important;
+						}
 					}
-					&.buttonSkipBackward, &.buttonSkipForward, &.buttonExpand, &.buttonMore {
+					&.buttonSkipBackward, &.buttonSkipForward, &.buttonExpand, &.buttonMore, &.buttonFiller {
 						height: 40px;
 			
 						svg {
-							height: 25px;
+							height: 20px;
 							fill: var(--miniplayer-button-color);
+						}
+						@media (min-width: 370px) {
+							svg {
+								height: 25px;
+							}
 						}
 					}
 				}
@@ -358,7 +367,7 @@
 				padding-inline: 16px;
 
 				&.range-has-pin {
-					padding-top: 8px;
+					padding-top: 0px;
 				}
 			}
 		}
@@ -394,7 +403,7 @@
 									height: 30px;
 								}
 							}
-							&.buttonSkipBackward, &.buttonSkipForward, &.buttonExpand, &.buttonMore {
+							&.buttonSkipBackward, &.buttonSkipForward, &.buttonExpand, &.buttonMore, &.buttonFiller {
 								width: 30px;
 
 								svg {
@@ -448,7 +457,7 @@
 							&.buttonPlay, &.buttonLoad, &.buttonPause {
 								background-color: var(--miniplayer-playbutton-background-color);
 							}
-							&.buttonSkipBackward, &.buttonSkipForward, &.buttonExpand, &.buttonMore {
+							&.buttonSkipBackward, &.buttonSkipForward, &.buttonExpand, &.buttonMore, &.buttonFiller {
 								width: 30px;
 			
 								svg {
@@ -481,15 +490,15 @@
 	}
 	&.notPlaying {
 		.buttonRewind, .buttonForward {
-			width: 0px;
+			width: 0px !important;
 			margin-right: 0px;
 
 			svg {
 				width: 0px;
 			}
 		}
-		.buttonSkipBackward, .buttonSkipForward, .buttonExpand, .buttonMore, .buttonChat {
-			width: 0px;
+		.buttonSkipBackward, .buttonSkipForward, .buttonExpand, .buttonMore, .buttonFiller, .buttonChat {
+			width: 0px !important;
 
 			svg {
 				width: 0px;
@@ -517,11 +526,25 @@
 						max-width: 600px;
 
 						.button {
-							&.buttonRewind, &.buttonForward {
-								min-width: 30px;
+							&.buttonFiller {
+								display: none;
 							}
-							&.buttonSkipBackward, &.buttonSkipForward, &.buttonExpand, &.buttonMore {
-								min-width: 30px;
+							&.buttonRewind, &.buttonForward {
+								min-width: 20px;
+							}
+							&.buttonSkipBackward, &.buttonSkipForward, &.buttonExpand, &.buttonMore, &.buttonFiller {
+								min-width: 20px;
+							}
+							@media (min-width: 370px) {
+								&.buttonFiller {
+									display: block;
+								}
+								&.buttonRewind, &.buttonForward {
+									min-width: 30px;
+								}
+								&.buttonSkipBackward, &.buttonSkipForward, &.buttonExpand, &.buttonMore, &.buttonFiller {
+									min-width: 30px;
+								}
 							}
 						}
 					}
@@ -534,7 +557,7 @@
 			.progressBar {
 				display: none;
 			}
-			.buttonSkipBackward, .buttonRewind, .buttonForward, .buttonSkipForward, .buttonMore {
+			.buttonSkipBackward, .buttonRewind, .buttonForward, .buttonSkipForward, .buttonMore, &.buttonFiller {
 				display: none !important;
 			}
 			.buttonChat {
@@ -736,12 +759,20 @@
 						margin-top: 15px;
 
 						.button {
-							&.buttonRewind, &.buttonForward, &.buttonSkipBackward, &.buttonSkipForward, &.buttonMore {
-								min-width: 40px;
-								width: 40px;
+							&.buttonRewind, &.buttonForward, &.buttonSkipBackward, &.buttonSkipForward, &.buttonMore, &.buttonFiller {
+								min-width: 30px;
+								width: 30px;
 
 								svg {
-									width: 30px;
+									width: 20px;
+								}
+								@media (min-width: 370px) {
+									min-width: 40px;
+									width: 40px;
+	
+									svg {
+										width: 30px;
+									}
 								}
 							}
 						}
@@ -777,7 +808,7 @@
 @media (min-width: 390px) {
 	.playing {
 		.playerControls {
-			gap: 25px !important;
+			gap: 15px !important;
 		}
 	}
 	.fullscreen {

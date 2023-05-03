@@ -34,13 +34,14 @@ const ProgressBarSlider = ({ progress, duration, onProgressSliderChange}) => {
 		setSliderValue(newValue);
 	},[progress,duration,dragValue,isDraggingSlider]);
 
+	/*
 	const sliderDragged = ({ detail }) => {
 		if (isDraggingSlider) {
-			// console.log('dragging: ' + detail.value);
+			console.log('dragging: ' + detail.value);
 			setDragValue(detail.value);
 		}
 	};
-
+*/
 	const sliderDragStart = ({ detail }) => {
 		setIsDraggingSlider(true);
 		// console.log('drag start');
@@ -67,11 +68,10 @@ const ProgressBarSlider = ({ progress, duration, onProgressSliderChange}) => {
 	return (
 		<IonRange
 			value={sliderValue}
-			onIonChange={sliderDragged}
 			onIonKnobMoveStart={sliderDragStart}
 			onIonKnobMoveEnd={sliderDragStopped}
 			pin={true}
-			pinFormatter={(number) => { return TimeUtil.formatPrettyDurationText((sliderValue * duration) / 100) }}
+			pinFormatter={(number) => { setDragValue(number); return TimeUtil.formatPrettyDurationText((number * duration) / 100) }}
 		>
 		</IonRange>
 	);

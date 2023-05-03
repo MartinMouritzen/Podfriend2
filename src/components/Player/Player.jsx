@@ -103,6 +103,7 @@ const Player = ({ audioController, navigateToPath, platform }) => {
 	const [chaptersLoading,setChaptersLoading] = useState(true);
 	const [currentChapter,setCurrentChapter] = useState(false);
 
+	const [rssFeedContents,setRssFeedContents] = useState(false);
 	const [subtitleFileURL,setSubtitleFileURL] = useState(false);
 
 	const [error,setError] = useState(false);
@@ -301,6 +302,8 @@ const Player = ({ audioController, navigateToPath, platform }) => {
 		setTranscriptData(false);
 		setSegmentVisible('playing');
 		setChapters(false);
+		setRssFeedContents(false);
+		setRssFeedCurrentEpisode(false);
 
 		changeActiveEpisode(activePodcast,activeEpisode,episodeState);
 
@@ -309,6 +312,7 @@ const Player = ({ audioController, navigateToPath, platform }) => {
 			.then((feed) => {
 				console.log('new original feed in player');
 				console.log(feed);
+				setRssFeedContents(feed);
 			});
 		}
 	},[activeEpisodeGuid]);
@@ -323,18 +327,18 @@ const Player = ({ audioController, navigateToPath, platform }) => {
 	useEffect(() => {
 		setRssFeedCurrentEpisode(false);
 
-		if (activePodcast.rssFeedContents) {
+		if (rssFeedContents && rssFeedContents.items) {
 			var foundEpisode = false;
 
-			for(var i=0;i<activePodcast.rssFeedContents.items.length;i++) {
-				if (activeEpisode.guid == activePodcast.rssFeedContents.items[i].guid) {
+			for(var i=0;i<rssFeedContents.items.length;i++) {
+				if (activeEpisode.guid == rssFeedContents.items[i].guid) {
 					foundEpisode = true;
-					setRssFeedCurrentEpisode(activePodcast.rssFeedContents.items[i]);
+					setRssFeedCurrentEpisode(rssFeedContents.items[i]);
 					break;
 				}
 			}
 		}
-	},[JSON.stringify(activePodcast.rssFeedContents)]);
+	},[JSON.stringify(rssFeedContents)]);
 
 	useEffect(() => {
 		if (rssFeedCurrentEpisode && rssFeedCurrentEpisode.chaptersUrl) {
@@ -688,6 +692,7 @@ const Player = ({ audioController, navigateToPath, platform }) => {
 									{ (activeEpisode.live && activeEpisode.chat) &&
 										<div className="button buttonChat" onClick={openChatModal}><IonIcon icon={chatIcon} /></div>
 									}
+									<div className="button buttonFiller">&nbsp;</div>
 									<div className="button buttonSkipBackward" onClick={onSkipBackward}><SVG src={SkipBackwardIcon} /></div>
 									<div className="button buttonRewind" onClick={onBackward}><SVG src={RewindIcon} /></div>
 									{ streamDataLoading &&

@@ -308,10 +308,12 @@
 							height: 25px !important;
 							fill: var(--miniplayer-button-color);
 						}
+						/*
 						@media (min-width: 370px) {
 							width: 35px;
 							height: 35px !important;
 						}
+						*/
 					}
 					&.buttonSkipBackward, &.buttonSkipForward, &.buttonExpand, &.buttonMore, &.buttonFiller {
 						height: 40px;
@@ -490,7 +492,7 @@
 	}
 	&.notPlaying {
 		.buttonRewind, .buttonForward {
-			width: 0px !important;
+			width: 0px;
 			margin-right: 0px;
 
 			svg {
@@ -498,7 +500,7 @@
 			}
 		}
 		.buttonSkipBackward, .buttonSkipForward, .buttonExpand, .buttonMore, .buttonFiller, .buttonChat {
-			width: 0px !important;
+			width: 0px;
 
 			svg {
 				width: 0px;

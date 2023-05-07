@@ -300,6 +300,7 @@ export const createPodcastSlice = (set, get) => ({
 	* Trending podcasts
 	***********************************************************************************/
 	lastTrendingPodcastRefresh: false,
+	lastOtherUsersListenRefresh: false,
 	__retrieveTrendingPodcasts: async(categoryId,limit = 14) => {
 		const trendingAPIUrl = `https://api.podfriend.com/podcasts/trending/${categoryId ? categoryId : ''}?limit=${limit}`;
 
@@ -314,6 +315,57 @@ export const createPodcastSlice = (set, get) => ({
 			console.log(trendingAPIUrl);
 			console.log(exception);
 		}
+	},
+	__retrieveOtherUsersListenToPodcasts: async() => {
+		const latestListenedAPIUrl = `https://api.podfriend.com/podcasts/latestlistened/`;
+
+		try {
+			let rawResults = await fetch(latestListenedAPIUrl);
+			let results = await rawResults.json();
+
+			return results;
+		}
+		catch(exception) {
+			console.log('Error getting latestListened podcasts');
+			console.log(latestListenedAPIUrl);
+			console.log(exception);
+		}
+	},
+	refreshOtherUsersListenToPodcasts: async() => {
+		let shouldUpdate = false;
+		let lastOtherUsersListenRefresh = get().lastOtherUsersListenRefresh;
+	
+		if (!lastOtherUsersListenRefresh) {
+			shouldUpdate = true;
+		}
+		else {
+			lastOtherUsersListenRefresh = new Date(lastOtherUsersListenRefresh);
+	
+			const msBetweenDates = Math.abs(lastOtherUsersListenRefresh.getTime() - new Date().getTime());
+			const hoursBetweenDates = msBetweenDates / (60 * 60 * 1000);
+	
+			if (hoursBetweenDates > 1) {
+				shouldUpdate = true;
+			}
+		}
+		return ClientStorage.getItem('other_users_listened')
+		.then((trendingPodcasts) => {
+			if (shouldUpdate || !trendingPodcasts) {
+				console.log('Should refresh trending podcasts.');
+				
+				get().__retrieveOtherUsersListenToPodcasts()
+				.then((trendingPodcasts) => {
+					if (trendingPodcasts.podcasts) {
+						ClientStorage.setItem('other_users_listened',trendingPodcasts.podcasts)
+
+						set({
+							lastOtherUsersListenRefresh: new Date()
+						});
+					}
+				});
+			}
+			return trendingPodcasts;
+		});
 	},
 	refreshTrendingPodcasts: async(limit = 14) => {
 		let shouldUpdate = false;

@@ -51,6 +51,7 @@ import ChatModal from "components/Chat/ChatModal";
 import AudioSpeedSettingModal from './AudioSpeedSettingModal';
 
 import Events from 'library/Events.js';
+import BoostButton from './BoostButton';
 
 const Player = ({ audioController, navigateToPath, platform }) => {
 	const { breakpoint } = useBreakpoint(BREAKPOINTS, 'desktop');
@@ -94,6 +95,8 @@ const Player = ({ audioController, navigateToPath, platform }) => {
 	const onSkipForward = useStore((state) => state.audioSkipForward);
 
 	const changeActiveEpisode = useStore((state) => state.changeActiveEpisode);
+
+	const [playingValuePodcast,setPlayingValuePodcast] = useState(false);
 
 	const [isVideo,setIsVideo] = useState(false);
 
@@ -316,6 +319,16 @@ const Player = ({ audioController, navigateToPath, platform }) => {
 			});
 		}
 	},[activeEpisodeGuid]);
+
+	useEffect(() => {
+		setPlayingValuePodcast(false);
+		if (activePodcast) {
+			if (activePodcast.value) {
+				console.log('playingValuePodcast');
+				setPlayingValuePodcast(true);
+			}
+		}
+	},[activePodcastPath]);
 
 	useEffect(() => {
 		setSegmentVisible('playing');
@@ -633,7 +646,10 @@ const Player = ({ audioController, navigateToPath, platform }) => {
 								</Swiper>
 							</div>
 							{ transcriptData &&
-								<TranscriptLiveArea rssFeedCurrentEpisode={rssFeedCurrentEpisode} transcriptData={transcriptData} currentTime={episodeState.currentTime} podcast={activePodcast} chapters={chapters} setCurrentTime={setCurrentTime} />
+								<TranscriptLiveArea rssFeedContents={rssFeedContents} rssFeedCurrentEpisode={rssFeedCurrentEpisode} transcriptData={transcriptData} currentTime={episodeState.currentTime} podcast={activePodcast} chapters={chapters} setCurrentTime={setCurrentTime} />
+							}
+							{ playingValuePodcast &&
+								<BoostButton />
 							}
 							{ false &&
 								<div style={{ color: '#000000', padding: 10 }}>

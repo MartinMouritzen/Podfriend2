@@ -13,10 +13,162 @@ export const createWalletSlice = (set,get) => ({
 	walletSyncing: false,
 	walletToken: false,
 	exchangeCodeToWalletToken: (code) => {
-		const tokenURL = 'https://api.podfriend.com/user/wallet/token/?development=' + (process.env.NODE_ENV === 'development' ? 'true' : 'false') + '&code=' + code;
-		// const tokenURL = 'https://api.podfriend.com/user/wallet/token/?code=' + code;
+		// const tokenURL = 'https://api.podfriend.com/user/wallet/token/?development=' + (process.env.NODE_ENV === 'development' ? 'true' : 'false') + '&code=' + code;
+		const tokenURL = 'https://api.podfriend.com/user/wallet/token/?code=' + code;
 		return fetch(tokenURL, {
 			method: "POST",
+			headers: {
+				'Content-Type': 'application/json',
+				'Accept': 'application/json',
+				'Authorization': `Bearer ${get().authToken}`
+			}
+		})
+		.then((resp) => {
+			return resp.json();
+			
+		})
+		.then((response) => {
+			console.log(response);
+			set({
+				walletSetupCompleted: true
+			});
+			return response;
+		})
+		.catch((exception) => {
+			console.log('Error retrieving wallet token in WalletSlice::exchangeCodeToWalletToken');
+			console.log(tokenURL);
+			console.log(exception);
+
+			return false;
+		});
+	},
+	refreshAlbyAuthToken: (refreshToken) => {
+		const tokenURL = 'https://api.podfriend.com/user/wallet/token/?refresh=true';
+		return fetch(tokenURL, {
+			method: "GET",
+			headers: {
+				'Content-Type': 'application/json',
+				'Accept': 'application/json',
+				'Authorization': `Bearer ${get().authToken}`
+			}
+		})
+		.then((resp) => {
+			return resp.text();
+			return resp.json();
+		})
+		.then((response) => {
+			console.log(response);
+			console.log('AuthToken Refreshed');
+			return response;
+		})
+		.catch((exception) => {
+			console.log('Error retrieving wallet token in WalletSlice::exchangeCodeToWalletToken');
+			console.log(tokenURL);
+			console.log(exception);
+
+			return false;
+		});
+	},
+	/*********************************
+	* Account balance
+	*********************************/
+	boostValue: (valueBlock,totalAmount,overrideDestinations = false,senderName = false,message = false) => {
+		return get().sendValue(valueBlock,totalAmount,overrideDestinations,'boost',senderName,message);
+	},
+	sendValue: (valueBlock,totalAmount,overrideDestinations = false,actionType = 'stream',senderName = false,message = false) => {
+		var recognizedMethod = false;
+		var validDestinations = false;
+
+		if (valueBlock.model && valueBlock.model.method === 'keysend' && valueBlock.model.type === 'lightning') {
+			recognizedMethod = true;
+		}
+		if (overrideDestinations || valueBlock.destinations && valueBlock.destinations.length > 0) {
+			validDestinations = true;
+		}
+
+		if (recognizedMethod && validDestinations) {
+			console.log('sending value');
+			console.log(valueBlock);
+
+			const activePodcast = get().activePodcast;
+			const activeEpisode = get().activeEpisode;
+			
+			const episodeState = get().podcasts[activePodcast.path]?.episodes[activeEpisode.guid];
+
+			var debug = true;
+			var async = true;
+			if (debug) {
+				async = false;
+				totalAmount = 10;
+			}
+
+			const valueData = {
+				valueType: valueBlock.model.type,
+				valueMethod: valueBlock.model.method,
+				amount: totalAmount,
+				destinations: overrideDestinations ? overrideDestinations : valueBlock.destinations,
+				actionType: actionType,
+				async: async,
+				podcastInfo: {
+					name: activePodcast.name,
+					path: activePodcast.path,
+					feedUrl: activePodcast.feedUrl,
+					feedId: activePodcast.id,
+					podcastGuid: activePodcast.guid,
+					episodeName: activeEpisode.title,
+					episodeGuid: activeEpisode.guid,
+					episodeId: activeEpisode.id,
+					currentTime: episodeState.currentTime
+				}
+			};
+			if (senderName) {
+				valueData.senderName = senderName;
+			}
+			if (message) {
+				valueData.message = message;
+			}
+
+			const walletInvoiceURL = 'https://api.podfriend.com/user/wallet/send/' + (debug ? '?debug=true' : '');
+			return fetch(walletInvoiceURL, {
+				method: "POST",
+				headers: {
+					'Content-Type': 'application/json',
+					'Accept': 'application/json',
+					'Authorization': `Bearer ${get().authToken}`
+				},
+				body: JSON.stringify(valueData)
+			})
+			.then((resp) => {
+				return resp.text();
+				return resp.json();
+			})
+			.then((response) => {
+				console.log('sent value!');
+				console.log(response);
+				return Promise.resolve({
+					success: 1
+				});
+			})
+			.catch((error) => {
+				console.log('error sending value');
+				console.log(error);
+
+				return Promise.resolve({
+					success: 0
+				});
+			});
+		}
+		else {
+			console.log('WalletSlice::sendValue error: Unrecognized method or invalid destinations.');
+		}
+	},
+	/*********************************
+	* Account balance
+	*********************************/
+	updateAccountBalance: () => {
+		const balanceURL = 'https://api.podfriend.com/user/wallet/balance/';
+		return fetch(balanceURL, {
+			method: "GET",
 			headers: {
 				'Content-Type': 'application/json',
 				'Accept': 'application/json',
@@ -28,19 +180,52 @@ export const createWalletSlice = (set,get) => ({
 		})
 		.then((response) => {
 			console.log(response);
+			set({
+				walletBalance: response.balance
+			});
+			return response;
 		})
 		.catch((exception) => {
-			console.log('Error retrieving wallet token');
+			console.log('Error retrieving balance');
+			console.log(balanceURL);
 			console.log(exception);
+
+			return false;
 		});
 	},
-	setWalletToken: (token) => {
-		set({
-			walletToken: token
+	walletHistory: false,
+	updateWalletHistory: () => {
+		const ingoingURL = 'https://api.podfriend.com/user/wallet/history/';
+		return fetch(ingoingURL, {
+			method: "GET",
+			headers: {
+				'Content-Type': 'application/json',
+				'Accept': 'application/json',
+				'Authorization': `Bearer ${get().authToken}`
+			}
+		})
+		.then((resp) => {
+			// return resp.text();
+			return resp.json();
+		})
+		.then((response) => {
+			console.log(response);
+			/*
+			set({
+				walletIngoingHistory: response.walletIngoingHistory
+			});
+			*/
+			return response;
+		})
+		.catch((exception) => {
+			console.log('Error retrieving history');
+			console.log(exception);
+
+			return false;
 		});
 	},
 	/*********************************
-	* 
+	* Legacy wallet
 	*********************************/
 	legacyWalletBalance: false,
 	legacyWalletSyncing: false,

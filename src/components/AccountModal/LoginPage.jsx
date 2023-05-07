@@ -46,7 +46,7 @@ const LoginPage = ({ dismiss }) => {
 
 	return (
 		<>
-			<IonHeader className="blueModalHeader ion-no-border hideWhenKeyboardShown">
+			<IonHeader className="blueModalHeader ion-no-border">
 				<IonToolbar>
 				<IonButtons slot="start">
 					<IonBackButton></IonBackButton>
@@ -56,23 +56,24 @@ const LoginPage = ({ dismiss }) => {
 			</IonHeader>
 			<IonContent className="blueContent">
 				<div className="loginPage modalPage">
-					<div className="teaser hideWhenKeyboardShown">
+					<div className="teaser">
 						<div className="teaserContent">
 							<IonNavLink routerDirection='back' className='backLink'><IonIcon icon={backIcon} /> <IonLabel>Back</IonLabel></IonNavLink>
 							<h2>Welcome back friend</h2>
 						</div>
 					</div>
 					<div className="content">
-						<div className="secondTeaser hideWhenKeyboardShown">
+						<div className="secondTeaser">
 							Let's get you signed in and start listening!
 						</div>
-						<img src={BlueOnBlueWave} className="wave hideWhenKeyboardShown" />
+						<img src={BlueOnBlueWave} className="wave" />
 						<div className="darkBlueContent">
 							<form>
 								<IonItem>
 									<IonLabel position="floating"><IonIcon icon={mailIcon} /> Email address</IonLabel>
 									
 									<IonInput type="email" onIonInput={onEmailChange} />
+									{ /* <input type="text" onKeyUp={onEmailChange} style={{ color: '#000000' }} /> */ }
 								</IonItem>
 								<IonItem>
 									<IonLabel position="floating"><IonIcon icon={passwordIcon} /> Password</IonLabel>

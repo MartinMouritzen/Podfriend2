@@ -1,0 +1,23 @@
+.boostButtonContainer {
+	display: flex;
+	justify-content: center;
+	align-items: start;
+	text-align: center;
+
+	.infoMessage {
+		color: #999999;
+		font-size: 12px;
+	}
+	.filler {
+		width: 40px;
+	}
+	.boostButtonDiv {
+		width: 160px;
+	}
+	.configIcon {
+		margin-top: 12px;
+		width: 40px;
+		font-size: 30px;
+		color: rgba(0,0,0,0.6);
+	}
+}

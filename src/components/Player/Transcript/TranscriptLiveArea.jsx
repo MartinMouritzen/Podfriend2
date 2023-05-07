@@ -20,12 +20,12 @@ import TranscriptSegment from './TranscriptSegment';
 import useStore from 'store/Store';
 import ChapterSegment from './ChapterSegment';
 
-const TranscriptLiveArea = ({ transcriptData, rssFeedCurrentEpisode, currentTime, podcast, setCurrentTime, chapters }) => {
+const TranscriptLiveArea = ({ transcriptData, rssFeedContents, rssFeedCurrentEpisode, currentTime, podcast, setCurrentTime, chapters }) => {
 	const page = useRef(null);
 	const modal = useRef(null);
 	const contentNodeRef = useRef(null);
 	const [presentingElement, setPresentingElement] = useState(null);
-	const [persons,setPersons] = useState(podcast?.rssFeedContents?.persons);
+	const [persons,setPersons] = useState(rssFeedContents?.persons);
 	const [episodePersons,setEpisodePersons] = useState(rssFeedCurrentEpisode?.persons);
 	const [speakers,setSpeakers] = useState(false);
 	const [segments,setSegments] = useState(false);
@@ -51,10 +51,10 @@ const TranscriptLiveArea = ({ transcriptData, rssFeedCurrentEpisode, currentTime
 
 	useEffect(() => {
 		setPersons(false);
-		if (podcast && podcast.rssFeedContents && podcast.rssFeedContents.persons) {
-			setPersons(podcast.rssFeedContents.persons);
+		if (rssFeedContents && rssFeedContents.persons) {
+			setPersons(rssFeedContents.persons);
 		}
-	},[JSON.stringify(podcast?.rssFeedContents?.persons)]);
+	},[JSON.stringify(rssFeedContents?.persons)]);
 
 	useEffect(() => {
 		setEpisodePersons(false);
@@ -338,7 +338,7 @@ const TranscriptLiveArea = ({ transcriptData, rssFeedCurrentEpisode, currentTime
 
 function transcriptListShouldCache(prevList,nextList) {
 	if (Math.round(nextList.currentTime) != Math.round(prevList.currentTime)) { return false; }
-	if (JSON.stringify(prevList.podcast?.rssFeedContents?.persons) != JSON.stringify(nextList.podcast?.rssFeedContents?.persons)) { return false; }
+	if (JSON.stringify(prevList.rssFeedContents?.persons) != JSON.stringify(nextList.rssFeedContents?.persons)) { return false; }
 
 	return true;
 }

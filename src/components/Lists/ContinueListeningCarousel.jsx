@@ -95,6 +95,10 @@ const ContinueListeningEpisode = ({ podcastPath, continueListeningEpisode }) => 
 
 	const podcastData =  useStore((state) => state.podcasts[podcastPath]);
 
+	if (!podcastData) {
+		return null;
+	}
+
 	const episode = podcastData.episodes[episodeGuid];
 	const timeLeft = episode.duration - episode.currentTime;
 

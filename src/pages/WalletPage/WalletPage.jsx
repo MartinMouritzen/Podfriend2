@@ -25,6 +25,11 @@ const WalletPage = ({  }) => {
 	const loggedIn = useStore((state) => state.loggedIn);
 	const userData = useStore((state) => state.userData);
 	const walletBalance = useStore((state) => state.walletBalance);
+
+	const updateAccountBalance = useStore((state) => state.updateAccountBalance);
+	// const updateWalletHistory = useStore((state) => state.updateWalletHistory);
+	
+
 	const walletSetupCompleted = useStore((state) => state.walletSetupCompleted);
 	const walletOnboardingShowed = useStore((state) => state.walletOnboardingShowed);
 	const updateWalletOnboardingShowed = useStore((state) => state.updateWalletOnboardingShowed);
@@ -52,15 +57,19 @@ const WalletPage = ({  }) => {
 			openOnboardingModal();
 			updateWalletOnboardingShowed(true);
 		}
+		updateAccountBalance();
+		// updateWalletHistory();
 		synchronizeLegacyWallet();
 	},[walletOnboardingShowed]);
 
 	const onBeginConnectWallet = () => {
 		var albyOathUrl = 'https://getalby.com/oauth?client_id=QBqT68cVBK&redirect_uri=https%3A%2F%2Fwww.podfriend.com%2Foauth%2Falby%2F&scope=account:read%20invoices:create%20invoices:read%20transactions:read%20balance:read%20payments:send';
+		/*
 		if (process.env.NODE_ENV === 'development') {
 			console.log('Using development Alby address');
 			albyOathUrl = 'https://app.regtest.getalby.com/oauth?client_id=test_client&response_type=code&redirect_uri=http%3A%2F%2Flocalhost:8080%2Foauth%2Falby%2F&scope=account:read%20invoices:create%20invoices:read%20transactions:read%20balance:read%20payments:send';
 		}
+		*/
 
 		console.log(albyOathUrl);
 
@@ -139,6 +148,10 @@ const WalletPage = ({  }) => {
 								Connect to Alby wallet
 							</IonItem>
 						}
+							<IonItem detail={true} onClick={onBeginConnectWallet}>
+								<IonIcon icon={historyIcon} slot="start" />
+								Re-connect to Alby wallet
+							</IonItem>
 						<IonItem detail={true} onClick={openOnboardingModal}>
 							<IonIcon icon={helpIcon} slot="start" />
 							Watch &quot;About&quot; again

@@ -14,6 +14,7 @@ export const createServerSyncSlice = (set,get) => ({
 		// lastSyncedPodcastState = false;
 
 		const podcastSynchronizationURL = 'https://api.podfriend.com/user/favorites/' + (lastSyncedPodcastState ? '?after=' + lastSyncedPodcastState : '');
+		console.log(podcastSynchronizationURL);
 
 		return fetch(podcastSynchronizationURL, {
 			method: "GET",
@@ -33,6 +34,7 @@ export const createServerSyncSlice = (set,get) => ({
 			return resp.json()
 		})
 		.then((response) => {
+			console.log(response);
 			let activePodcast = get().activePodcast;
 
 			if (Array.isArray(response.podcasts)) {

@@ -11,6 +11,7 @@ import { IonButton, IonButtons, IonHeader, IonSearchbar, IonSpinner, IonTitle, I
 import useBreakpoint from 'use-breakpoint';
 import { BREAKPOINTS } from 'constants/breakpoints';
 import ContinueListening from "components/Lists/ContinueListeningCarousel";
+import OtherUsersListensToCarousel from "components/Lists/OtherUsersListensToCarousel";
 import CoverCarousel from "components/Lists/CoverCarousel";
 import LatestEpisodes from 'components/Lists/LatestEpisodes';
 import DeviceInfo from "components/DeviceInfo";
@@ -79,6 +80,15 @@ const Home = ({  }) => {
 				</div>
 				<div className="sectionContents">
 					<TrendingPodcasts backButtonText="Home" />
+				</div>
+			</div>
+			<div className='section noPadding'>
+				<div className='sectionInner'>
+					<div className='sectionSubTitle'>Latest listened</div>
+					<div className='sectionTitle'>by others</div>
+				</div>
+				<div className="sectionContents noPadding">
+					<OtherUsersListensToCarousel />
 				</div>
 			</div>
 			<div className='section'>

@@ -35,6 +35,7 @@ import PodcastPage from 'pages/PodcastPage/PodcastPage';
 import EpisodePage from 'pages/PodcastPage/EpisodePage';
 import SearchPage from 'pages/SearchPage/SearchPage';
 import WalletPage from 'pages/WalletPage/WalletPage';
+import WalletHistoryPage from 'pages/WalletPage/WalletHistoryPage';
 import CategoryPage from 'pages/CategoryPage/CategoryPage';
 import ReviewPage from 'pages/ReviewPage/ReviewPage';
 
@@ -127,7 +128,8 @@ export default function App({ platform, audioController, desktop = false }) {
 		<Route path="/favorites/" render={(props) => <FavoritePage {...props} />} />,
 		<Route path="/playlist/" render={(props) => <Home {...props} />} />,
 		<Route path="/collections/" render={(props) => <Home {...props} />} />,
-		<Route path="/wallet/" render={(props) => <WalletPage {...props} />} />,
+		<Route path="/wallet/" exact={true} render={(props) => <WalletPage {...props} />} />,
+		<Route path="/wallet/history/" exact={true}  render={(props) => <WalletHistoryPage {...props} />} />,
 		<Route path="/oauth/alby" render={(props) => <AlbyOauthPage {...props} />} />,
 		<Route path="/search/:searchQuery?" render={(props) => <SearchPage {...props} />} />,
 		<Route exact={true} path="/podcast/:podcastPath/" render={(props) => <PodcastPage {...props} />} />,

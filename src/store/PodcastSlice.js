@@ -349,22 +349,25 @@ export const createPodcastSlice = (set, get) => ({
 			}
 		}
 		return ClientStorage.getItem('other_users_listened')
-		.then((trendingPodcasts) => {
-			if (shouldUpdate || !trendingPodcasts) {
+		.then((otherUsersListenedList) => {
+			if (shouldUpdate || !otherUsersListenedList) {
 				console.log('Should refresh trending podcasts.');
 				
 				get().__retrieveOtherUsersListenToPodcasts()
-				.then((trendingPodcasts) => {
-					if (trendingPodcasts.podcasts) {
-						ClientStorage.setItem('other_users_listened',trendingPodcasts.podcasts)
+				.then((otherUsersListenedList) => {
+					if (otherUsersListenedList && otherUsersListenedList.podcasts) {
+						ClientStorage.setItem('other_users_listened',otherUsersListenedList.podcasts)
 
 						set({
 							lastOtherUsersListenRefresh: new Date()
 						});
 					}
+					else {
+						console.log('No otherUsersListenedList returned in refreshOtherUsersListenToPodcasts');
+					}
 				});
 			}
-			return trendingPodcasts;
+			return otherUsersListenedList;
 		});
 	},
 	refreshTrendingPodcasts: async(limit = 14) => {
@@ -533,7 +536,7 @@ export const createPodcastSlice = (set, get) => ({
 		}
 	},
 	retrievePodcastByPath: (podcastPath) => {
-		var podcastAPIURL = "https://api.podfriend.com/podcast/" + podcastPath;
+		var podcastAPIURL = "https://api.podfriend.com/podcast/" + encodeURIComponent(podcastPath);
 
 		return fetch(podcastAPIURL, {
 			method: "GET"
@@ -603,11 +606,12 @@ export const createPodcastSlice = (set, get) => ({
 	retrievePodcastFromServer: (podcastPath) => {
 		return get().retrievePodcastByPath(podcastPath)
 		.then((data) => {
+			console.log(data);
 			if (data.error) {
 				console.log('Error fetching podcast in Redux::fetchPodcast');
 				console.log(data.error);
 				
-				return Promise.reject('Error fetching podcast: ' + podcastIdentifier);
+				return Promise.reject('Error fetching podcast: ' + podcastPath);
 			}
 
 			var podcastData = get().__managePodcastResults(data,podcastPath);
@@ -618,6 +622,10 @@ export const createPodcastSlice = (set, get) => ({
 			get().__updatePodcastState(podcastPath,podcastData,podcastState);
 
 			return data;
+		})
+		.catch((exception) => {
+			return Promise.reject('Fetch error in fetching podcast: ' + podcastPath);
+			console.log(exception);
 		});
 	},
 	retrieveOriginalPodcastFeed: (podcastPath,feedUrl,overruleCache = false) => {

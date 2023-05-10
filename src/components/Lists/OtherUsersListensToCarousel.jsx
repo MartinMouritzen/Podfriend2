@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import useStore from 'store/Store';
 import PodcastList from './PodcastList';
@@ -7,8 +7,10 @@ const OtherUsersListenToCarousel = ({ backButtonText = false }) => {
 	const refreshOtherUsersListenToPodcasts = useStore((state) => state.refreshOtherUsersListenToPodcasts);
 	const [otherUsersListenToList,setOtherUsersListenToList] = useState(false);
 
-	refreshOtherUsersListenToPodcasts()
-	.then(setOtherUsersListenToList);
+	useEffect(() => {
+		refreshOtherUsersListenToPodcasts()
+		.then(setOtherUsersListenToList);
+	},[]);
 
 	return (
 		<div>

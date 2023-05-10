@@ -53,6 +53,14 @@ const BoostButton = () => {
 		}
 	);
 
+	const onBoostDown = () => {
+
+	};
+
+	const onBoostUp = () => {
+
+	};
+
 	return (
 		<div className="boostButtonContainer">
 			<div className="filler">
@@ -60,26 +68,31 @@ const BoostButton = () => {
 			</div>
 			<div className="boostButtonDiv">
 				<div id="rewardButton">
-					<IonButton onClick={onBoost} expand="block" {...longPressBind()}>
-						{ isBoosting &&
-							<>
-								<IonSpinner /> Boosting
-							</>
-						}
-						{ !isBoosting &&
-							<>
-								<IonIcon icon={boostIcon} slot="start" />
-								BOOST {boostAmount}
-							</>
-						}
-					</IonButton>
+					<div className="boostButton">
+						<div className="buttonPrimaryAction" onClick={onBoost} {...longPressBind()} onMouseDown={onBoostDown} onMouseUp={onBoostUp} onTouchStart={onBoostDown} onTouchEnd={onBoostUp}>
+							{ isBoosting &&
+								<>
+									<IonSpinner /> Boosting
+								</>
+							}
+							{ !isBoosting &&
+								<>
+									<IonIcon icon={boostIcon} slot="start" />
+									Boost
+								</>
+							}
+						</div>
+						<div className="buttonSecondaryAction">
+							<IonIcon icon={configIcon} className="configIcon" />
+						</div>
+					</div>
 				</div>
 				<div className="infoMessage">
 					Hold to send a Boostagram
 				</div>
 			</div>
 			<div>
-				<IonIcon icon={configIcon} className="configIcon" />
+				
 			</div>
 		</div>
 	);

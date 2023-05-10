@@ -12,6 +12,39 @@ export const createWalletSlice = (set,get) => ({
 	walletBalance: 0,
 	walletSyncing: false,
 	walletToken: false,
+	onDisconnectWallet: () => {
+		const tokenURL = 'https://api.podfriend.com/user/wallet/token/';
+		return fetch(tokenURL, {
+			method: "DELETE",
+			headers: {
+				'Content-Type': 'application/json',
+				'Accept': 'application/json',
+				'Authorization': `Bearer ${get().authToken}`
+			}
+		})
+		.then((resp) => {
+			return resp.text();
+			return resp.json();
+		})
+		.then((response) => {
+			console.log(response);
+			console.log('AuthTokens removed');
+
+			set({
+				walletSetupCompleted: false,
+				walletBalance: 0
+			});
+
+			return response;
+		})
+		.catch((exception) => {
+			console.log('Error retrieving wallet token in WalletSlice::exchangeCodeToWalletToken');
+			console.log(tokenURL);
+			console.log(exception);
+
+			return false;
+		});
+	},
 	exchangeCodeToWalletToken: (code) => {
 		// const tokenURL = 'https://api.podfriend.com/user/wallet/token/?development=' + (process.env.NODE_ENV === 'development' ? 'true' : 'false') + '&code=' + code;
 		const tokenURL = 'https://api.podfriend.com/user/wallet/token/?code=' + code;
@@ -52,9 +85,13 @@ export const createWalletSlice = (set,get) => ({
 				'Authorization': `Bearer ${get().authToken}`
 			}
 		})
-		.then((resp) => {
-			return resp.text();
-			return resp.json();
+		.then((response) => {
+			if (response.ok) {
+				return response.json();
+			}
+			else {
+				return response.text();
+			}
 		})
 		.then((response) => {
 			console.log(response);
@@ -175,15 +212,27 @@ export const createWalletSlice = (set,get) => ({
 				'Authorization': `Bearer ${get().authToken}`
 			}
 		})
-		.then((resp) => {
-			return resp.json();
+		.then((response) => {
+			if (response.ok) {
+				return response.json();
+			}
+			else {
+				return response.text();
+
+			}
 		})
 		.then((response) => {
 			console.log(response);
-			set({
-				walletBalance: response.balance
-			});
-			return response;
+
+			if (response.balance) {
+				set({
+					walletBalance: response.balance
+				});
+				return response;
+			}
+			else {
+				return Promise.reject(response);
+			}
 		})
 		.catch((exception) => {
 			console.log('Error retrieving balance');
@@ -193,10 +242,9 @@ export const createWalletSlice = (set,get) => ({
 			return false;
 		});
 	},
-	walletHistory: false,
-	updateWalletHistory: () => {
-		const ingoingURL = 'https://api.podfriend.com/user/wallet/history/';
-		return fetch(ingoingURL, {
+	retrieveWalletHistory: (type = 'outgoing') => {
+		const incomingURL = 'https://api.podfriend.com/user/wallet/history/?type=' + type;
+		return fetch(incomingURL, {
 			method: "GET",
 			headers: {
 				'Content-Type': 'application/json',
@@ -204,18 +252,29 @@ export const createWalletSlice = (set,get) => ({
 				'Authorization': `Bearer ${get().authToken}`
 			}
 		})
-		.then((resp) => {
-			// return resp.text();
-			return resp.json();
+		.then((response) => {
+			if (response.ok) {
+				return response.json();
+			}
+			else {
+				return response.text();
+			}
+			
 		})
 		.then((response) => {
-			console.log(response);
+			// console.log(response);
 			/*
 			set({
 				walletIngoingHistory: response.walletIngoingHistory
 			});
 			*/
-			return response;
+			if (response.history) {
+				return response.history;
+			}
+			else {
+				console.log(response);
+				return Promise.reject(response);
+			}
 		})
 		.catch((exception) => {
 			console.log('Error retrieving history');

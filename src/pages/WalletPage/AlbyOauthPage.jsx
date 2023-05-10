@@ -22,49 +22,44 @@ const AlbyOauthPage = ({  }) => {
 	const location = useLocation();
 
 	useEffect(() => {
-		if (walletSetupCompleted) {
-			setStatus(true);
-		}
-		else {
-			setStatus(false);
-			setError(false);
-			setErrorMessage(false);
-			var searchParams = new URLSearchParams(location.search);
-			var code = searchParams.get('code');
-			if (code) {
-				console.log('We have a code. Let us exchange it to a token');
-				exchangeCodeToWalletToken(code)
-				.then((response) => {
-					console.log('response received');
-					console.log(response);
-					console.log(response.error);
+		setStatus(false);
+		setError(false);
+		setErrorMessage(false);
+		var searchParams = new URLSearchParams(location.search);
+		var code = searchParams.get('code');
+		if (code) {
+			console.log('We have a code. Let us exchange it to a token');
+			exchangeCodeToWalletToken(code)
+			.then((response) => {
+				console.log('response received');
+				console.log(response);
+				console.log(response.error);
 
-					if (!response || response.error) {
-						console.log('Error happened');
-						setStatus(true);
-						setError(true);
-						if (!response) {
-							setErrorMessage('No response from server.');
-						}
-						else if (response.error_description) {
-							setErrorMessage(response.error_description);
-						}
-						else {
-							setErrorMessage('No specific error message from server. This is likely an error on the Podfriend side.');
-						}
-					}
-					else {
-						console.log('No error happened');
-						setStatus(true);
-						setError(false);
-					}
-				})
-				.catch((exception) => {
-					console.log('failure');
+				if (!response || response.error) {
+					console.log('Error happened');
 					setStatus(true);
 					setError(true);
-				});
-			}
+					if (!response) {
+						setErrorMessage('No response from server.');
+					}
+					else if (response.error_description) {
+						setErrorMessage(response.error_description);
+					}
+					else {
+						setErrorMessage('No specific error message from server. This is likely an error on the Podfriend side.');
+					}
+				}
+				else {
+					console.log('No error happened');
+					setStatus(true);
+					setError(false);
+				}
+			})
+			.catch((exception) => {
+				console.log('failure');
+				setStatus(true);
+				setError(true);
+			});
 		}
 	},[location]);
 

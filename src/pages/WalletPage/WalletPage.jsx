@@ -37,6 +37,7 @@ const WalletPage = ({  }) => {
 	const synchronizeLegacyWallet = useStore((state) => state.synchronizeLegacyWallet);
 	
 	const setShowingLoginModal = useStore((state) => state.setShowingLoginModal);
+	const onDisconnectWallet = useStore((state) => state.onDisconnectWallet);
 
 	// console.log(userData);
 
@@ -130,7 +131,8 @@ const WalletPage = ({  }) => {
 									<IonIcon icon={fundsIcon} slot="start" />
 									Add funds
 								</IonItem>
-								<IonItem detail={true}>
+
+								<IonItem detail={true} routerLink="/wallet/history/" button routerDirection="forward">
 									<IonIcon icon={historyIcon} slot="start" />
 									Boost and Stream history
 								</IonItem>
@@ -148,14 +150,16 @@ const WalletPage = ({  }) => {
 								Connect to Alby wallet
 							</IonItem>
 						}
-							<IonItem detail={true} onClick={onBeginConnectWallet}>
-								<IonIcon icon={historyIcon} slot="start" />
-								Re-connect to Alby wallet
-							</IonItem>
 						<IonItem detail={true} onClick={openOnboardingModal}>
 							<IonIcon icon={helpIcon} slot="start" />
 							Watch &quot;About&quot; again
 						</IonItem>
+						{ walletSetupCompleted && loggedIn &&
+							<IonItem detail={true} onClick={() => { if (confirm('Are you sure you want to disconnect Alby and Podfriend?')) { onDisconnectWallet(); }}} color="danger" >
+								<IonIcon icon={turnOffIcon} slot="start" />
+								<IonLabel>Disconnect Alby wallet</IonLabel>
+							</IonItem>
+						}
 					</IonList>
 				</div>
 			</div>

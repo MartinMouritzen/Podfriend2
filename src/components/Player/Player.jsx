@@ -313,8 +313,8 @@ const Player = ({ audioController, navigateToPath, platform }) => {
 		if (activePodcast) {
 			retrieveOriginalPodcastFeed(activePodcast.path,activePodcast.feedUrl)
 			.then((feed) => {
-				console.log('new original feed in player');
-				console.log(feed);
+				// console.log('new original feed in player');
+				// console.log(feed);
 				setRssFeedContents(feed);
 			});
 		}

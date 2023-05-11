@@ -63,6 +63,7 @@ const PodcastPage = ({ match }) => {
 	const [showReviews,setShowReviews] = useState(false);
 	const [activeEpisodeIsShownInList,setActiveEpisodeIsShownInList] = useState(false);
 
+	const [overruleOriginalRSSCache,setOverruleOriginalRSSCache] = useState(false);
 	const [podcastLocation,setPodcastLocation] = useState(false);
 	const [showPodcastLocation,setShowPodcastLocation] = useState(false);
 	const [persons,setPersons] = useState(false);
@@ -189,8 +190,9 @@ const PodcastPage = ({ match }) => {
 
 	useEffect(() => {
 		if (podcastState === 'loaded') {
-			retrieveOriginalPodcastFeed(podcastData.path,podcastData.feedUrl)
+			retrieveOriginalPodcastFeed(podcastData.path,podcastData.feedUrl,overruleOriginalRSSCache)
 			.then((feed) => {
+				setOverruleOriginalRSSCache(false);
 				console.log('new original feed');
 				console.log(feed);
 				setPodcastRSSData(feed);
@@ -264,6 +266,8 @@ const PodcastPage = ({ match }) => {
 		  event.detail.complete();
 		}, 2000);
 		*/
+
+		setOverruleOriginalRSSCache(true);
 
 		var startTime = new Date();
 		refreshPodcast()

@@ -137,8 +137,11 @@ class PodcastFeed {
 			rssFeed.funding = podcast['podcast:funding'];
 			rssFeed.images = podcast['podcast:images'];
 
-			if (podcast['podcast:podroll'] && podcast['podcast:podroll'].split) {
-				var podGuids = podcast['podcast:podroll'].split(',');
+			if (podcast['podcast:podroll'] && podcast['podcast:podroll']['podcast:remoteItem']) {
+				var podGuids = [];
+				podcast['podcast:podroll']['podcast:remoteItem'].forEach((podRoll) => {
+					podGuids.push(podRoll.feedGuid);
+				});
 				rssFeed.podRoll = podGuids;
 			}
 

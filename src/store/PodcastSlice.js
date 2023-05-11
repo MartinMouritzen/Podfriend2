@@ -629,7 +629,7 @@ export const createPodcastSlice = (set, get) => ({
 		});
 	},
 	retrieveOriginalPodcastFeed: (podcastPath,feedUrl,overruleCache = false) => {
-		var podcastFeed = new PodcastFeed(feedUrl);
+		var podcastFeed = new PodcastFeed(feedUrl + '?test1');
 		var shouldUpdate = false;
 
 		return ClientStorage.getItem('podcast_rssfeed_cache_' + podcastPath)
@@ -643,15 +643,17 @@ export const createPodcastSlice = (set, get) => ({
 				shouldUpdate = true;
 			}
 			else {
-				var minutesSinceLastUpdate = Math.floor((Math.abs(new Date() - new Date(lastRSSFeedUpdate)) / 1000) / 60);
+				var secondsSinceLastUpdate = Math.floor((Math.abs(new Date() - new Date(lastRSSFeedUpdate)) / 1000));
+				console.log('secondsSinceLastUpdate');
+				console.log(secondsSinceLastUpdate);
 					
-				if (isNaN(minutesSinceLastUpdate) || minutesSinceLastUpdate > 5) {
-					console.log('Original RSS minutesSinceLastUpdate: ' + minutesSinceLastUpdate);
+				if (isNaN(secondsSinceLastUpdate) || secondsSinceLastUpdate > 300) {
+					console.log('Original RSS secondsSinceLastUpdate: ' + secondsSinceLastUpdate);
 					shouldUpdate = true;
 				}
 			}
 			if (!shouldUpdate) {
-				console.log('Original RSS Feed cached');
+				console.log('Original RSS Feed cached: ' + secondsSinceLastUpdate);
 				return Promise.resolve(rssFeedCache);
 			}
 			else {

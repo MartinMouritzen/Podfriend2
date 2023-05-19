@@ -231,6 +231,7 @@ export const createPodcastSlice = (set, get) => ({
 		}
 		else if (shouldUpdate) {
 			var followedPodcasts = get().followedPodcasts;
+
 			return new Promise((resolve,reject) => {
 				// console.log(subscribedPodcasts);
 				var feedPaths = [];
@@ -351,23 +352,27 @@ export const createPodcastSlice = (set, get) => ({
 		return ClientStorage.getItem('other_users_listened')
 		.then((otherUsersListenedList) => {
 			if (shouldUpdate || !otherUsersListenedList) {
-				console.log('Should refresh trending podcasts.');
+				console.log('Should refresh other users listened podcasts.');
 				
-				get().__retrieveOtherUsersListenToPodcasts()
+				return get().__retrieveOtherUsersListenToPodcasts()
 				.then((otherUsersListenedList) => {
+					console.log(otherUsersListenedList);
 					if (otherUsersListenedList && otherUsersListenedList.podcasts) {
 						ClientStorage.setItem('other_users_listened',otherUsersListenedList.podcasts)
 
 						set({
 							lastOtherUsersListenRefresh: new Date()
 						});
+						return otherUsersListenedList.podcasts;
 					}
 					else {
 						console.log('No otherUsersListenedList returned in refreshOtherUsersListenToPodcasts');
 					}
 				});
 			}
-			return otherUsersListenedList;
+			else {
+				return otherUsersListenedList;
+			}
 		});
 	},
 	refreshTrendingPodcasts: async(limit = 14) => {
@@ -392,16 +397,20 @@ export const createPodcastSlice = (set, get) => ({
 			if (shouldUpdate || !trendingPodcasts) {
 				console.log('Should refresh trending podcasts.');
 				
-				get().__retrieveTrendingPodcasts(false,limit)
+				return get().__retrieveTrendingPodcasts(false,limit)
 				.then((trendingPodcasts) => {
+					// console.log(trendingPodcasts);
 					ClientStorage.setItem('trending_podcasts_all',trendingPodcasts)
 
 					set({
 						lastTrendingPodcastRefresh: new Date()
 					});
+					return trendingPodcasts;
 				});
 			}
-			return trendingPodcasts;
+			else {
+				return trendingPodcasts;
+			}
 		});
 	},
 	/**********************************************************************************
@@ -624,12 +633,12 @@ export const createPodcastSlice = (set, get) => ({
 			return data;
 		})
 		.catch((exception) => {
-			return Promise.reject('Fetch error in fetching podcast: ' + podcastPath);
+			console.log('Fetch error in fetching podcast: ' + podcastPath);
 			console.log(exception);
 		});
 	},
 	retrieveOriginalPodcastFeed: (podcastPath,feedUrl,overruleCache = false) => {
-		var podcastFeed = new PodcastFeed(feedUrl + '?test1');
+		var podcastFeed = new PodcastFeed(feedUrl);
 		var shouldUpdate = false;
 
 		return ClientStorage.getItem('podcast_rssfeed_cache_' + podcastPath)
@@ -644,8 +653,8 @@ export const createPodcastSlice = (set, get) => ({
 			}
 			else {
 				var secondsSinceLastUpdate = Math.floor((Math.abs(new Date() - new Date(lastRSSFeedUpdate)) / 1000));
-				console.log('secondsSinceLastUpdate');
-				console.log(secondsSinceLastUpdate);
+				// console.log('secondsSinceLastUpdate');
+				// console.log(secondsSinceLastUpdate);
 					
 				if (isNaN(secondsSinceLastUpdate) || secondsSinceLastUpdate > 300) {
 					console.log('Original RSS secondsSinceLastUpdate: ' + secondsSinceLastUpdate);

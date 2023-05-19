@@ -1,3 +1,5 @@
+import { useEffect } from 'react';
+
 // Import Swiper React components
 import { Swiper, SwiperSlide } from "swiper/react";
 
@@ -17,6 +19,11 @@ import PodcastImage from 'components/PodcastImage/PodcastImage';
 import { Link } from 'react-router-dom';
 
 const CoverCarousel = ({ type, podcasts, backButtonText }) => {
+	useEffect(() => {
+		console.log('podcasts changed');
+		console.log(podcasts);
+	},[podcasts]);
+
 	return (
 		<Swiper
 			slidesPerView='auto'

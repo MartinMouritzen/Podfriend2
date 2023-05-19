@@ -100,6 +100,10 @@ const ContinueListeningEpisode = ({ podcastPath, continueListeningEpisode }) => 
 	}
 
 	const episode = podcastData.episodes[episodeGuid];
+	if (!episode) {
+		return null;
+	}
+
 	const timeLeft = episode.duration - episode.currentTime;
 
 	return (

@@ -23,6 +23,7 @@ import {
 import { useIonToast, IonList, IonItem, IonLabel, IonSelect,IonSelectOption, IonImg, IonIcon, IonButton, IonHeader, IonToolbar, IonTitle, IonButtons, IonModal, IonContent, IonListHeader, IonSkeletonText, IonRouterLink, IonItemSliding, IonItemOptions, IonItemOption } from '@ionic/react';
 
 import PodcastImage from 'components/PodcastImage/PodcastImage';
+import { current } from 'immer';
 
 /************************************************
 * Episode item 
@@ -181,23 +182,25 @@ const EpisodeItem = ({ podcastPath, podcastData, episode, guid, id, title, descr
 								<div className="pauseButton" onClick={(event) => { onPause(episode); return false;  }}><IonIcon icon={pauseIcon} /></div>
 							}
 						</div>
-						<div className="progress">
-							{ (!isNaN(minutesLeft) && progressPercentage > 0) &&
-								<div className="episodeProgressBarOuter">
-									<div className="episodeProgressBarInner" style={{ width: Math.round(progressPercentage) + '%' }}/>
-								</div>
-							}
+						{ ("live" in episode !== true) &&
+							<div className="progress">
+								{ (!isNaN(minutesLeft) && progressPercentage > 0) &&
+									<div className="episodeProgressBarOuter">
+										<div className="episodeProgressBarInner" style={{ width: Math.round(progressPercentage) + '%' }}/>
+									</div>
+								}
 
-							{ (!isNaN(minutesLeft) && minutesLeft == totalMinutes) && 
-								<span>{totalMinutes} min</span>
-							}
-							{ (!isNaN(minutesLeft) && minutesLeft != totalMinutes) && 
-								<span>{Math.round((duration - currentTime) / 60)} of {totalMinutes} min left</span>
-							}
-							{ isNaN(minutesLeft) &&
-								<span>{currentTime} - {duration}</span>
-							}
-						</div>
+								{ (!isNaN(minutesLeft) && minutesLeft == totalMinutes) && 
+									<span>{totalMinutes} min</span>
+								}
+								{ (!isNaN(minutesLeft) && minutesLeft != totalMinutes) && 
+									<span>{Math.round((duration - currentTime) / 60)} of {totalMinutes} min left</span>
+								}
+								{ isNaN(minutesLeft) &&
+									<span>{currentTime} - {duration}</span>
+								}
+							</div>
+						}
 					</div>
 				</IonLabel>
 			</IonItem>

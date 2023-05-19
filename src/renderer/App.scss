@@ -425,12 +425,17 @@ ion-menu {
 	}
 	.sectionSubTitle {
 		color: #0263e8;
+		color: var(--primary-color);
+		
 		font-size: 28px;
 
 		margin-right: 6px;
 	}
 	.sectionTitle {
 		color: #024699;
+		color: #000000;
+		color: var(--primary-color-dark);
+		
 
 		font-size: 28px;
 		text-transform: lowercase;
@@ -942,6 +947,9 @@ ion-modal {
 .blueContent {
 	--background: var(--primary-color);
 }
+.autoHeightModal {
+	--height: auto;
+}
 .modalPage {
 	display: flex;
 
@@ -1035,7 +1043,7 @@ ion-modal {
 		.darkBlueContent {
 			padding: 20px;
 			padding-top: 0px;
-			color: #999999;
+			color: #FFFFFF;
 
 			ion-button {
 				&.button-outline {

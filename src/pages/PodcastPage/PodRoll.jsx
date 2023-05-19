@@ -14,7 +14,7 @@ const PodRoll = ({ podRoll }) => {
 		if (podRoll) {
 			retrievePodcastByGuid(podRoll)
 			.then((podcasts) => {
-				console.log(podcasts);
+				// console.log(podcasts);
 				setPodcasts(podcasts);
 			})
 			.catch((exception) => {

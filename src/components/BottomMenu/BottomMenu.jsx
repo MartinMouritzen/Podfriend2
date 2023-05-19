@@ -29,10 +29,13 @@ import {
 
 import { useState, useEffect } from 'react';
 import { useLocation } from "react-router";
+import useStore from 'store/Store';
 
 const BottomMenu = ({ routes }) => {
 	const location = useLocation();
 	const [selected,setSelected] = useState('home');
+
+	const walletBalance = useStore((state) => state.walletBalance);
 
 	useEffect(() => {
 		var selected = 'home';
@@ -69,7 +72,14 @@ const BottomMenu = ({ routes }) => {
 
 				<IonTabButton tab="about" href="/wallet/" selected={selected === 'wallet'}>
 					<IonIcon icon={walletIcon} />
-					<IonLabel>Wallet</IonLabel>
+					<IonLabel>
+						{ walletBalance !== false &&
+							<>{(walletBalance).toLocaleString()}</>
+						}
+						{ walletBalance === false &&
+							Wallet
+						}
+					</IonLabel>
 				</IonTabButton>
 
 				<IonTabButton tab="search" href="/search/" selected={selected === 'search'}>

@@ -12,33 +12,37 @@ import { useLongPress } from 'use-long-press';
 
 import { IonButton, IonIcon, IonSpinner, useIonActionSheet, useIonModal } from '@ionic/react';
 
+import { BREAKPOINTS } from 'constants/breakpoints';
+import useBreakpoint from 'use-breakpoint';
+
 import './BoostButton.scss';
+import BoostModal from 'components/Boost/BoostModal';
 
 const BoostButton = () => {
 	const boostAmount = 500;
-	const [isBoosting,setIsBoosting] = useState(false);
+
+	const isBoosting = useStore((state) => state.isBoosting);
+	const userData = useStore((state) => state.userData);
 
 	const boostValue = useStore((state) => state.boostValue);
 	const activePodcast = useStore((state) => state.activePodcast);
 
-	const onBoost = () => {
-		setIsBoosting(true);
+	const { breakpoint } = useBreakpoint(BREAKPOINTS, 'desktop');
 
+	const onBoost = () => {
 		// valueBlock,totalAmount,overrideDestinations = false,senderName = false,message = false
-		boostValue(activePodcast.value,10,false,"Martin")
+		boostValue(activePodcast.value,10,false,userData.username)
 		.then((result) => {
 			console.log(result);
 			reward();
-			setIsBoosting(false);
 		})
 		.catch((exception) => {
 			console.log('Exception while boosting');
 			console.log(exception);
-			setIsBoosting(false);
 		});
 	};
 	const longPressBind = useLongPress(() => {
-		console.log('Long pressed!');
+		openBoostModal();
 	},{
 		threshold: 400
 	});
@@ -59,6 +63,23 @@ const BoostButton = () => {
 
 	const onBoostUp = () => {
 
+	};
+
+	const [present, dismiss] = useIonModal(BoostModal, {
+		onDismiss: (data, role) => dismiss(data, role),
+	});
+
+	const openBoostModal = () => {
+		present({
+			backdropBreakpoint: 0.3,
+			backdropDismiss: true,
+			initialBreakpoint: breakpoint === 'desktop' ? undefined : 0.5,
+			breakpoints: breakpoint === 'desktop' ? undefined : [0,0.5,1],
+			canDismiss: true,
+			onWillDismiss: (event) => {
+			  
+			},
+		});
 	};
 
 	return (

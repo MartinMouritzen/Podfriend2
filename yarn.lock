@@ -11053,10 +11053,10 @@ tr46@^2.1.0:
   dependencies:
     punycode "^2.1.1"
 
-transcriptator@^1.0.3:
-  version "1.0.6"
-  resolved "https://registry.yarnpkg.com/transcriptator/-/transcriptator-1.0.6.tgz#7ededf9bdfd5dbd9c01826d83ea2a3fdcdcd84f2"
-  integrity sha512-88t5AwgGMfuFpgfMW/4BqapcQLmFbPvHOoGh9CbnrVu8XyGYZBVR6cjLG+otBSpQm2E73y+rFSWrt/tN67+09w==
+transcriptator@^1.1.0-beta.0:
+  version "1.1.0-beta.0"
+  resolved "https://registry.yarnpkg.com/transcriptator/-/transcriptator-1.1.0-beta.0.tgz#47117a77c776e151623c777dea2f4d7f6eebaf10"
+  integrity sha512-Wt6OKiAQKB6dMXu1AelEHV4kAQBkMTWJL6OV0Rc2oRVSC1Bm9e6lOU51Wsi0TXvQLT61RbnqzXF9oogRth0UwA==
   dependencies:
     node-html-parser "^6.1.5"
 

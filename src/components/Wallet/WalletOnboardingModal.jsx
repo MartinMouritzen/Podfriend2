@@ -9,7 +9,7 @@ import Value4ValueWalletImage from 'images/onboarding/value4value-wallet.png';
 import Value4ValueAmountImage from 'images/onboarding/value4value-amount.png';
 import Value4ValueDecisionImage from 'images/onboarding/value4value-decision.png';
 
-const WalletModal = ({ onDismiss }) => {
+const WalletOnboardingModal = ({ onDismiss }) => {
 	const closeModal = () => {
 		onDismiss();
 	};
@@ -40,7 +40,7 @@ const WalletModal = ({ onDismiss }) => {
 					<h2>It runs on Bitcoin</h2>
 					<div>
 						What's in your wallet are &quot;Satoshis&quot;. Satoshis are fractions of a Bitcoin.<br /><br />
-						Bitcoin is a super efficient way to transfer value almost instantly between you and the podcast.
+						Using the Lightning network, sending Satoshis is a super efficient way to transfer value almost instantly between you and the podcast.
 						
 					</div>
 				</OnboardingStep>
@@ -69,4 +69,4 @@ const WalletModal = ({ onDismiss }) => {
 		
 	);
 };
-export default WalletModal;
+export default WalletOnboardingModal;

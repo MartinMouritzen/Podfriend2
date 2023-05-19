@@ -22,9 +22,11 @@
 				padding-bottom: 2vh;
 
 				img {
-					max-height: 20vh;
+					max-height: 35vh;
+					/*
 					-webkit-filter: drop-shadow(5px 5px 5px rgba(0,0,0,0.4));
 					filter: drop-shadow(5px 5px 5px rgba(0,0,0,0.4));
+					*/
 				}
 				@media (min-height: 390px) {
 
@@ -48,6 +50,10 @@
 					font-size: 36px;
 					color: rgba(0,0,0,1);
 					margin-bottom: 15px;
+
+					@media (min-height: 800px) {
+						font-size: 36px;
+					}
 				}
 				ul {
 					li {

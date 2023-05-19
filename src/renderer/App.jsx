@@ -79,7 +79,7 @@ export default function App({ platform, audioController, desktop = false }) {
 	const authenticateUser = useStore((state) => state.authenticateUser);
 
 	const walletSetupCompleted = useStore((state) => state.walletSetupCompleted);
-	const refreshAlbyAuthToken = useStore((state) => state.refreshAlbyAuthToken);
+	const doAlbyAuthTokenRefreshIfNeeded = useStore((state) => state.doAlbyAuthTokenRefreshIfNeeded);
 	
 
 	const RouterUsed = desktop ? IonReactHashRouter : capPlatform === 'web' ? IonReactRouter : IonReactHashRouter;
@@ -116,7 +116,7 @@ export default function App({ platform, audioController, desktop = false }) {
 			authenticateUser();
 
 			if (walletSetupCompleted) {
-				refreshAlbyAuthToken();
+				doAlbyAuthTokenRefreshIfNeeded();
 			}
 		}
 	},[authToken,_hasHydrated]);

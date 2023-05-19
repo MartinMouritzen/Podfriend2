@@ -48,8 +48,12 @@ export const createPlayerSlice = (set,get) => ({
 
 		if (podcastData === false) {
 			console.log('No podcastdata. Retrieving it.');
-			podcastData = await get().getPodcast(podcastPath);
-			console.log(podcastData);
+			podcastData = await get().getPodcastFromCache(podcastPath);
+
+			var shouldUpdate = get().shouldPodcastUpdate(podcastData);
+			if (shouldUpdate) {
+				get().retrievePodcastFromServer(podcastPath);
+			}
 		}
 
 		if (live) {
@@ -91,17 +95,12 @@ export const createPlayerSlice = (set,get) => ({
 					state.loading = true;
 				})
 			)
+			if (get().loggedIn) {
+				get().synchronizeEpisodeState();
+			}
 			/*
 			setTimeout(() => {
 				get().audioSetCurrentTime(get().podcasts[podcastPath].episodes[episodeGuid].currentTime ? get().podcasts[podcastPath].episodes[episodeGuid].currentTime : 0);
-			},50);
-			*/
-
-			/*
-			setTimeout(() => {
-				if (state.podcasts[podcastPath].episodes[episodeGuid]) {
-					get().audioSetCurrentTime(state.podcasts[podcastPath].episodes[episodeGuid].currentTime);
-				}
 			},50);
 			*/
 		}
@@ -110,85 +109,6 @@ export const createPlayerSlice = (set,get) => ({
 			console.log(podcastData);
 			console.log(episodeGuid);
 		}
-
-		// var podcastState = get().podcasts[podcastPath];
-
-		return;
-
-		
-
-		// const activePodcast = get().activePodcast;
-
-		// console.log('activePodcast');
-		// console.log(activePodcast);
-
-		if (live) {
-			console.log(live);
-			episode = {
-				title: live.title,
-				url: live.enclosure?.url,
-				chat: live.chat,
-				image: (live['itunes:image'] && live['itunes:image'].href) ? live['itunes:image'].href : live['podcast:images'] ? live['podcast:images'].srcset : false,
-				guid: live.guid['#text'] ? live.guid['#text'] : live.guid,
-				live: true
-			};
-		}
-		else {
-			// episode = get().getEpisodeByUrl(podcast,episodeUrl);
-			episode = podcastState.episodes[episode.guid];
-
-			console.log('Playing episode');
-			console.log(episode);
-			if (episode && episode.currentTime == null) {
-				console.log(podcast);
-				// console.log(activePodcast);
-				console.log(episodeGuid);
-			}
-			if (!episode) {
-				console.log('Episode not found?');
-				console.log(episodeGuid);
-				console.log(podcast);
-				return;
-			}
-		}
-
-		/*
-		get().updateFollowedPodcastListeningDate(podcastPath);
-		get().updatePodcastAttributes(
-			podcast.path,
-			{
-				lastListened: new Date()
-			}
-		);
-		*/
-
-		/*
-		set(
-			produce((state) => {
-				state.podcasts.push({
-					path: podcastPath,
-					dateFollowed: new Date()
-				})
-			})
-		)
-		*/
-
-		// console.log(podcast);
-
-		var currentTime = episode.currentTime;
-
-		set({
-			activePodcastPath: podcast.path,
-			activeEpisodeGuid: episode.guid,
-			// activePodcast: podcast,
-			// activeEpisode: episode,
-			shouldPlay: true,
-			loading: true
-		});
-		setTimeout(() => {
-			get().audioSetCurrentTime(currentTime);
-		},50);
-		// get().addEpisodeToContinueListeningList(podcast,episode);
 	},
 	audioPause: () => {
 		set({
@@ -218,7 +138,7 @@ export const createPlayerSlice = (set,get) => ({
 		var audioController = get().audioController;
 		if (audioController) {
 			audioController.setCurrentTime(currentTime);
-			get().resetAudioSegmentTime();
+			get().resetPlayingSegmentTime();
 		}
 	},
 	audioBackward: () => {
@@ -233,7 +153,7 @@ export const createPlayerSlice = (set,get) => ({
 			}
 
 			audioController.setCurrentTime(backwardTime);
-			get().resetAudioSegmentTime();
+			get().resetPlayingSegmentTime();
 			/*
 			audioController.pause()
 			.then(() => {
@@ -242,7 +162,7 @@ export const createPlayerSlice = (set,get) => ({
 			.then(() => {
 				if (get().shouldPlay) {
 					audioController.play();
-					get().resetAudioSegmentTime();
+					get().resetPlayingSegmentTime();
 				}
 			});
 			*/
@@ -261,7 +181,7 @@ export const createPlayerSlice = (set,get) => ({
 			}
 			else {
 				audioController.setCurrentTime(currentTime + audioForwardIncrement);
-				state.resetAudioSegmentTime();
+				state.resetPlayingSegmentTime();
 				/*
 				audioController.pause()
 				.then(() => {
@@ -270,7 +190,7 @@ export const createPlayerSlice = (set,get) => ({
 				.then(() => {
 					if (state.shouldPlay) {
 						audioController.play();
-						state.resetAudioSegmentTime();
+						state.resetPlayingSegmentTime();
 					}
 				});
 				*/
@@ -596,8 +516,37 @@ export const createPlayerSlice = (set,get) => ({
 	/**********************************************************************************
 	* Value 4 Value related
 	***********************************************************************************/
-	resetAudioSegmentTime: () => {
+	__audioSegmentIntervalId: false,
+	playingSegmentCurrentTime: false,
+	resetPlayingSegmentTime: () => {
+		console.log('resetPlayingSegmentTime');
+		var audioController = get().audioController;
 
+		if (audioController) {
+			set({
+				playingSegmentCurrentTime: audioController.getCurrentTime()
+			});
+			get().startNewPlayingSegmentTimer();
+		}
+	},
+	stopPlayingSegmentTime: () => {
+		console.log('stopPlayingSegmentTime');
+		clearInterval(get().__audioSegmentIntervalId);
+	},
+	startNewPlayingSegmentTimer: () => {
+		console.log('startNewPlayingSegmentTimer');
+		clearInterval(get().__audioSegmentIntervalId);
+
+		var newIntervalId = setInterval(() => {
+			get().playingSegmentTimeTrigger();
+		// },5000);
+		},60000);
+		set({
+			__audioSegmentIntervalId: newIntervalId
+		});
+	},
+	playingSegmentTimeTrigger: () => {
+		get().streamValue();
 	},
 	/**********************************************************************************
 	* Active podcast states

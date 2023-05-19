@@ -26,7 +26,7 @@ const OnboardingStep = ({ children, illustration, backgroundColor }) => {
 		</div>
 	);
 };
-const Onboarding = ({ children, title, closeModal, skippable = "Close" }) => {
+const Onboarding = ({ children, title, closeModal, skippable = "Close", lastButtonTitle = "Finish", lastButtonFunction = false, hideLastContinueButton = false }) => {
 	const [swiperInstance, setSwiperInstance] = useState(null);
 	const [step,setStep] = useState(0);
 
@@ -52,7 +52,7 @@ const Onboarding = ({ children, title, closeModal, skippable = "Close" }) => {
 
 	return (
 		<IonPage>
-			<IonHeader>
+			<IonHeader className="ion-no-border">
 				<IonToolbar>
 					{ step !== 0 &&
 						<IonButtons slot="start">
@@ -107,16 +107,22 @@ const Onboarding = ({ children, title, closeModal, skippable = "Close" }) => {
 				</div>
 			*/ }
 			</IonContent>
-			<IonFooter>
-				<IonToolbar>
-					{ (swiperInstance && swiperInstance.isEnd) &&
-						<IonButton expand='block' onClick={closeModal}>Finish</IonButton>
-					}
-					{ (swiperInstance && !swiperInstance.isEnd) &&
-						<IonButton expand='block' onClick={nextStep}>Continue</IonButton>
-					}
-				</IonToolbar>
-			</IonFooter>
+			
+				<IonFooter className="ion-no-border">
+					<IonToolbar>
+						{ (lastButtonTitle && swiperInstance && swiperInstance.isEnd) && 
+							<>
+								<IonButton expand='block' onClick={lastButtonFunction}>{lastButtonTitle}</IonButton>
+							</>
+						}
+						{ (!lastButtonTitle && !hideLastContinueButton && swiperInstance && swiperInstance.isEnd) &&
+							<IonButton expand='block' onClick={closeModal}>Finish</IonButton>
+						}
+						{ (swiperInstance && !swiperInstance.isEnd) &&
+							<IonButton expand='block' onClick={nextStep}>Continue</IonButton>
+						}
+					</IonToolbar>
+				</IonFooter>
 		</IonPage>
 	);
 };

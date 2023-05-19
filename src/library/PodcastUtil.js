@@ -1,4 +1,10 @@
-import { convertFile, determineFormat } from 'transcriptator';
+import { Options, convertFile, determineFormat } from 'transcriptator';
+
+Options.setOptions({
+	// combineSegments: true,
+	// combineSegmentsLength: 80,
+	combineEqualTimes: true
+});
 
 class PodcastUtil {
 	/**
@@ -79,6 +85,7 @@ class PodcastUtil {
 			catch(exception) {
 				console.error('Exception getting chapters from: ' + url);
 				console.error(exception);
+				return false;
 			}
 		}
 		catch(exception) {
@@ -86,6 +93,7 @@ class PodcastUtil {
 			console.error(exception);
 			console.error(url);
 			console.error(result);
+			return false;
 		}
 	};
 	/**

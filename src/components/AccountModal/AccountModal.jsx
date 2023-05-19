@@ -6,7 +6,7 @@ import LoginIndex from "./LoginIndex";
 import useStore from 'store/Store';
 
 import './AccountModal.scss'
-import AccountPage from "./AccountPage";
+import AccountModalPage from "./AccountModalPage";
 
 const AccountModal = ({ breakpoint }) => {
 	const page = useRef(null);
@@ -89,7 +89,7 @@ const AccountModalInner = ({ dismiss } ) => {
 				</IonNav>
 			}
 			{ (loggedIn && !creatingUser) &&
-				<AccountPage dismiss={dismiss} />
+				<AccountModalPage dismiss={dismiss} />
 			}
 		</IonPage>
 	);

@@ -30,6 +30,7 @@ import RSSFeed from "library/RSSFeed";
 import {
 	earthSharp as websiteIcon,
 	micSharp as companyIcon,
+	cashOutline as donateIcon,
 } from 'ionicons/icons';
 import LiveEpisodes from "./LiveEpisodes";
 import PodRoll from "./PodRoll";
@@ -48,6 +49,8 @@ const PodcastPage = ({ match }) => {
 	const followPodcast = useStore((state) => state.followPodcast);
 	const unfollowPodcast = useStore((state) => state.unfollowPodcast);
 	const isPodcastFollowed = useStore((state) => state.isPodcastFollowed);
+
+	const playEpisode = useStore((state) => state.playEpisode);
 
 	const podcastPath = match.params.podcastPath;
 
@@ -296,6 +299,20 @@ const PodcastPage = ({ match }) => {
 		setShowReviews(false);
 	};
 
+	const startPlayingPodcast = () => {
+		console.log('startPlayingPodcast');
+		var guid = false;
+		if (seasonType === 'episodic') {
+			guid = podcastData.episodes[0].guid;
+		}
+		else {
+			guid = podcastData.episodes[podcastData.episodes.length -1].guid;
+		}
+		if (guid) {
+			playEpisode(podcastPath,podcastData,guid);
+		}
+	};
+
 	return (
 		<Page defaultHeader={false} title={podcastData ? podcastData.name : 'Loading...'} className="podcastPage greyPage" setScrollableContentRef={setScrollableContentRef} onRefresh={doRefresh}>
 			<div className="podcastPageContent">
@@ -308,7 +325,7 @@ const PodcastPage = ({ match }) => {
 							<PodcastImage
 								alt={podcastData.name + ' cover art'}
 								imageErrorText={podcastData.name}
-								podcastPath={podcastData.path}
+								podcastPath={podcastPath}
 								width={600}
 								height={600}
 								coverWidth={400}
@@ -399,7 +416,7 @@ const PodcastPage = ({ match }) => {
 									Follow
 								</IonButton>
 							}
-							<IonButton id="lastEpisodeButton" fill={podcastIsFollowed === true ? 'solid' : 'outline'}>
+							<IonButton id="lastEpisodeButton" fill={podcastIsFollowed === true ? 'solid' : 'outline'} onClick={startPlayingPodcast}>
 								<IonIcon slot="start" icon={playIcon}></IonIcon>
 								{ seasonType === 'episodic' &&
 									<>Latest</>
@@ -407,38 +424,46 @@ const PodcastPage = ({ match }) => {
 								{ seasonType === 'season' &&
 									<>First</>
 								}
-									{ actionButtonsWidth > 310 &&
-										<> episode</>
-									}
+								{ actionButtonsWidth > 310 &&
+									<> episode</>
+								}
 							</IonButton>
 							<IonButton id="moreButton" className="greyButton" onClick={() => {
+								var buttons = [];
+								
+								buttons.push({
+									text: 'Go to podcast website',
+									icon: websiteIcon,
+									data: {
+										action: 'website'
+									}
+								});
+								if (podcastData.funding && podcastData.funding.url) {
+									buttons.push({
+										text: 'Support podcast',
+										icon: donateIcon,
+										data: {
+											action: 'funding'
+										}
+									});
+								}
+								buttons.push({
+									text: 'Cancel',
+									role: 'cancel',
+									data: {
+										action: 'cancel',
+									},
+								});
+
+
 								actionSheetPresent({
-									buttons: [
-										{
-											text: 'Go to podcast website',
-											data: {
-												action: 'website'
-											}
-										},
-										/*
-										{
-											text: 'Add season to playlist',
-											data: {
-												action: 'share',
-											},
-										},
-										*/
-										{
-											text: 'Cancel',
-											role: 'cancel',
-											data: {
-												action: 'cancel',
-											},
-										},
-									],
+									buttons: buttons,
 									onWillDismiss: ({ detail }) => {
 										if (detail?.data?.action === 'website') {
 											window.open(podcastData.link,"_blank");
+										}
+										else if (detail?.data?.action === 'funding') {
+											window.open(podcastData.funding.url,"_blank");
 										}
 									},
 									onDidDismiss: ({ detail }) => {
@@ -458,7 +483,7 @@ const PodcastPage = ({ match }) => {
 					</div>
 				</div>
 				<div>
-					{ (!activeEpisodeIsShownInList && (activePodcast.guid === podcastData.guid)) &&
+					{ (!activeEpisodeIsShownInList && (activePodcast.guid && activePodcast.guid === podcastData.guid)) &&
 						<div className="episodeListOuter">
 							<h2 className="podcastPageSubHeader">Currently playing</h2>
 							<IonList lines="full" inset={false} className="episodeList">

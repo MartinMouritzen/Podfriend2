@@ -12,6 +12,8 @@ import {NavContext} from '@ionic/react';
 
 import PodfriendLogo from 'images/icons/podfriend_logo.svg';
 
+import useStore from 'store/Store';
+
 const MainMenu = () => {
 	const toggleMenu = () => {
  	    menuController.toggle('first');
@@ -23,6 +25,8 @@ const MainMenu = () => {
 
 	const searchBar = useRef(null);
 	const [searchString,setSearchString] = useState('');
+
+	const walletBalance = useStore((state) => state.walletBalance);
 
 	const onSearch = (event) => {
 		event.preventDefault();
@@ -73,7 +77,12 @@ const MainMenu = () => {
 
 					<IonItem lines="none" button routerLink="/wallet/">
 						<IonIcon icon={walletIcon} slot="start"></IonIcon>
-						<IonLabel>Wallet</IonLabel>
+						<IonLabel>Wallet <span style={{ fontSize: 12 }}>
+							{ (walletBalance !== false && walletBalance !== 0) && 
+								<>({(walletBalance).toLocaleString()} sats)</>
+							}
+							</span>
+						</IonLabel>
 					</IonItem>
 
 					{ /*

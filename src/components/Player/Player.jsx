@@ -52,6 +52,7 @@ import AudioSpeedSettingModal from './AudioSpeedSettingModal';
 
 import Events from 'library/Events.js';
 import BoostButton from './BoostButton';
+import ShareModal from 'components/Share/ShareModal';
 
 const Player = ({ audioController, navigateToPath, platform }) => {
 	const { breakpoint } = useBreakpoint(BREAKPOINTS, 'desktop');
@@ -87,12 +88,14 @@ const Player = ({ audioController, navigateToPath, platform }) => {
 
 	const setCurrentTime = useStore((state) => state.setCurrentTime);
 
-	const resetAudioSegmentTime = useStore((state) => state.resetAudioSegmentTime);
+	const resetPlayingSegmentTime = useStore((state) => state.resetPlayingSegmentTime);
+	const stopPlayingSegmentTime = useStore((state) => state.stopPlayingSegmentTime);
+	
 	
 	const onBackward = useStore((state) => state.audioBackward);
 	const onForward = useStore((state) => state.audioForward);
-	const onSkipBackward = useStore((state) => state.audioSkipBackward);
-	const onSkipForward = useStore((state) => state.audioSkipForward);
+	const audioSkipBackward = useStore((state) => state.audioSkipBackward);
+	const audioSkipForward = useStore((state) => state.audioSkipForward);
 
 	const changeActiveEpisode = useStore((state) => state.changeActiveEpisode);
 
@@ -118,6 +121,8 @@ const Player = ({ audioController, navigateToPath, platform }) => {
 
 	const [controlledSwiper, setControlledSwiper] = useState(null);
 
+	const [shareModalOpen,setShareModalOpen] = useState(false);
+
 	let fullPlayerOpen = false;
 	let hasEpisode = true;
 
@@ -132,9 +137,11 @@ const Player = ({ audioController, navigateToPath, platform }) => {
 	};
 	const onPlay = () => {
 		audioPlay();
+		resetPlayingSegmentTime();
 	};
 	const onPause = () => {
 		audioPause();
+		stopPlayingSegmentTime();
 	};
 	const onSeek = () => {
 
@@ -145,7 +152,8 @@ const Player = ({ audioController, navigateToPath, platform }) => {
 		}
 	};
 	const onEnded = () => {
-
+		audioSkipForward();
+		console.log('episode ended');
 	};
 	const onLoadedData = () => {
 
@@ -174,7 +182,7 @@ const Player = ({ audioController, navigateToPath, platform }) => {
 		// Make sure we don't overload the html5 component
 		progressTimeoutId.current = setTimeout(() => {
 			setCurrentTime(placeInTrack);
-			resetAudioSegmentTime();
+			resetPlayingSegmentTime();
 	 	},100);
 	}
 
@@ -269,8 +277,8 @@ const Player = ({ audioController, navigateToPath, platform }) => {
 	useEffect(() => {
 		Events.addListener('PodfriendSetCurrentTime',(param) => { if (isNaN(param)) { return; } setCurrentTime(param) },'Player');
 		Events.addListener('MediaPlayPause',() => { console.log('MediaPlayPause'); playOrPause();  },'Player');
-		Events.addListener('MediaNextTrack',() => {  console.log('MediaNextTrack'); onSkipForward(); },'Player');
-		Events.addListener('MediaPreviousTrack',() => { console.log('MediaPreviousTrack'); onSkipBackward(); },'Player');
+		Events.addListener('MediaNextTrack',() => {  console.log('MediaNextTrack'); audioSkipForward(); },'Player');
+		Events.addListener('MediaPreviousTrack',() => { console.log('MediaPreviousTrack'); audioSkipBackward(); },'Player');
 		Events.addListener('MediaRewindTrack',() => {  console.log('MediaRewindTrack'); onBackward(); },'Player');
 		Events.addListener('MediaForwardTrack',() => {  console.log('MediaForwardTrack'); onForward(); },'Player');
 
@@ -402,7 +410,7 @@ const Player = ({ audioController, navigateToPath, platform }) => {
 		}
 		var foundChapter = false;
 
-		if (episodeState.currentTime > 0) {
+		if (episodeState.currentTime > 0 && chapters && chapters.length) {
 			// First we walk through to find the active chapter
 			for(var i=0;i<chapters.length;i++) {
 				if (chapters[i].startTime <= episodeState.currentTime) {
@@ -491,7 +499,7 @@ const Player = ({ audioController, navigateToPath, platform }) => {
 
 				}
 				else if (detail?.data?.action === 'share') {
-
+					setShareModalOpen(true);
 				}
 			},
 			onDidDismiss: ({ detail }) => {
@@ -525,6 +533,11 @@ const Player = ({ audioController, navigateToPath, platform }) => {
 		});
 	};
 
+	const onDismissShareModal = () => {
+		console.log('close share modal');
+		setShareModalOpen(false);
+	};
+
 	return (
 		<>
 			<div
@@ -549,26 +562,28 @@ const Player = ({ audioController, navigateToPath, platform }) => {
 				}
 				<div className="mainPlayerComponents">
 					<div className="segmentContainer" style={{ display: (fullscreen ? 'block' : 'none') }}>
-						<IonSegment value={segmentVisible} onIonChange={(e) => { setSegmentVisible(e.detail.value); console.log(e.detail.value); }} onClick={(event) => { event.preventDefault(); event.stopPropagation(); }}>
-							<IonSegmentButton value="playing">
-								<IonLabel>
-									Playing
-								</IonLabel>
-							</IonSegmentButton>
-							<IonSegmentButton value="info">
-								<IonLabel>Info</IonLabel>
-							</IonSegmentButton>
-							{ chapters &&
-								<IonSegmentButton value="chapters">
-									<IonLabel>Chapters</IonLabel>
+						{ (activeEpisode && "live" in activeEpisode !== true) &&
+							<IonSegment value={segmentVisible} onIonChange={(e) => { setSegmentVisible(e.detail.value); console.log(e.detail.value); }} onClick={(event) => { event.preventDefault(); event.stopPropagation(); }}>
+								<IonSegmentButton value="playing">
+									<IonLabel>
+										Playing
+									</IonLabel>
 								</IonSegmentButton>
-							}
-							{ false &&
-								<IonSegmentButton value="chat">
-									<IonLabel>Chat</IonLabel>
+								<IonSegmentButton value="info">
+									<IonLabel>Info</IonLabel>
 								</IonSegmentButton>
-							}
-						</IonSegment>
+								{ chapters &&
+									<IonSegmentButton value="chapters">
+										<IonLabel>Chapters</IonLabel>
+									</IonSegmentButton>
+								}
+								{ false &&
+									<IonSegmentButton value="chat">
+										<IonLabel>Chat</IonLabel>
+									</IonSegmentButton>
+								}
+							</IonSegment>
+						}
 					</div>
 
 					{ fullscreen &&
@@ -626,13 +641,15 @@ const Player = ({ audioController, navigateToPath, platform }) => {
 											}
 										</div>
 									</SwiperSlide>
-									<SwiperSlide>
-										<div className="description">
-											<h2>Description</h2>
-											<div dangerouslySetInnerHTML={{__html: activeEpisode.safeDescription}}>
+									{ ("live" in activeEpisode !== true) &&
+										<SwiperSlide>
+											<div className="description">
+												<h2>Description</h2>
+												<div dangerouslySetInnerHTML={{__html: activeEpisode.safeDescription}}>
+												</div>
 											</div>
-										</div>
-									</SwiperSlide>
+										</SwiperSlide>
+									}
 									{ chapters &&
 										<SwiperSlide>
 											<div className="swipeContents">
@@ -681,7 +698,7 @@ const Player = ({ audioController, navigateToPath, platform }) => {
 					<div className="controls">
 						<div className='titleAndButtons'>
 							{ !fullscreen &&
-								<div className="podcastInfo">
+								<div className="podcastInfo" onClick={maximize}>
 									<div className="episodeTitle">
 										{activeEpisode.title}
 									</div>
@@ -709,7 +726,7 @@ const Player = ({ audioController, navigateToPath, platform }) => {
 										<div className="button buttonChat" onClick={openChatModal}><IonIcon icon={chatIcon} /></div>
 									}
 									<div className="button buttonFiller">&nbsp;</div>
-									<div className="button buttonSkipBackward" onClick={onSkipBackward}><SVG src={SkipBackwardIcon} /></div>
+									<div className="button buttonSkipBackward" onClick={audioSkipBackward}><SVG src={SkipBackwardIcon} /></div>
 									<div className="button buttonRewind" onClick={onBackward}><SVG src={RewindIcon} /></div>
 									{ streamDataLoading &&
 										<div className="button buttonLoad" onClick={onPauseClicked}  ><img src={LoadingIcon} /></div>
@@ -725,7 +742,7 @@ const Player = ({ audioController, navigateToPath, platform }) => {
 										</>
 									}
 									<div className="button buttonForward" onClick={onForward}><SVG src={ForwardIcon} /></div>
-									<div className="button buttonSkipForward" onClick={onSkipForward}><SVG src={SkipForwardIcon} /></div>
+									<div className="button buttonSkipForward" onClick={audioSkipForward}><SVG src={SkipForwardIcon} /></div>
 									<div className="button buttonMore" onClick={showMoreSheet}><IonIcon icon={moreIcon} /></div>
 									{ !fullscreen &&
 										<div className="button navigateToPodcastButton" onClick={navigateToPodcast}>
@@ -773,6 +790,7 @@ const Player = ({ audioController, navigateToPath, platform }) => {
 						</div>
 					</div>
 				}
+				<ShareModal isOpen={shareModalOpen} onDismiss={onDismissShareModal} podcast={activePodcast} episode={activeEpisode} />
 			</DraggablePane>
 		</>
 	);

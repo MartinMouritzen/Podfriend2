@@ -7,7 +7,7 @@ import useStore from 'store/Store';
 import { IonButton, IonButtons, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonListHeader, IonSearchbar, IonSegment, IonSegmentButton, IonTitle, IonToolbar, useIonModal } from "@ionic/react";
 
 import {
-	cashOutline as fundsIcon,
+	walletOutline as fundsIcon,
 	listOutline as historyIcon,
 	closeCircleOutline as turnOffIcon,
 	checkmarkCircle as settledIcon,
@@ -73,13 +73,13 @@ const WalletHistoryPage = ({  }) => {
 
 
 
-						<IonList lines="full" inset={true} >
+						<IonList lines="full">
 							<IonListHeader>
 								<IonLabel style={{ textTransform: 'capitalize' }}>{historyType} transactions</IonLabel>
 							</IonListHeader>
 							{ walletHistory !== false && walletHistory[historyType] && walletHistory[historyType].map((historyEntry) => {
 								return (
-									<HistoryEntry historyEntry={historyEntry} historyType={historyType} />
+									<HistoryEntry key={historyEntry.payment_hash} historyEntry={historyEntry} historyType={historyType} />
 								);
 							})};
 						</IonList>
@@ -103,7 +103,7 @@ const HistoryEntry = ({ historyEntry, historyType }) => {
 					{ historyType === 'incoming' &&
 						<IonLabel slot="end">{historyEntry.boostagram.sender_name} </IonLabel>
 					}
-					<p>{historyEntry.amount} sats</p>
+					<p>{historyEntry.amount} sats, {new Date(historyEntry.created_at).toLocaleString()}</p>
 					
 				</IonLabel>
 			</IonItem>

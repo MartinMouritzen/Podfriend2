@@ -19,7 +19,7 @@ import {
 import { Browser } from '@capacitor/browser';
 
 import './WalletPage.scss';
-import WalletModal from "components/Wallet/WalletModal";
+import WalletOnboardingModal from "components/Wallet/WalletOnboardingModal";
 
 const WalletPage = ({  }) => {
 	const loggedIn = useStore((state) => state.loggedIn);
@@ -41,7 +41,7 @@ const WalletPage = ({  }) => {
 
 	// console.log(userData);
 
-	const [present, dismiss] = useIonModal(WalletModal, {
+	const [present, dismiss] = useIonModal(WalletOnboardingModal, {
 		onDismiss: (data, role) => dismiss(data, role),
 	});
 
@@ -88,6 +88,14 @@ const WalletPage = ({  }) => {
 		setShowingLoginModal(true);
 	};
 
+	const addFunds = () => {
+		Browser.open({
+			url: 'https://getalby.com/topup',
+			windowName: '_blank',
+			toolbarColor: '#0176e5'
+		})
+	};
+
 	return (
 		<Page id="wallet" title="Wallet" className="greyPage" showBackButton={false}>
 			<div className="walletPageContainer">
@@ -127,9 +135,9 @@ const WalletPage = ({  }) => {
 						</IonListHeader>
 						{ walletSetupCompleted &&
 							<>
-								<IonItem detail={true}>
+								<IonItem detail={true} onClick={addFunds}>
 									<IonIcon icon={fundsIcon} slot="start" />
-									Add funds
+									Add funds (Through Alby)
 								</IonItem>
 
 								<IonItem detail={true} routerLink="/wallet/history/" button routerDirection="forward">

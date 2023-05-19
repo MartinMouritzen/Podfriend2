@@ -1,6 +1,10 @@
 import { IonAvatar, IonContent, IonItem, IonLabel, IonList, IonIcon } from "@ionic/react";
 
-import { lockClosed as lockIcon, mailOutline as mailIcon } from 'ionicons/icons';
+import {
+	lockClosed as lockIcon,
+	mailOutline as mailIcon,
+	newspaperOutline as guideIcon
+} from 'ionicons/icons';
 // import { homeOutline as homeIcon, closeSharp as closeIcon, searchOutline as searchIcon, mailOutline as mailIcon, listOutline as collectionsIcon, starOutline as favoriteIcon, walletOutline as walletIcon } from 'ionicons/icons'
 
 import { Link } from 'react-router-dom';
@@ -10,6 +14,7 @@ import useStore from 'store/Store';
 const AccountPage = ({ dismiss }) => {
 	const userData = useStore((state) => state.userData);
 	const userNotLoggedIn = useStore((state) => state.userNotLoggedIn);
+	const setSeenPodfriendOnboarding = useStore((state) => state.setSeenPodfriendOnboarding);
 
 	const onAccountChangeClicked = () => {
 		alert('Account editing will be implemented soon');
@@ -41,11 +46,23 @@ const AccountPage = ({ dismiss }) => {
 						pathname: '/contact/'
 					}}
 					style={{ textDecoration: 'none' }}
-					onClick={() => { dismiss(); }}
+					onClick={dismiss}
 				>
 					<IonItem >
 						<IonIcon icon={mailIcon} slot="start" />
 						<IonLabel>Contact Podfriend</IonLabel>
+					</IonItem>
+				</Link>
+				<Link
+					to={{
+						pathname: '/'
+					}}
+					style={{ textDecoration: 'none' }}
+					onClick={() => { setSeenPodfriendOnboarding(false); dismiss(); }}
+				>
+					<IonItem>
+						<IonIcon icon={guideIcon} slot="start" />
+						<IonLabel>Watch Podfriend intro again</IonLabel>
 					</IonItem>
 				</Link>
 			</IonList>

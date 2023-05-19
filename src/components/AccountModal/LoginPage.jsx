@@ -19,6 +19,8 @@ const LoginPage = ({ dismiss }) => {
 	const [password,setPassword] = useState('');
 	const [email,setEmail] = useState('');
 
+	const [forgotPasswordInitiated,setForgotPasswordInitiated] = useState(false);
+
 	const [overallError,setOverallError] = useState(false);
 
 	const onPasswordChange = (event) => {
@@ -44,6 +46,15 @@ const LoginPage = ({ dismiss }) => {
 		}
 	},[authToken]);
 
+	const onForgotPassword = () => {
+		setForgotPasswordInitiated('fill-email');
+	};
+	const onForgotPasswordContinue = () => {
+		var url = "https://api.podfriend.com/user/reset-password/?email=" + email;
+		fetch(url);
+		setForgotPasswordInitiated('emailed');
+	};
+
 	return (
 		<>
 			<IonHeader className="blueModalHeader ion-no-border">
@@ -64,39 +75,75 @@ const LoginPage = ({ dismiss }) => {
 					</div>
 					<div className="content">
 						<div className="secondTeaser">
-							Let's get you signed in and start listening!
+							{ forgotPasswordInitiated === 'emailed' &&
+								<>
+								<p>Great news</p>
+								<p>An email has been sent to {email}, with instructions for resetting your password.</p>
+							</>
+							}
+							{ forgotPasswordInitiated === 'fill-email' &&
+								<>
+									<p>Do not despair my friend!</p>
+									<p>
+										Fill out your email and we will send you an email to reset the password.
+									</p>
+								</>
+							}
+							{ forgotPasswordInitiated === false &&
+								<>
+									Let's get you signed in and start listening!
+								</>
+							}
 						</div>
 						<img src={BlueOnBlueWave} className="wave" />
 						<div className="darkBlueContent">
-							<form>
-								<IonItem>
-									<IonLabel position="floating"><IonIcon icon={mailIcon} /> Email address</IonLabel>
-									
-									<IonInput type="email" onIonInput={onEmailChange} />
-									{ /* <input type="text" onKeyUp={onEmailChange} style={{ color: '#000000' }} /> */ }
-								</IonItem>
-								<IonItem>
-									<IonLabel position="floating"><IonIcon icon={passwordIcon} /> Password</IonLabel>
-									<IonInput type="password" onIonInput={onPasswordChange} />
-								</IonItem>
-								{ /*
-								<IonItem lines="none" style={{ marginTop: 20 }}>
-									<IonCheckbox />
-									<IonLabel> Remember me</IonLabel>
-								</IonItem>
-								*/ }
-
-								{ overallError &&
-									<div style={{ padding: 20, paddingTop: 40 }}>
-										<IonLabel color="danger">{overallError}</IonLabel>
-									</div>
-								}
-									
-								<IonButton expand="block" onClick={onLogin}>Sign in</IonButton>
-								<div className="forgotPasswordLink">
-									Forgot password?
+							{ forgotPasswordInitiated === 'emailed' &&
+								<div>
+									<IonNavLink routerDirection='back' className='backLink'>
+										<IonButton expand="block">Back to log in</IonButton>
+									</IonNavLink>
 								</div>
-							</form>
+							}
+							{ forgotPasswordInitiated === 'fill-email' &&
+								<div>
+									<IonItem>
+										<IonLabel position="floating"><IonIcon icon={mailIcon} /> Email address</IonLabel>
+										<IonInput type="email" value={email} onIonInput={onEmailChange} />
+									</IonItem>
+									<IonButton expand="block" onClick={onForgotPasswordContinue}>Continue</IonButton>
+								</div>
+							}
+							{ forgotPasswordInitiated === false &&
+								<form>
+									<IonItem>
+										<IonLabel position="floating"><IonIcon icon={mailIcon} /> Email address</IonLabel>
+										
+										<IonInput type="email" onIonInput={onEmailChange} value={email} />
+										{ /* <input type="text" onKeyUp={onEmailChange} style={{ color: '#000000' }} /> */ }
+									</IonItem>
+									<IonItem>
+										<IonLabel position="floating"><IonIcon icon={passwordIcon} /> Password</IonLabel>
+										<IonInput type="password" onIonInput={onPasswordChange} />
+									</IonItem>
+									{ /*
+									<IonItem lines="none" style={{ marginTop: 20 }}>
+										<IonCheckbox />
+										<IonLabel> Remember me</IonLabel>
+									</IonItem>
+									*/ }
+
+									{ overallError &&
+										<div style={{ padding: 20, paddingTop: 40 }}>
+											<IonLabel color="danger">{overallError}</IonLabel>
+										</div>
+									}
+										
+									<IonButton expand="block" onClick={onLogin}>Sign in</IonButton>
+									<div className="forgotPasswordLink" onClick={onForgotPassword}>
+										Forgot password?
+									</div>
+								</form>
+							}
 						</div>
 					</div>
 				</div>

@@ -93,7 +93,11 @@ const useStore = create(persist((...a) => ({
 		delete newState.shouldPlay;
 		delete newState.playerFullscreen;
 
+		delete newState.showingLoginModal;
+
 		delete newState.synchronizingEpisodeState;
+
+		delete newState.isBoosting;
 
 		return newState;
 	}

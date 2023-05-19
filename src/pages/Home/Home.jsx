@@ -1,12 +1,12 @@
 import Page from "components/Page/Page";
 
-import { useRef } from 'react';
+import { useRef, useEffect } from 'react';
 
 import useStore from 'store/Store';
 
 import TrendingPodcasts from "components/Lists/TrendingPodcasts";
 import CategoryList from "components/Lists/CategoryList";
-import { IonButton, IonButtons, IonHeader, IonSearchbar, IonSpinner, IonTitle, IonToolbar, useIonRouter } from "@ionic/react";
+import { IonButton, IonButtons, IonHeader, IonSearchbar, IonSpinner, IonTitle, IonToolbar, IonContent, useIonRouter, useIonModal, useIonPopover  } from "@ionic/react";
 
 import useBreakpoint from 'use-breakpoint';
 import { BREAKPOINTS } from 'constants/breakpoints';
@@ -16,11 +16,16 @@ import CoverCarousel from "components/Lists/CoverCarousel";
 import LatestEpisodes from 'components/Lists/LatestEpisodes';
 import DeviceInfo from "components/DeviceInfo";
 
+import NewUserOnboardingModal from "components/Onboarding/NewUser/NewUserOnboardingModal";
+
+const Popover = () => <IonContent className="ion-padding">Hello World!</IonContent>;
+
 const Home = ({  }) => {
 	const { breakpoint } = useBreakpoint(BREAKPOINTS, 'desktop');
 
 	const loggedIn = useStore((state) => state.loggedIn);
 	const refreshingLatestEpisodes = useStore((state) => state.refreshingLatestEpisodes);
+	const seenPodfriendOnboarding = useStore((state) => state.seenPodfriendOnboarding);
 	
 	const continueListeningEpisodeList = useStore((state) => state.continueListeningEpisodeList);
 
@@ -33,6 +38,37 @@ const Home = ({  }) => {
 
 		return false;
 	};
+
+	const [popOverPresent, popOverDismiss] = useIonPopover(Popover, {
+		onDismiss: (data, role) => popOverDismiss(data, role),
+	});
+
+	const [onboardingPresent, onboardingDismiss] = useIonModal(NewUserOnboardingModal, {
+		dismiss: (data, role) => { onboardingDismiss(data, role); },
+	});
+
+	const openOnboardingModal = () => {
+		onboardingPresent({
+			id: 'onboardingModal',
+			canDismiss: true,
+			breakpoints: breakpoint === 'desktop' ? undefined : [0,1],
+			initialBreakpoint: breakpoint === 'desktop' ? undefined : 1,
+			onWillDismiss: (event) => {
+				/*
+				popOverPresent({
+					side: 'bottom',
+					alignment: 'center'
+				});
+				*/
+			},
+		  });
+	};
+
+	useEffect(() => {
+		if (!seenPodfriendOnboarding) {
+			openOnboardingModal();
+		}
+	},[seenPodfriendOnboarding]);
 
 	return (
 		<Page id="home" title="Home" showBackButton={false}>

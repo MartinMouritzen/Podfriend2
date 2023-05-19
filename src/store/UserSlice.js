@@ -83,9 +83,12 @@ export const createUserSlice = (set,get) => ({
 				}
 				else {
 					console.log('User authenticated');
+					console.log(data);
 					set({
 						loggedIn: true,
-						userData: data
+						userData: data,
+						walletSetupCompleted: data.metaData.walletSetupCompleted,
+						walletOnboardingShowed: data.metaData.walletSetupCompleted ? true : get().walletOnboardingShowed
 					});
 				}
 			})
@@ -157,5 +160,11 @@ export const createUserSlice = (set,get) => ({
 			console.log(error);
 			return Promise.reject(error);
 		});
-	}
+	},
+	seenPodfriendOnboarding: false,
+	setSeenPodfriendOnboarding: (seen) => {
+		set({
+			seenPodfriendOnboarding: seen
+		});
+	},
 });

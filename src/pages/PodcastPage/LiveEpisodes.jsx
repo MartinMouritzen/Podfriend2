@@ -46,6 +46,10 @@ const LiveItem = ({ podcastData, liveItem }) => {
 		}
 	};
 
+	const onShowLiveOptions = () => {
+
+	};
+
 	return (
 		<div className="liveItem" key={liveItem.title}>
 			<div className="content">
@@ -92,7 +96,9 @@ const LiveItem = ({ podcastData, liveItem }) => {
 						Tune in
 					</IonButton>
 				}
-				<IonButton color="secondary" fill="solid" style={{ float: 'right' }}><IonIcon slot="start" icon={dotsIcon}></IonIcon> Options</IonButton>
+				{ /*
+				<IonButton color="secondary" fill="solid" style={{ float: 'right' }} onClick={onShowLiveOptions}><IonIcon slot="start" icon={dotsIcon}></IonIcon> Options</IonButton>
+				*/ }
 			</div>
 		</div>
 	);

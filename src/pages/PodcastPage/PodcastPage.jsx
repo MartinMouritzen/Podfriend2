@@ -137,8 +137,10 @@ const PodcastPage = ({ match }) => {
 	const refreshPodcast = () => {
 		return retrievePodcastFromServer(podcastPath)
 		.then((podcastDataFromServer) => {
-			setPodcastData(podcastDataFromServer);
-			setPodcastState('loaded');
+			if (podcastDataFromServer !== false) {
+				setPodcastData(podcastDataFromServer);
+				setPodcastState('loaded');
+			}
 		})
 		.catch((error) => {
 			console.log('Error2 fetching podcast in PodcastPage::fetchPodcast: ' + error);
@@ -321,7 +323,7 @@ const PodcastPage = ({ match }) => {
 						{ podcastState === 'loading' &&
 							<IonSkeletonText animated={true} style={{ width: '90vw', height: '90vw', maxWidth: '400px', maxHeight: '400px' }} className="cover"></IonSkeletonText>
 						}
-						{ podcastState === 'loaded' &&
+						{ (podcastState === 'loaded' && podcastData) &&
 							<PodcastImage
 								alt={podcastData.name + ' cover art'}
 								imageErrorText={podcastData.name}
@@ -349,7 +351,7 @@ const PodcastPage = ({ match }) => {
 						}
 						{ (false && podcastState === 'loaded') &&
 							<div className="author">
-								{podcastData.author}
+								{podcastData?.author}
 							</div>
 						}
 						<IonHeader collapse="condense">
@@ -361,7 +363,7 @@ const PodcastPage = ({ match }) => {
 									{ podcastState === 'loaded' &&
 										<>
 										<div className="ion-text-wrap">
-											{podcastData.name}
+											{podcastData?.name}
 											</div>
 										</>
 									}

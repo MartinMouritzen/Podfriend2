@@ -60,7 +60,10 @@ const AudioSpeedSettingModal = ({ onDismiss }) => {
 		// var newValue = sliderValue;
 
 		if (isDraggingSlider) {
-			newValue = dragValue;
+			var newValue = dragValue;
+			if (newValue === false) {
+				return;
+			}
 			
 			if (newValue < 0) {
 				newValue = 0;

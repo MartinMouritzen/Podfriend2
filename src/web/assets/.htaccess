@@ -5,6 +5,9 @@
 DirectoryIndex index.php
 
 RewriteEngine On
+RewriteCond %{HTTP_HOST} ^podfriend.com [NC]
+RewriteRule ^(.*)$ https://www.podfriend.com/$1 [L,R=301]
+
 RewriteRule ^miniplayer - [L,NC] 
 RewriteRule ^fonts - [L,NC] 
 RewriteCond %{REQUEST_FILENAME} !-d

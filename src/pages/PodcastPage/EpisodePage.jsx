@@ -134,7 +134,7 @@ const EpisodePage = ({ match, audioController }) => {
 			audioPlay();
 		}
 		else {
-			playEpisode(podcast.path,podcastData,episode.guid);
+			playEpisode(podcast.path,false,episode.guid);
 		}
 	}
 

@@ -9,7 +9,10 @@ const TrendingPodcasts = ({ backButtonText = false }) => {
 
 	useEffect(() => {
 		refreshTrendingPodcasts()
-		.then(setTrendingPodcasts);
+		.then((newTrendingPodcasts) => {
+			setTrendingPodcasts(newTrendingPodcasts);
+			console.log(newTrendingPodcasts);
+		});
 	},[]);
 
 	return (

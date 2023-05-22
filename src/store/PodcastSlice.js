@@ -635,6 +635,8 @@ export const createPodcastSlice = (set, get) => ({
 		.catch((exception) => {
 			console.log('Fetch error in fetching podcast: ' + podcastPath);
 			console.log(exception);
+
+			return false;
 		});
 	},
 	retrieveOriginalPodcastFeed: (podcastPath,feedUrl,overruleCache = false) => {

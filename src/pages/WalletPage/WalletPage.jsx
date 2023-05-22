@@ -58,9 +58,10 @@ const WalletPage = ({  }) => {
 			openOnboardingModal();
 			updateWalletOnboardingShowed(true);
 		}
-		updateAccountBalance();
-		// updateWalletHistory();
-		synchronizeLegacyWallet();
+		if (walletSetupCompleted) {
+			updateAccountBalance();
+		}
+		// synchronizeLegacyWallet();
 	},[walletOnboardingShowed]);
 
 	const onBeginConnectWallet = () => {
@@ -103,7 +104,7 @@ const WalletPage = ({  }) => {
 					<div className="creditCardContainer">
 						<CreditCard walletBalance={walletBalance} username={walletSetupCompleted ? userData?.username : 'Wallet not connected yet'} />
 					</div>
-					{ legacyWalletBalance > 0 &&
+					{ (false && legacyWalletBalance > 0) &&
 						<div className="legacyContainer">
 							<div className="legacyNotice">
 								<div className="iconContainer">

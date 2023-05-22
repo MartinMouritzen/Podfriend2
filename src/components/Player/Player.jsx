@@ -60,6 +60,9 @@ const Player = ({ audioController, navigateToPath, platform }) => {
 	const audioElement = useRef(null);
 	const scrollChild = useRef(null);
 
+	const loggedIn = useStore((state) => state.loggedIn);
+	const walletSetupCompleted = useStore((state) => state.walletSetupCompleted);
+
 	const activePodcastPath = useStore((state) => state.activePodcastPath);
 	const activeEpisodeGuid = useStore((state) => state.activeEpisodeGuid);
 
@@ -329,6 +332,14 @@ const Player = ({ audioController, navigateToPath, platform }) => {
 	},[activeEpisodeGuid]);
 
 	useEffect(() => {
+		if (playingValuePodcast) {
+			console.log('playing value podcast');
+			console.log(activePodcast.value);
+			console.log(activeEpisode);
+		}
+	},[playingValuePodcast]);
+
+	useEffect(() => {
 		setPlayingValuePodcast(false);
 		if (activePodcast) {
 			if (activePodcast.value) {
@@ -458,6 +469,7 @@ const Player = ({ audioController, navigateToPath, platform }) => {
 						action: 'playbackSpeed'
 					}
 				},
+				/*
 				{
 					text: 'Set sleep timer',
 					icon: alarmIcon,
@@ -465,6 +477,7 @@ const Player = ({ audioController, navigateToPath, platform }) => {
 						action: 'sleepTimer'
 					}
 				},
+				*/
 				{
 					text: 'Share episode',
 					icon: shareIcon,
@@ -665,7 +678,7 @@ const Player = ({ audioController, navigateToPath, platform }) => {
 							{ transcriptData &&
 								<TranscriptLiveArea rssFeedContents={rssFeedContents} rssFeedCurrentEpisode={rssFeedCurrentEpisode} transcriptData={transcriptData} currentTime={episodeState.currentTime} podcast={activePodcast} chapters={chapters} setCurrentTime={setCurrentTime} />
 							}
-							{ playingValuePodcast &&
+							{ (playingValuePodcast && loggedIn && walletSetupCompleted) &&
 								<BoostButton />
 							}
 							{ false &&

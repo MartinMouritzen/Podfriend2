@@ -83,6 +83,8 @@
 
 		max-width: 600px;
 
+		margin-bottom: 0px;
+
 		overflow: hidden;
 		display: -webkit-box;
 		-webkit-line-clamp: 2;
@@ -107,7 +109,7 @@
 	.playAndProgress {
 		display: flex;
 
-		margin-top: 10px;
+		margin-top: 8px;
 		align-items: center;
 
 		.playButton, .pauseButton {
@@ -166,7 +168,7 @@
 	}
 	.description {
 		display: -webkit-box;
-		-webkit-line-clamp: 2;
+		-webkit-line-clamp: 3;
 		-webkit-box-orient: vertical; 
 		text-overflow: ellipsis;
 		overflow: hidden;
@@ -227,8 +229,8 @@
 			--padding-end: 0px;
 			
 			.cover, .coverLoading {
-				width: 115px !important;
-				height: 115px !important;
+				width: 130px !important;
+				height: 130px !important;
 			}
 		}
 		&.selected {

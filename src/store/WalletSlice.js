@@ -24,9 +24,21 @@ export const createWalletSlice = (set,get) => ({
 				'Authorization': `Bearer ${get().authToken}`
 			}
 		})
-		.then((resp) => {
-			return resp.text();
-			return resp.json();
+		.then((response) => {
+			if (response.ok) {
+				console.log(response);
+				return response.json();
+			}
+			else {
+				console.log('Error happened while removing authtokens.');
+				console.log(response);
+				response.text()
+				.then((errorText) => {
+					console.log(errorText);
+				});
+				
+				return Promise.reject(errorText);
+			}
 		})
 		.then((response) => {
 			console.log(response);
@@ -40,7 +52,7 @@ export const createWalletSlice = (set,get) => ({
 			return response;
 		})
 		.catch((exception) => {
-			console.log('Error retrieving wallet token in WalletSlice::exchangeCodeToWalletToken');
+			console.log('Error removing wallet token in WalletSlice::onDisconnectWallet');
 			console.log(tokenURL);
 			console.log(exception);
 
@@ -58,9 +70,20 @@ export const createWalletSlice = (set,get) => ({
 				'Authorization': `Bearer ${get().authToken}`
 			}
 		})
-		.then((resp) => {
-			return resp.json();
-			
+		.then((response) => {
+			if (response.ok) {
+				return response.json();
+			}
+			else {
+				console.log('Error happened while retrieving exchanging code to token.');
+				console.log(response);
+				response.text()
+				.then((errorText) => {
+					console.log(errorText);
+				});
+				
+				return Promise.reject(errorText);
+			}
 		})
 		.then((response) => {
 			set({

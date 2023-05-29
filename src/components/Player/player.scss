@@ -484,6 +484,7 @@
 
 	&.mini {
 		bottom: 71px !important;
+		bottom: max(calc(env(safe-area-inset-bottom) + 61px),71px);
 
 		.playerCoverContainer {
 			min-width: 50px;

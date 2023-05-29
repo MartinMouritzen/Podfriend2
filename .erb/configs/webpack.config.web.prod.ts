@@ -27,7 +27,7 @@ const configuration: webpack.Configuration = {
 	output: {
 		path: webpackPaths.webPath,
 		publicPath: './',
-		filename: 'web.prod.js',
+		filename: 'web.prod.[contenthash].js',
 		library: {
 			type: 'umd',
 		},

@@ -15,6 +15,7 @@ const AccountModal = ({ breakpoint }) => {
 
 	const showingLoginModal = useStore((state) => state.showingLoginModal);
 	const setShowingLoginModal = useStore((state) => state.setShowingLoginModal);
+	const currentModalBackgroundPage = useStore((state) => state.currentModalBackgroundPage);
 	
 	useEffect(() => {
 		setPresentingElement(page.current);
@@ -44,6 +45,7 @@ const AccountModal = ({ breakpoint }) => {
 			initialBreakpoint: breakpoint === 'desktop' ? undefined : 1,
 			breakpoints: breakpoint === 'desktop' ? undefined : [0,1],
 			canDismiss: true,
+			presentingElement: currentModalBackgroundPage,
 			
 			onDidDismiss: (event) => {
 				// setShowingLoginModal(false);

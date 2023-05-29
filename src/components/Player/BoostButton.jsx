@@ -17,6 +17,7 @@ import useBreakpoint from 'use-breakpoint';
 
 import './BoostButton.scss';
 import BoostModal from 'components/Boost/BoostModal';
+import BoostSettingsModal from 'components/Boost/BoostSettingsModal';
 
 const BoostButton = () => {
 	const boostAmount = 500;
@@ -27,11 +28,13 @@ const BoostButton = () => {
 	const boostValue = useStore((state) => state.boostValue);
 	const activePodcast = useStore((state) => state.activePodcast);
 
+	const defaultBoostAmount = useStore((state) => state.defaultBoostAmount);
+
 	const { breakpoint } = useBreakpoint(BREAKPOINTS, 'desktop');
 
 	const onBoost = () => {
 		// valueBlock,totalAmount,overrideDestinations = false,senderName = false,message = false
-		boostValue(activePodcast.value,10,false,userData.username)
+		boostValue(activePodcast.value,defaultBoostAmount,false,userData.username)
 		.then((result) => {
 			console.log(result);
 			reward();
@@ -68,6 +71,9 @@ const BoostButton = () => {
 	const [present, dismiss] = useIonModal(BoostModal, {
 		onDismiss: (data, role) => dismiss(data, role),
 	});
+	const [boostSettingsPresent, boostSettingsDismiss] = useIonModal(BoostSettingsModal, {
+		onDismiss: (data, role) => boostSettingsDismiss(data, role),
+	});
 
 	const openBoostModal = () => {
 		present({
@@ -82,15 +88,25 @@ const BoostButton = () => {
 		});
 	};
 
+	const onConfigure = () => {
+		boostSettingsPresent({
+			backdropBreakpoint: 0.3,
+			backdropDismiss: true,
+			initialBreakpoint: breakpoint === 'desktop' ? undefined : 0.4,
+			breakpoints: breakpoint === 'desktop' ? undefined : [0,0.4,1],
+			canDismiss: true,
+			onWillDismiss: (event) => {
+			  
+			},
+		});
+	};
+
 	return (
 		<div className="boostButtonContainer">
-			<div className="filler">
-				&nbsp;
-			</div>
 			<div className="boostButtonDiv">
 				<div id="rewardButton">
 					<div className="boostButton">
-						<div className="buttonPrimaryAction" onClick={onBoost} {...longPressBind()} onMouseDown={onBoostDown} onMouseUp={onBoostUp} onTouchStart={onBoostDown} onTouchEnd={onBoostUp}>
+						<div className="buttonPrimaryAction" onClick={openBoostModal} onMouseDown={onBoostDown} onMouseUp={onBoostUp} onTouchStart={onBoostDown} onTouchEnd={onBoostUp}>
 							{ isBoosting &&
 								<>
 									<IonSpinner /> Boosting
@@ -98,22 +114,16 @@ const BoostButton = () => {
 							}
 							{ !isBoosting &&
 								<>
-									<IonIcon icon={boostIcon} slot="start" />
-									Boost
+										<IonIcon icon={boostIcon} slot="start" />
+									Boost {defaultBoostAmount.toLocaleString()}
 								</>
 							}
 						</div>
-						<div className="buttonSecondaryAction">
+						<div className="buttonSecondaryAction" onClick={onConfigure}>
 							<IonIcon icon={configIcon} className="configIcon" />
 						</div>
 					</div>
 				</div>
-				<div className="infoMessage">
-					Hold to send a Boostagram
-				</div>
-			</div>
-			<div>
-				
 			</div>
 		</div>
 	);

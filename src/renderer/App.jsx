@@ -50,6 +50,7 @@ import AccountModal from 'components/AccountModal/AccountModal';
 import AlbyOauthPage from 'pages/WalletPage/AlbyOauthPage';
 import ContactPage from 'pages/ContactPage/ContactPage';
 import LoadingScreen from 'components/UI/LoadingScreen';
+import UserProfilePage from 'pages/UserProfilePage/UserProfilePage';
 
 setupIonicReact({
 	mode: 'ios',
@@ -123,29 +124,36 @@ export default function App({ platform, audioController, desktop = false }) {
 
 	const routes = [
 		<Route path="/" exact={true} render={(props) => <Home {...props} />} />,
+
+		<Route path="/categories/:categoryKey/" render={(props) => <CategoryPage {...props} />} />,
+		<Route path="/collections/" render={(props) => <Home {...props} />} />,
 		<Route path="/contact/" render={(props) => <ContactPage {...props} />} />,
 		<Route path="/discover/" render={(props) => <DiscoverPage {...props} />} />,
 		<Route path="/favorites/" render={(props) => <FavoritePage {...props} />} />,
-		<Route path="/playlist/" render={(props) => <Home {...props} />} />,
-		<Route path="/collections/" render={(props) => <Home {...props} />} />,
-		<Route path="/wallet/" exact={true} render={(props) => <WalletPage {...props} />} />,
-		<Route path="/wallet/history/" exact={true}  render={(props) => <WalletHistoryPage {...props} />} />,
 		<Route path="/oauth/alby" render={(props) => <AlbyOauthPage {...props} />} />,
-		<Route path="/search/:searchQuery?" render={(props) => <SearchPage {...props} />} />,
+		<Route path="/playlist/" render={(props) => <Home {...props} />} />,
+
 		<Route exact={true} path="/podcast/:podcastPath/" render={(props) => <PodcastPage {...props} />} />,
 		<Route exact={true} path="/podcast/:podcastPath/reviews/" render={(props) => <ReviewPage {...props} />} />,
 		<Route exact={true} path="/podcast/:podcastPath/episode/:episodeId/" render={(props) => <EpisodePage audioController={audioController} navigateToPath={navigateToPath} {...props} />} />,
-		<Route path="/categories/:categoryKey/" render={(props) => <CategoryPage {...props} />} />,
+
+		<Route path="/search/:searchQuery?" render={(props) => <SearchPage {...props} />} />,
+
+		<Route exact={true} path="/user/:userName/" render={(props) => <UserProfilePage {...props} />} />,
+
+		<Route path="/wallet/" exact={true} render={(props) => <WalletPage {...props} />} />,
+		<Route path="/wallet/history/" exact={true}  render={(props) => <WalletHistoryPage {...props} />} />,
+
 		<Redirect exact={true} from="/home/" to="/" />,
 		<Redirect exact={true} from="/index.html" to="/" />
+
 	].map((Route, index) => ({ ...Route, key: index }));
 
 	return (
 		<RouterUsed ref={router}>
 			<IonApp className={'platform_' + platform}>
-				{ !readyToShow &&
-					<LoadingScreen />
-				}
+
+					<LoadingScreen hasLoaded={readyToShow} />
 				{ readyToShow &&
 					<>
 						{ platform === 'desktop' &&

@@ -99,7 +99,7 @@ class PodcastUtil {
 	/**
 	*
 	**/
-	static parseEpisodes(episodes) {
+	static parseEpisodes(podcastData,episodes) {
 		if (Array.isArray(episodes)) {
 			let seasonCount = 0;
 			let rawSeasons = [];

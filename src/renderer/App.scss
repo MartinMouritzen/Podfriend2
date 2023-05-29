@@ -123,6 +123,19 @@ ion-content {
 	--background: #f0f2f5;
 }
 */
+
+.loadingScreen {
+	
+}
+.loadingScreenLoaded {
+	animation: circle 2s normal forwards ease-in-out;
+}
+@keyframes circle {
+	0% { clip-path: circle(100%); }
+	50% { clip-path: circle(50%); }
+	100% { clip-path: circle(0%); }
+}
+
 .contentCard {
 	background-color: #FFFFFF;
 	
@@ -261,8 +274,9 @@ ion-split-pane {
 .header-background {
 	display: none;
 }
+
 .bottomTabs {
-	padding-bottom: 10px;
+	padding-bottom: max(env(safe-area-inset-bottom),10px);
 	padding-top: 10px;
 }
 ion-split-pane {

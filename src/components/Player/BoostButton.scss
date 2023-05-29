@@ -4,7 +4,8 @@
 	align-items: start;
 	text-align: center;
 
-	width: 260px;
+	min-width: 260px;
+	margin-bottom: 10px;
 
 	.infoMessage {
 		margin-top: 2px;

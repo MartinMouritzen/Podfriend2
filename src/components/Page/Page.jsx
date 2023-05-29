@@ -75,7 +75,7 @@ function useHookWithRefCallback(setScrollableContentRef = false) {
 	return [setRef]
 }
 
-const Page = ({ id = null, title = "Undefined", defaultHeader = true, defaultHref = '/', showBackButton = true, backButtonText = "back", className = "", children, setScrollableContentRef = false, onRefresh = false}) => {
+const Page = ({ id = null, title = "Undefined", defaultHeader = true, defaultHref = '/', showBackButton = true, backButtonText = "back", className = "", children, setScrollableContentRef = false, onRefresh = false, setCurrentPage = false}) => {
 	const { breakpoint, maxWidth, minWidth } = useBreakpoint(BREAKPOINTS, 'desktop');
 	const location = useLocation();
 
@@ -96,6 +96,8 @@ const Page = ({ id = null, title = "Undefined", defaultHeader = true, defaultHre
 	const modalString = "open-account-modal";
 	const [ contentNodeRef ] = useHookWithRefCallback(setScrollableContentRef);
 
+	const ionPageRef = useRef(null);
+
 	/*
 	useEffect(() => {
 		if (contentRef && contentRef.current) {
@@ -114,12 +116,12 @@ const Page = ({ id = null, title = "Undefined", defaultHeader = true, defaultHre
 	*/
 
 	return (
-		<IonPage id={id} className={className}>
+		<IonPage id={id} className={className} ref={ionPageRef}>
 			<IonHeader translucent="false" className="mainHeader">
 				<IonToolbar className="mainToolbar">
 					<IonButtons slot="start" className="ionButtons">
 						{ showBackButton &&
-							<IonBackButton defaultHref={defaultHref} text={backButtonText} />
+							<IonBackButton defaultHref={defaultHref} text={breakpoint === 'desktop' ? backButtonText : 'Back'} />
 						}
 					</IonButtons>
 					<IonTitle>{title}</IonTitle>

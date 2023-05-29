@@ -102,6 +102,8 @@ const Player = ({ audioController, navigateToPath, platform }) => {
 
 	const changeActiveEpisode = useStore((state) => state.changeActiveEpisode);
 
+	const processValueTimeSplit = useStore((state) => state.processValueTimeSplit);
+
 	const [playingValuePodcast,setPlayingValuePodcast] = useState(false);
 
 	const [isVideo,setIsVideo] = useState(false);
@@ -332,15 +334,8 @@ const Player = ({ audioController, navigateToPath, platform }) => {
 	},[activeEpisodeGuid]);
 
 	useEffect(() => {
-		if (playingValuePodcast) {
-			console.log('playing value podcast');
-			console.log(activePodcast.value);
-			console.log(activeEpisode);
-		}
-	},[playingValuePodcast]);
-
-	useEffect(() => {
 		setPlayingValuePodcast(false);
+		processValueTimeSplit(false);
 		if (activePodcast) {
 			if (activePodcast.value) {
 				console.log('playingValuePodcast');
@@ -373,6 +368,11 @@ const Player = ({ audioController, navigateToPath, platform }) => {
 	},[JSON.stringify(rssFeedContents)]);
 
 	useEffect(() => {
+		if (rssFeedCurrentEpisode && rssFeedCurrentEpisode.value) {
+			if (rssFeedCurrentEpisode.value['podcast:valueTimeSplit']) {
+				processValueTimeSplit(rssFeedCurrentEpisode.value['podcast:valueTimeSplit']);
+			}
+		}
 		if (rssFeedCurrentEpisode && rssFeedCurrentEpisode.chaptersUrl) {
 			PodcastUtil.loadChapters(rssFeedCurrentEpisode.chaptersUrl)
 			.then((chapters) => {

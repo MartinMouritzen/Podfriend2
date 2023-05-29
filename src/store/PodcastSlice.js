@@ -25,6 +25,8 @@ export const createPodcastSlice = (set, get) => ({
 			console.log(podcast);
 			return;
 		}
+		podcast.receivedFromServer = new Date();
+		podcast.receivedFromServerText = podcast.receivedFromServer.toString();
 		ClientStorage.setItem('podcast_cache_' + path,podcast);
 	},
 	/**********************************************************************************
@@ -491,51 +493,70 @@ export const createPodcastSlice = (set, get) => ({
 		return shouldUpdate;
 	},
 	__managePodcastResults: (data,podcastPath,isSyncedPodcast = false) => {
-			// console.log('Received new version of: ' + data.name);
+		// console.log('Received new version of: ' + data.name);
 
-			if (!isSyncedPodcast) {
-				data.receivedFromServer = new Date();
-				data.receivedFromServerText = data.receivedFromServer.toString();
-			}
+		if (!isSyncedPodcast) {
+			data.receivedFromServer = new Date();
+			data.receivedFromServerText = data.receivedFromServer.toString();
+		}
 
-			data.safeDescription = DOMPurify.sanitize(data.description, {
-				ALLOWED_TAGS: [
-					'p','br','ol','ul','li','b','a'
-				  ]
-			});
-			data.descriptionNoHTML = DOMPurify.sanitize(data.description, {
-				ALLOWED_TAGS: [
-					
+		data.safeDescription = DOMPurify.sanitize(data.description, {
+			ALLOWED_TAGS: [
+				'p','br','ol','ul','li','b','a'
 				]
-			});
+		});
+		data.descriptionNoHTML = DOMPurify.sanitize(data.description, {
+			ALLOWED_TAGS: [
+				
+			]
+		});
 
-			if (data && data.episodes) {
-				for (var i=0;i<data.episodes.length;i++) {
-					if (!data.episodes[i].descriptionNoHTML && data.episodes[i].description) {
-						data.episodes[i].descriptionNoHTML = DOMPurify.sanitize(data.episodes[i].description, {
-							ALLOWED_TAGS: [
-								
-							  ]
-						});
-					}
-					if (!data.episodes[i].safeDescription && data.episodes[i].description) {
-						data.episodes[i].safeDescription = DOMPurify.sanitize(data.episodes[i].description, {
-							ALLOWED_TAGS: [
-								'p','br','ol','ul','li','b','a','strong'
-							  ]
-						});
-					}
+		if (data && data.episodes) {
+			for (var i=0;i<data.episodes.length;i++) {
+				if (!data.episodes[i].descriptionNoHTML && data.episodes[i].description) {
+					data.episodes[i].descriptionNoHTML = DOMPurify.sanitize(data.episodes[i].description, {
+						ALLOWED_TAGS: [
+							
+							]
+					});
+				}
+				if (!data.episodes[i].safeDescription && data.episodes[i].description) {
+					data.episodes[i].safeDescription = DOMPurify.sanitize(data.episodes[i].description, {
+						ALLOWED_TAGS: [
+							'p','br','ol','ul','li','b','a','strong'
+							]
+					});
 				}
 			}
-			return data;
+		}
+		return data;
 	},
 	retrievePodcastByGuid: async(guids) => {
 		const byGuidUrl = `https://api.podfriend.com/podcasts/byguid/${guids}`;
 
 		try {
-			let rawResults = await fetch(byGuidUrl);
-			let results = await rawResults.json();
+			let results;
+			var cache = await ClientStorage.getItem(byGuidUrl);
+			var shouldRefresh = true;
+			if (cache && cache.cachedTime) {
+				var secondsSinceLastUpdate = Math.floor((Math.abs(new Date() - new Date(cache.cachedTime)) / 1000));
 
+				if (secondsSinceLastUpdate < 600) {
+					shouldRefresh = false;
+				}
+			}
+			if (shouldRefresh) {
+				console.log('Refreshing podcast by guid');
+				let rawResults = await fetch(byGuidUrl);
+				results = await rawResults.json();
+				results.cachedTime = new Date();
+
+				ClientStorage.setItem(byGuidUrl,results);
+			}
+			else {
+				console.log('Using cache in retrievepodcastbyguid');
+				results = cache;
+			}
 			return results;
 		}
 		catch(exception) {
@@ -559,15 +580,18 @@ export const createPodcastSlice = (set, get) => ({
 	},
 	__updatePodcastState: (podcastPath,podcastData,podcastState,stateAttributes = false) => {
 		var seasonType = podcastState?.seasonType;
-		var sortOrder = podcastState?.sortOrder
-;
-		if (!podcastState || !podcastState.seasonType) {
-			let episodeInfo = PodcastUtil.parseEpisodes(podcastData.episodes);
+		var sortOrder = podcastState?.sortOrder;
 
-			seasonType = episodeInfo.podcastSeasonType;
+		if (!podcastState || !podcastState.seasonType) {
+			let episodeInfo = PodcastUtil.parseEpisodes(podcastData,podcastData.episodes);
+			if (episodeInfo) {
+				seasonType = episodeInfo.podcastSeasonType;
+			}
 		}
 		if (!podcastState || !podcastState.sortOrder) {
-			sortOrder = seasonType === 'season' ? 'old' : 'new';
+			if (typeof seasonType !== 'undefined') {
+				sortOrder = seasonType == 'season' ? 'old' : 'new';
+			}
 		}
 
 		set(
@@ -583,8 +607,12 @@ export const createPodcastSlice = (set, get) => ({
 				state.podcasts[podcastPath].image = podcastData.artworkUrl600 ? podcastData.artworkUrl600 : podcastData.image;
 				state.podcasts[podcastPath].categories = podcastData.categories;
 				state.podcasts[podcastPath].lastUpdated = new Date();
-				state.podcasts[podcastPath].seasonType = seasonType;
-				state.podcasts[podcastPath].sortOrder = sortOrder;
+				if (seasonType) {
+					state.podcasts[podcastPath].seasonType = seasonType;
+				}
+				if (sortOrder) {
+					state.podcasts[podcastPath].sortOrder = sortOrder;
+				}
 				if (stateAttributes) {
 					for (const [key,value] of Object.entries(stateAttributes)) {
 						if (!state.podcasts[podcastPath][key]) {
@@ -645,7 +673,8 @@ export const createPodcastSlice = (set, get) => ({
 
 		return ClientStorage.getItem('podcast_rssfeed_cache_' + podcastPath)
 		.then((rssFeedCache) => {
-			var lastRSSFeedUpdate = get().podcasts[podcastPath].lastRSSFeedUpdate;
+			var podcastState = get().podcasts[podcastPath];
+			var lastRSSFeedUpdate = podcastState ? podcastState.lastRSSFeedUpdate : false;
 
 			if (overruleCache || !lastRSSFeedUpdate || !rssFeedCache) {
 				console.log('Original RSS not cached');
@@ -680,6 +709,9 @@ export const createPodcastSlice = (set, get) => ({
 
 						set(
 							produce((state) => {
+								if (!state.podcasts[podcastPath]) {
+									state.podcasts[podcastPath] = {};
+								}
 								state.podcasts[podcastPath].lastRSSFeedUpdate = new Date();
 							})
 						)

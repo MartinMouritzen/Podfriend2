@@ -320,7 +320,7 @@ const PodcastPage = ({ match }) => {
 			<div className="podcastPageContent">
 				<div className="podcastHeader">
 					<div className="coverHolder">
-						{ podcastState === 'loading' &&
+						{ (podcastState === 'loading' || !podcastData) &&
 							<IonSkeletonText animated={true} style={{ width: '90vw', height: '90vw', maxWidth: '400px', maxHeight: '400px' }} className="cover"></IonSkeletonText>
 						}
 						{ (podcastState === 'loaded' && podcastData) &&

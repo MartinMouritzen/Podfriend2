@@ -48,10 +48,7 @@ const ContinueListening = ({ backButtonText = false }) => {
 				nextEl: '.swiper-button-next',
 				prevEl: '.swiper-button-prev',
 			}}
-			pagination={{
-				clickable: true,
-			}}
-			modules={[Navigation, Pagination]}
+			modules={[Navigation]}
 
 			className="coverSwiper"
 		>

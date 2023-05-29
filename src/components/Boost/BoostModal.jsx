@@ -17,8 +17,9 @@ const BoostModal = ({ onDismiss }) => {
 	const boostValue = useStore((state) => state.boostValue);
 	const activePodcast = useStore((state) => state.activePodcast);
 	const isBoosting = useStore((state) => state.isBoosting);
+	const defaultBoostAmount = useStore((state) => state.defaultBoostAmount);
 
-	const [boostAmount,setBoostAmount] = useState(500);
+	const [boostAmount,setBoostAmount] = useState(defaultBoostAmount);
 	const [name,setName] = useState(userData.username ? userData.username : '');
 	const [message,setMessage] = useState('');
 
@@ -59,7 +60,7 @@ const BoostModal = ({ onDismiss }) => {
 		<IonPage>
 			<IonHeader>
 				<IonToolbar>
-					<IonTitle>Boostagram</IonTitle>
+					<IonTitle>Boostagram to {activePodcast.name}</IonTitle>
 				</IonToolbar>
 			</IonHeader>
 			<IonContent className="greyPage">
@@ -81,13 +82,13 @@ const BoostModal = ({ onDismiss }) => {
 				<IonButton expand="block" onClick={onBoost}>
 						{ isBoosting &&
 							<>
-								<IonSpinner /> Boosting {boostAmount}
+								<IonSpinner /> Boosting {Number(boostAmount).toLocaleString()}
 							</>
 						}
 						{ !isBoosting &&
 							<>
 								<IonIcon icon={boostIcon} slot="start" />
-								Boost {boostAmount}
+								Boost {Number(boostAmount).toLocaleString()}
 							</>
 						}
 					</IonButton>
@@ -98,18 +99,3 @@ const BoostModal = ({ onDismiss }) => {
 	);
 };
 export default BoostModal;
-/*
-					<IonButton expand="block" onClick="onBoost">
-						{ isBoosting &&
-							<>
-								<IonSpinner /> Boosting {boostAmount}
-							</>
-						}
-						{ !isBoosting &&
-							<>
-								<IonIcon icon={boostIcon} slot="start" />
-								Boost {boostAmount}
-							</>
-						}
-					</IonButton>
-					*/

@@ -165,7 +165,7 @@ const ContactPage = () => {
 											}
 											<IonItem>
 												<IonLabel position="floating">Your message</IonLabel>
-												<IonTextarea autoGrow={true} onIonChange={onMessageChange} onIonChange={setMessage} enterkeyhint="send" />
+												<IonTextarea autoGrow={true} onIonChange={onMessageChange} enterkeyhint="send" />
 											</IonItem>
 										</IonList>
 										<div style={{ marginTop: 20 }}>

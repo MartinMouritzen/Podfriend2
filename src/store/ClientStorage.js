@@ -1,6 +1,9 @@
 import localForage from "localforage";
 
 class ClientStorage {
+	/**
+	*
+	*/
 	static getPodcast(podcastPath) {
 		return this.getItem('podcast_cache_' + podcastPath);
 	}

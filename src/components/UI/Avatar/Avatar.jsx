@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 
 var randomColor = require('randomcolor');
 
-const Avatar = ({ userName, userGuid }) => {
+const Avatar = ({ userName, userGuid, width = 45, height = 45 }) => {
 	const [imageState,setImageState] = useState('loading');
 
 	const avatarRandomColor = randomColor({
@@ -29,8 +29,8 @@ const Avatar = ({ userName, userGuid }) => {
 		<>
 			{ imageState === 'loading' || imageState === 'error' &&
 				<div style={{
-					width: '45px',
-					height: '45px',
+					width: width,
+					height: height,
 					overflow: 'hidden',
 					borderRadius: '50%',
 					backgroundColor: avatarRandomColor
@@ -42,8 +42,8 @@ const Avatar = ({ userName, userGuid }) => {
 				<img
 					src={'https://api.podfriend.com/user/avatar/' + userGuid + '.jpg'}
 					style={{
-						width: '45px',
-						height: '45px',
+						width: width,
+						height: height,
 						borderRadius: '50%'
 					}}
 				/>

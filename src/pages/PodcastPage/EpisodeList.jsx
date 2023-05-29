@@ -15,6 +15,7 @@ const EpisodeList = ({ podcastData, podcastPath, episodes, showNumberOfEpisodes 
 
 	const selectedSeason = useStore((state) => state.podcasts[podcastPath] ? state.podcasts[podcastPath].selectedSeason : undefined);
 	const sortOrder = useStore((state) => state.podcasts[podcastPath] ? state.podcasts[podcastPath].sortOrder : undefined);
+	console.log(sortOrder);
 
 	const episodeCountShowMoreTrigger = 20;
 
@@ -67,6 +68,7 @@ const EpisodeList = ({ podcastData, podcastPath, episodes, showNumberOfEpisodes 
 			shouldUpdateConfig = true;
 		}
 		if (shouldUpdateConfig) {
+			console.log(sortOrder);
 			updatePodcastAttributes(podcastPath,{
 				selectedSeason: selectedSeason ? selectedSeason : seasonNumbers ? seasonNumbers[seasonNumbers.length - 1] : undefined,
 				sortOrder: sortOrder ? sortOrder : seasonCount > 1 ? 'old' : 'new'

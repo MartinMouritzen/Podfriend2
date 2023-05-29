@@ -1,5 +1,5 @@
 .onboardingSwiper {
-	height: 100%;
+	
 	.swiper-slide {
 
 		.onboardingContent {
@@ -23,10 +23,6 @@
 
 				img {
 					max-height: 35vh;
-					/*
-					-webkit-filter: drop-shadow(5px 5px 5px rgba(0,0,0,0.4));
-					filter: drop-shadow(5px 5px 5px rgba(0,0,0,0.4));
-					*/
 				}
 				@media (min-height: 390px) {
 

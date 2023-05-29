@@ -182,6 +182,16 @@ export const createWalletSlice = (set,get) => ({
 	},
 	defaultStreamAmount: 20,
 	defaultBoostAmount: 1000,
+	setDefaultStreamAmount: (newAmount) => {
+		set({
+			defaultStreamAmount: Number(newAmount)
+		});
+	},
+	setDefaultBoostAmount: (newAmount) => {
+		set({
+			defaultBoostAmount: Number(newAmount)
+		});
+	},
 	streamValue: () => {
 		var activePodcast = get().activePodcast;
 		var podcastState = get().podcasts[activePodcast.path];
@@ -211,15 +221,24 @@ export const createWalletSlice = (set,get) => ({
 
 				const activePodcast = get().activePodcast;
 				const activeEpisode = get().activeEpisode;
-				
 				const episodeState = get().podcasts[activePodcast.path]?.episodes[activeEpisode.guid];
 
-				var debug = false;
-				var async = true;
-				if (debug) {
-					async = false;
-					// totalAmount = 10;
+				var currentTime = episodeState ? episodeState.currentTime : false;
+
+				var currentValueTimeSplits = get().currentValueTimeSplits;
+				if (currentValueTimeSplits) {
+					// console.log(currentValueTimeSplits);
+					for(var i=0;i<currentValueTimeSplits.length;i++) {
+						if (currentTime >= currentValueTimeSplits[i].startTime && currentTime <= currentValueTimeSplits[i].endTime) {
+							console.log('Woohoo, found a currentValueTimeSplit that matches the current time.');
+							console.log(currentValueTimeSplits[i].value);
+							console.log(valueBlock.destinations);
+							overrideDestinations = currentValueTimeSplits[i].value;
+						}
+					}
 				}
+
+				var debug = false;
 
 				var podcastInfo = {
 					name: activePodcast.name,
@@ -230,7 +249,7 @@ export const createWalletSlice = (set,get) => ({
 					episodeName: activeEpisode.title,
 					episodeGuid: activeEpisode.guid,
 					episodeId: activeEpisode.id,
-					currentTime: episodeState ? episodeState.currentTime : false
+					currentTime: currentTime
 				};
 
 				// console.log(podcastInfo);
@@ -284,6 +303,68 @@ export const createWalletSlice = (set,get) => ({
 				console.log('WalletSlice::sendValue error: Unrecognized method or invalid destinations.');
 			}
 		});
+	},
+	/*********************************
+	* Time splits
+	*********************************/
+	currentValueTimeSplits: false,
+	processValueTimeSplit: async (timeSplits) => {
+		set({
+			currentValueTimeSplits: false
+		});
+		if (timeSplits) {
+			console.log('timesplits exists');
+			console.log(timeSplits);
+
+			var newTimeSplits = [];
+
+			for(var i=0;i<timeSplits.length;i++) {
+				var timeSplit = timeSplits[i];
+
+				var newTimeSplit = {
+					startTime: parseInt(timeSplit.startTime),
+					endTime: parseInt(timeSplit.startTime) + parseInt(timeSplit.duration),
+					duration: parseInt(timeSplit.duration)
+				};
+				console.log('foreach timesplit');
+				if (timeSplit['podcast:remoteItem'] && timeSplit['podcast:remoteItem'].feedGuid) {
+					var podcastInformation = await get().retrievePodcastByGuid(timeSplit['podcast:remoteItem'].feedGuid)
+					if (podcastInformation) {
+						podcastInformation = podcastInformation[0];
+						if (timeSplit['podcast:remoteItem'].itemGuid) {
+							console.log('ValueTimeSplit: Using value from episode level');
+							console.log(podcastInformation);
+							var originalFeed = await get().retrieveOriginalPodcastFeed(podcastInformation.path,podcastInformation.url)
+							console.log('ValueTimeSplit: Got original feed ');
+							console.log(originalFeed);
+							if (originalFeed.items && originalFeed.items.forEach) {
+								originalFeed.items.forEach((episode) => {
+									if (episode.guid === timeSplit['podcast:remoteItem'].itemGuid) {
+										console.log('Found value episode');
+										console.log(episode.value);
+
+										newTimeSplit.value = episode.value['podcast:valueRecipient'];
+									}
+								});
+							}
+
+						}
+						else {
+							console.log('ValueTimeSplit: Using value from podcast level');
+							console.log(podcastInformation);
+							newTimeSplit.value = podcastInformation.value;
+						}
+					}
+
+				}
+				newTimeSplits.push(newTimeSplit);
+			}
+			console.log('newTimeSplits');
+			console.log(newTimeSplits);
+			set({
+				currentValueTimeSplits: newTimeSplits
+			});
+		}
 	},
 	/*********************************
 	* Account balance
@@ -437,10 +518,15 @@ export const createWalletSlice = (set,get) => ({
 			var activePodcast = get().activePodcast;
 			var activeEpisode = get().activeEpisode;
 
-			var debug = false;
+			var currentValueTimeSplits = get().currentValueTimeSplits;
 
-			if (debug) {
-				// totalAmount = 10;
+			console.log(currentValueTimeSplits);
+
+			if (currentValueTimeSplits) {
+				
+				for(var i=0;i<currentValueTimeSplits.length;i++) {
+
+				}
 			}
 
 			const valueData = {
@@ -449,7 +535,6 @@ export const createWalletSlice = (set,get) => ({
 				amount: totalAmount,
 				destinations: overrideDestinations ? overrideDestinations : valueBlock.destinations,
 				actionType: actionType,
-				async: async,
 				podcastInfo: {
 					name: activePodcast.name,
 					path: activePodcast.path,
@@ -470,7 +555,7 @@ export const createWalletSlice = (set,get) => ({
 			}
 			// console.log(valueData);
 
-			const walletInvoiceURL = 'https://api.podfriend.com/user/wallet/keysend/' + (debug ? '?debug=true' : '');
+			const walletInvoiceURL = 'https://api.podfriend.com/user/wallet/keysend/' + (false ? '?debug=true' : '');
 			return fetch(walletInvoiceURL, {
 				method: "POST",
 				headers: {

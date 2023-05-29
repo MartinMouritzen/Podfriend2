@@ -32,7 +32,7 @@ import './EpisodePage.scss';
 
 const EpisodePage = ({ match, audioController }) => {
 	const podcastPath = match.params.podcastPath;
-	const episodeId = match.params.episodeId;
+	const episodeId = decodeURIComponent(match.params.episodeId);
 
 	const [episode,setEpisode] = useState(false);
 	const [podcast,setPodcast] = useState(false);

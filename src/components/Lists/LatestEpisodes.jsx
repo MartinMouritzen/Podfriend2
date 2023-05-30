@@ -22,7 +22,6 @@ import { Navigation, Pagination } from "swiper";
 
 const LatestEpisodes = ({ backButtonText = false }) => {
 	const followedPodcasts = useStore((state) => state.followedPodcasts);
-	const retrieveLatestEpisodes = useStore((state) => state.retrieveLatestEpisodes);
 
 	const activeEpisode = useStore((state) => state.activeEpisode);
 
@@ -47,25 +46,6 @@ const LatestEpisodes = ({ backButtonText = false }) => {
 	const onPause = () => {
 		audioPause();
 	};
-
-	useEffect(() => {
-		if (loggedIn) {
-			retrieveLatestEpisodes()
-			.catch((exception) => {
-				console.log('Error happened when retrieving latest episodes');
-				console.log(exception);
-			});
-			/*
-			.then((episodes) => {
-				setLatestEpisodes(episodes);
-			})
-			.catch((exception) => {
-				console.log('exception in latestEpisodes');
-				console.log(exception);
-			});
-			*/
-		}
-	},[loggedIn]);
 
 	return (
 		<Swiper

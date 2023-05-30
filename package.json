@@ -35,8 +35,9 @@
 	},
 	"browserslist": [],
 	"dependencies": {
+		"@awesome-cordova-plugins/core": "^6.3.0",
+		"@awesome-cordova-plugins/in-app-browser": "^6.3.0",
 		"@capacitor/android": "4.0.1",
-		"@capacitor/browser": "^4.1.1",
 		"@capacitor/core": "^4.0.1",
 		"@capacitor/device": "^4.1.0",
 		"@capacitor/ios": "4.0.1",
@@ -44,6 +45,7 @@
 		"@ionic/react": "^6.2.1",
 		"@ionic/react-router": "^6.2.1",
 		"@ungap/structured-clone": "^1.0.2",
+		"cordova-plugin-inappbrowser": "^5.0.0",
 		"date-fns": "^2.29.3",
 		"dompurify": "^2.4.3",
 		"electron-debug": "^3.2.0",

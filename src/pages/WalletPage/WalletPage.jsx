@@ -1,6 +1,6 @@
 import Page from "components/Page/Page";
 
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useState } from 'react';
 
 import useStore from 'store/Store';
 
@@ -16,7 +16,8 @@ import {
 	alertCircleOutline as noticeIcon
 } from 'ionicons/icons';
 
-import { Browser } from '@capacitor/browser';
+// import { Browser } from '@capacitor/browser';
+import { InAppBrowser } from '@awesome-cordova-plugins/in-app-browser';
 
 import './WalletPage.scss';
 import WalletOnboardingModal from "components/Wallet/WalletOnboardingModal";
@@ -35,9 +36,12 @@ const WalletPage = ({  }) => {
 	const updateWalletOnboardingShowed = useStore((state) => state.updateWalletOnboardingShowed);
 	const legacyWalletBalance = useStore((state) => state.legacyWalletBalance);
 	const synchronizeLegacyWallet = useStore((state) => state.synchronizeLegacyWallet);
+	const exchangeCodeToWalletToken = useStore((state) => state.exchangeCodeToWalletToken);
 	
 	const setShowingLoginModal = useStore((state) => state.setShowingLoginModal);
 	const onDisconnectWallet = useStore((state) => state.onDisconnectWallet);
+
+	const [showSuccessMessage,setShowSuccessMessage] = useState(false);
 
 	// console.log(userData);
 
@@ -65,24 +69,37 @@ const WalletPage = ({  }) => {
 	},[walletOnboardingShowed]);
 
 	const onBeginConnectWallet = () => {
-		var albyOathUrl = 'https://getalby.com/oauth?client_id=QBqT68cVBK&redirect_uri=https%3A%2F%2Fwww.podfriend.com%2Foauth%2Falby%2F&scope=account:read%20invoices:create%20invoices:read%20transactions:read%20balance:read%20payments:send';
-		/*
-		if (process.env.NODE_ENV === 'development') {
-			console.log('Using development Alby address');
-			albyOathUrl = 'https://app.regtest.getalby.com/oauth?client_id=test_client&response_type=code&redirect_uri=http%3A%2F%2Flocalhost:8080%2Foauth%2Falby%2F&scope=account:read%20invoices:create%20invoices:read%20transactions:read%20balance:read%20payments:send';
-		}
-		*/
+		setShowSuccessMessage(false);
+		var albyUrl = 'https://getalby.com/oauth?client_id=QBqT68cVBK&redirect_uri=https%3A%2F%2Fwww.podfriend.com%2Foauth%2Falby%2F&scope=account:read%20invoices:create%20invoices:read%20transactions:read%20balance:read%20payments:send';
 
-		console.log(albyOathUrl);
+		var ref = InAppBrowser.create(albyUrl, '_blank',{
+			location: 'no',
+			hideurlbar: 'yes',
+			toolbarcolor: '#0176E5',
+			footer: 'yes'
 
-		Browser.open({
-			url: albyOathUrl,
-			windowName: '_blank',
-			toolbarColor: '#0176e5'
-		})
-		.then(() => {
-			console.log('Wallet window opened');
 		});
+		var eventObserver = ref.on('loadstart');
+		// This only works on mobile, so we need to check.
+		if (eventObserver) {
+			eventObserver.subscribe((event) => {
+				if (event && event.url) {
+					if (event.url.indexOf('https://www.podfriend.com/oauth/alby/?code=') === 0) {
+    					var code = event.url.substring('https://www.podfriend.com/oauth/alby/?code='.length);
+						ref.close();
+
+						exchangeCodeToWalletToken(code)
+						.then((response) => {
+							setShowSuccessMessage(true);
+						})
+						.catch((error) => {
+							console.log('Error converting code to token on WalletPage');
+							console.log(error);	
+						});
+					}
+				}
+			});
+		}
 	};
 
 	const onLoginClicked = () => {
@@ -90,11 +107,14 @@ const WalletPage = ({  }) => {
 	};
 
 	const addFunds = () => {
-		Browser.open({
-			url: 'https://getalby.com/topup',
-			windowName: '_blank',
-			toolbarColor: '#0176e5'
-		})
+		var albyUrl = 'https://getalby.com/topup';
+		var ref = InAppBrowser.create(albyUrl, '_blank',{
+			location: 'no',
+			hideurlbar: 'yes',
+			toolbarcolor: '#0176E5',
+			footer: 'yes'
+
+		});
 	};
 
 	return (
@@ -134,6 +154,13 @@ const WalletPage = ({  }) => {
 						<IonListHeader>
 							<IonLabel>Your podcast wallet</IonLabel>
 						</IonListHeader>
+						{ showSuccessMessage &&
+							<div className="ion-padding">
+								<IonLabel color="success">
+									Successfully connected your Alby wallet
+								</IonLabel>
+							</div>
+						}
 						{ walletSetupCompleted &&
 							<>
 								<IonItem detail={true} onClick={addFunds}>

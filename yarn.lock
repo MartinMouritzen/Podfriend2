@@ -24,6 +24,20 @@
     jsonpointer "^5.0.0"
     leven "^3.1.0"
 
+"@awesome-cordova-plugins/core@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.yarnpkg.com/@awesome-cordova-plugins/core/-/core-6.3.0.tgz#05460eba56c06f9dce38f573f78bc74818fda321"
+  integrity sha512-MkcWO8akZLHa2RSJEPf76Y3P9wPqh5oXE8YCzn2vnYYeNyYWYnka2pHFsgUdbXJNiS+YeveUzvw+Isweg+wynA==
+  dependencies:
+    "@types/cordova" latest
+
+"@awesome-cordova-plugins/in-app-browser@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.yarnpkg.com/@awesome-cordova-plugins/in-app-browser/-/in-app-browser-6.3.0.tgz#3071255be40157ac83f3cb2f14e3a5fe848856a8"
+  integrity sha512-23x7Kzk2qFNLa8QWIoO84hKMMdqukpX4FJ87Glstj5XA6zSybINsp4o27teEynbUUbERiRfAI0ceqj//xm0THg==
+  dependencies:
+    "@types/cordova" latest
+
 "@babel/code-frame@^7.0.0", "@babel/code-frame@^7.10.4", "@babel/code-frame@^7.12.13", "@babel/code-frame@^7.16.0", "@babel/code-frame@^7.18.6", "@babel/code-frame@^7.21.4", "@babel/code-frame@^7.8.3":
   version "7.21.4"
   resolved "https://registry.npmjs.org/@babel/code-frame/-/code-frame-7.21.4.tgz"
@@ -1088,11 +1102,6 @@
   version "4.0.1"
   resolved "https://registry.npmjs.org/@capacitor/android/-/android-4.0.1.tgz"
   integrity sha512-JXToVdVYe4icOcPG8GOIiRoGSu3zQcZW965o2HUxWC0vQF3Xh0/ntbNL/J1Vf7HODyUkiRnozvzDzn6nWoVQEQ==
-
-"@capacitor/browser@^4.1.1":
-  version "4.1.1"
-  resolved "https://registry.yarnpkg.com/@capacitor/browser/-/browser-4.1.1.tgz#ef7f705bda5c63c5497d4cb3c9108bd6aa9db908"
-  integrity sha512-RJKNeRiLm6X668X75YiPN/9t3z1pxVEPjIhLM/AtWAEsHUb8bjroQQ3WGdW/30Wa60a7ywiw3YLqWctfRaYyFw==
 
 "@capacitor/cli@^4.0.1":
   version "4.0.1"
@@ -2163,6 +2172,11 @@
   integrity sha512-cdeYyv4KWoEgpBISTxWvqYsVy444DOqehiF3fM3ne10AmJ62RSyNkUnxMJXHQWRQQX2eR94m5y1IZyDwBjV9FQ==
   dependencies:
     "@types/node" "*"
+
+"@types/cordova@latest":
+  version "11.0.0"
+  resolved "https://registry.yarnpkg.com/@types/cordova/-/cordova-11.0.0.tgz#9fba2d903ab7181ef0c0a43fb13659a6d02226b3"
+  integrity sha512-AtBm1IAqqXsXszJe6XxuA2iXLhraNCj25p/FHRyikPeW0Z3YfgM6qzWb+VJglJTmZc5lqRNy84cYM/sQI5v6Vw==
 
 "@types/debug@^4.1.6":
   version "4.1.7"
@@ -4091,6 +4105,11 @@ copy-webpack-plugin@^11.0.0:
     normalize-path "^3.0.0"
     schema-utils "^4.0.0"
     serialize-javascript "^6.0.0"
+
+cordova-plugin-inappbrowser@^5.0.0:
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/cordova-plugin-inappbrowser/-/cordova-plugin-inappbrowser-5.0.0.tgz#2f1cf3ebfecf43bdd175a74743ee426832054951"
+  integrity sha512-MqnpmUQ/iy6hxtIGDdlIhy8aNi1pNanLATpbnkk7uCqW9YQ4rH/dGK9zESbZ50pUi2A2D2QMjBXNV175TJK5OQ==
 
 core-js-compat@^3.25.1:
   version "3.30.0"

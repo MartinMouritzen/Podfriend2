@@ -34,65 +34,6 @@ export const createPodcastSlice = (set, get) => ({
 	***********************************************************************************/
 	continueListeningEpisodeListMaxSize: 50,
 	continueListeningEpisodeList: [],
-	addEpisodeToContinueListeningList: (podcast,episode) => {
-		var continueListeningEpisodeList = [...get().continueListeningEpisodeList];
-
-		var podcastToStore = structuredClone(podcast);
-		delete podcastToStore.episodes;
-
-		/*
-		// We only want to store as little as possible
-		var podcastToStore = {
-			path: podcast.path,
-			image: 
-			dateFollowed: new Date()
-		};
-		*/
-
-		continueListeningEpisodeList.unshift({
-			podcastName: podcast.name,
-			podcastPath: podcast.path,
-			dateListened: new Date(),
-			podcast: podcastToStore,
-			episode: episode
-		});
-
-		/*
-		// Debug code that lets us remove if an empty episode has been added
-		for(var i=continueListeningEpisodeList.length - 1;i>=1;i--) {
-			if (!continueListeningEpisodeList[i]) {
-				continueListeningEpisodeList.splice(i,1);
-			}
-		}
-		set({
-			continueListeningEpisodeList: continueListeningEpisodeList
-		});
-		return;
-		*/
-
-		var alreadyExisted = false;
-		for(var i=continueListeningEpisodeList.length - 1;i>=1;i--) {
-			if (continueListeningEpisodeList[i]['episode'].guid == episode.guid) {
-				continueListeningEpisodeList.splice(i,1);
-				alreadyExisted = true;
-			}
-		}
-
-		if (!alreadyExisted && continueListeningEpisodeList.length > get().continueListeningEpisodeListMaxSize) {
-			continueListeningEpisodeList.pop();
-		}
-		set({
-			continueListeningEpisodeList: continueListeningEpisodeList
-		});
-	},
-	deletePodcastFromContinueListeningList: (episodeGuid) => {
-		set(
-			produce((state) => {
-				const index = state.continueListeningEpisodeList.findIndex(continueListeningEpisode => continueListeningEpisode.episodeGuid === episodeGuid);
-				state.continueListeningEpisodeList.splice(index,1);
-			})
-		);
-	},
 	/**********************************************************************************
 	* Favorite settings
 	***********************************************************************************/
@@ -243,6 +184,8 @@ export const createPodcastSlice = (set, get) => ({
 
 				try {
 					console.log('fetching latest episodes');
+					console.log(feedPaths);
+					console.log(followedPodcasts);
 					fetch('https://api.podfriend.com/podcast/episodes/?feedPaths=' + feedPaths.join(',') + '&max=' + max)
 					.then((result) => {
 						return result.json()

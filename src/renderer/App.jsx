@@ -74,7 +74,9 @@ export default function App({ platform, audioController, desktop = false }) {
 	const loggedIn = useStore((state) => state.loggedIn);
 	const setAudioController = useStore((state) => state.setAudioController);
 	const setDesktop = useStore((state) => state.setDesktop);
+
 	const synchronizePodcasts = useStore((state) => state.synchronizePodcasts);
+	const retrieveLatestEpisodes = useStore((state) => state.retrieveLatestEpisodes);
 
 	const authToken = useStore((state) => state.authToken);
 	const authenticateUser = useStore((state) => state.authenticateUser);
@@ -98,7 +100,20 @@ export default function App({ platform, audioController, desktop = false }) {
 	useEffect(() => {
 		if (_hasHydrated && loggedIn) {
 			console.log('synchronizePodcasts();');
-			synchronizePodcasts();
+			synchronizePodcasts()
+			.then(() => {
+				// We do this as step 2, because if the user just logged in, the favorites will be empty until synchronized, and so latest episodes will as well
+				retrieveLatestEpisodes()
+				.catch((exception) => {
+					console.log('Error happened when retrieving latest episodes');
+					console.log(exception);
+				})
+				.then((episodes) => {
+					// setLatestEpisodes(episodes);
+					console.log('Refreshed latest episodes');
+					console.log(episodes);
+				})
+			});
 		}
 	},[loggedIn,_hasHydrated]);
 

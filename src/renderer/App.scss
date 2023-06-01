@@ -276,8 +276,12 @@ ion-split-pane {
 }
 
 .bottomTabs {
-	padding-bottom: max(env(safe-area-inset-bottom),10px);
-	padding-top: 10px;
+	/*
+	@media (any-hover: hover) {
+		padding-bottom: max(env(safe-area-inset-bottom),10px);
+		padding-top: 10px;
+	}
+	*/
 }
 ion-split-pane {
 	--border: 0;

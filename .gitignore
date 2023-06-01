@@ -108,3 +108,5 @@ dist
 release/*
 
 inspiration
+
+.DS_Store

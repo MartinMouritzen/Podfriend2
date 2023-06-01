@@ -187,7 +187,7 @@ const EpisodePage = ({ match, audioController }) => {
 								Episode released {new Date(episode.date).toLocaleDateString(false,{ weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
 							</div>
 							{ episode === false &&
-								<IonSkeletonText />
+								<IonSkeletonText animated={true} />
 							}
 							{ episode !== false &&
 								<div className="episodeButtons">

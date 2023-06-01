@@ -15,6 +15,7 @@ class WebAudioController extends AudioController {
 		
 	}
 	init() {
+		console.log('WebAudioController:init');
 		if (this.browserShortcutsEnabled && 'mediaSession' in navigator) {
 			navigator.mediaSession.playbackState = "none";
 

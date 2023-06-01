@@ -34,6 +34,7 @@ const LatestEpisodes = ({ backButtonText = false }) => {
 	// const [latestEpisodes,setLatestEpisodes] = useState(false);
 
 	const latestEpisodes = useStore((state) => state.latestEpisodes);
+	const refreshingLatestEpisodes = useStore((state) => state.refreshingLatestEpisodes);
 
 	const onPlay = (podcastPath,podcastData,episode,url) => {
 		if (activeEpisode.url === url) {
@@ -64,6 +65,17 @@ const LatestEpisodes = ({ backButtonText = false }) => {
 			modules={[Navigation]}
 			className="coverSwiper"
 		>
+			{ (latestEpisodes === false || latestEpisodes.length === 0 && refreshingLatestEpisodes) && [...Array(7)].map((e, i) => {
+				return (
+					<SwiperSlide key={'loading' + i}>
+						<div className="podcastItem">
+							<IonSkeletonText animated={true} className="cover" style={{ minHeight: 208, marginTop: 0 }} ></IonSkeletonText>
+							<IonSkeletonText animated={true} style={{ height: 45 }}></IonSkeletonText>
+							<IonSkeletonText animated={true} style={{ height: 25 }}></IonSkeletonText>
+						</div>
+					</SwiperSlide>
+				);
+			}) }
 			{ latestEpisodes !== false && latestEpisodes.map((episode) => {
 				return (
 					<SwiperSlide key={episode.guid ? episode.guid : episode.url}>

@@ -110,13 +110,13 @@ const Onboarding = ({ children, title, closeModal, skippable = "Close", lastButt
 			
 				<IonFooter className="ion-no-border">
 					<IonToolbar>
-						{ (lastButtonTitle && swiperInstance && swiperInstance.isEnd) && 
+						{ (lastButtonFunction && swiperInstance && swiperInstance.isEnd) && 
 							<>
 								<IonButton expand='block' onClick={lastButtonFunction}>{lastButtonTitle}</IonButton>
 							</>
 						}
-						{ (!lastButtonTitle && !hideLastContinueButton && swiperInstance && swiperInstance.isEnd) &&
-							<IonButton expand='block' onClick={closeModal}>Finish</IonButton>
+						{ (!lastButtonFunction && !hideLastContinueButton && swiperInstance && swiperInstance.isEnd) &&
+							<IonButton expand='block' onClick={closeModal}>{lastButtonTitle}</IonButton>
 						}
 						{ (swiperInstance && !swiperInstance.isEnd) &&
 							<IonButton expand='block' onClick={nextStep}>Continue</IonButton>

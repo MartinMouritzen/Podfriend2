@@ -19,7 +19,7 @@ const PodcastList = ({ podcasts, listType = 'scroll', filterString = '', backBut
 		<div className={'podcastGrid ' + listType}>
 			{ (podcasts === false && displayLoadingCovers !== false) &&  Array.apply(null, { length: displayLoadingCovers }).map((e,i) => {
 				return (
-					<IonSkeletonText key={'loadingCover' + i} style={{ width: 200, height: 200 }} />
+					<IonSkeletonText key={'loadingCover' + i} style={{ width: 200, height: 200 }} animated={true} />
 				);
 			} ) }
 			{ podcasts !== false && podcasts.map((podcast) => {

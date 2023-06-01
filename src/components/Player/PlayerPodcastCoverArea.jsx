@@ -10,7 +10,7 @@ const PlayerPodcastCoverArea = ({ audioController, chapters = false, currentChap
 	if (!podcast || !episode) {
 		return (
 			<div className='chapers'>
-				<IonSkeletonText className={'chapter'} />
+				<IonSkeletonText animated={true} className={'chapter'} />
 			</div>
 		);
 	}

@@ -86,6 +86,8 @@ export const createWalletSlice = (set,get) => ({
 			}
 		})
 		.then((response) => {
+			console.log('Wallet set up completed');
+			console.log(response);
 			set({
 				walletSetupCompleted: true,
 				walletTokenLastRefreshDate: new Date(),

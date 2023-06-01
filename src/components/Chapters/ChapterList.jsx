@@ -13,6 +13,16 @@ const ChapterList = ({ chapters, currentChapter = false }) => {
 		return;
 	}
 	const audioSetCurrentTime = useStore((state) => state.audioSetCurrentTime);
+	const audioPlay = useStore((state) => state.audioPlay);
+	const shouldPlay = useStore((state) => state.shouldPlay);
+
+	const onSelectChapter = (startTime) => {
+		audioSetCurrentTime(startTime);
+
+		if (!shouldPlay) {
+			audioPlay();
+		}
+	};
 
 	return (
 		<IonList lines="full" className="chapterList">
@@ -21,7 +31,7 @@ const ChapterList = ({ chapters, currentChapter = false }) => {
 			</IonListHeader>
 			{ chapters.map((chapter,index) => {
 				return (
-				<IonItem key={'chapter' + index} detail={true} onClick={() => { audioSetCurrentTime(chapter.startTime) }} className={currentChapter === chapter ? 'currentChapter' : ''}>
+				<IonItem key={'chapter' + index} detail={true} onClick={() => { onSelectChapter(chapter.startTime); }} className={currentChapter === chapter ? 'currentChapter' : ''}>
 					{ chapter.img &&
 						<IonThumbnail slot="start" className="chapterListThumbnail">
 							<img src={chapter.img} />

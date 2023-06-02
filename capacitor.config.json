@@ -1,9 +1,15 @@
 {
 	"appId": "com.podfriend",
 	"appName": "Podfriend",
-	"bundledWebRuntime": false,
 	"npmClient": "yarn",
 	"webDir": "release/web",
+	"overrideUserAgent": "Podfriend 2.0 Mobile",
+	"android": {
+		"overrideUserAgent": "Podfriend 2.0 Android"
+	},
+	"ios": {
+		"overrideUserAgent": "Podfriend 2.0 ios"
+	},
 	"plugins": {
 		"SplashScreen": {
 			"launchAutoHide": false,

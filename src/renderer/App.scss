@@ -125,7 +125,7 @@ ion-content {
 */
 
 .loadingScreen {
-	
+	pointer-events: none;
 }
 .loadingScreenLoaded {
 	animation: circle 2s normal forwards ease-in-out;

@@ -25,6 +25,7 @@ const Home = ({  }) => {
 
 	const loggedIn = useStore((state) => state.loggedIn);
 	const refreshingLatestEpisodes = useStore((state) => state.refreshingLatestEpisodes);
+	const followedPodcasts = useStore((state) => state.followedPodcasts);
 	const seenPodfriendOnboarding = useStore((state) => state.seenPodfriendOnboarding);
 	
 	const continueListeningEpisodeList = useStore((state) => state.continueListeningEpisodeList);
@@ -94,7 +95,7 @@ const Home = ({  }) => {
 					</div>
 				</div>
 			}
-			{ loggedIn &&
+			{ (loggedIn && followedPodcasts.length > 0) &&
 				<div className='section'>
 					<div className='sectionInner'>
 						<div className='sectionSubTitle'>Latest</div>

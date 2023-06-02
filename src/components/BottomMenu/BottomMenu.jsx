@@ -3,28 +3,28 @@ import { IonRouterOutlet, IonTabs, IonTabBar, IonTabButton, IonIcon, IonLabel, I
 import Player from 'components/Player/Player';
 import {
 	homeOutline as homeIcon,
-	homeOutline as homeIconSelected,
+	home as homeIconSelected,
 
 	starOutline as favoriteIcon,
-	starSharp as favoriteIconSelected,
+	star as favoriteIconSelected,
 
 	mapOutline as discoverIcon,
-	mapSharp as discoverIconSelected,
+	map as discoverIconSelected,
 
 	listOutline as podcastIcon,
-	listSharp as podcastIconSelected,
+	list as podcastIconSelected,
 
 	listOutline as collectionsIcon,
-	listSharp as collectionsIconSelected,
+	list as collectionsIconSelected,
 
 	listOutline as playlistIcon,
-	listSharp as playlistIconSelected,
+	list as playlistIconSelected,
 	
 	walletOutline as walletIcon,
-	walletSharp as walletIconSelected,
+	wallet as walletIconSelected,
 
 	searchOutline as searchIcon,
-	searchSharp as searchIconSelected
+	search as searchIconSelected
 } from 'ionicons/icons';
 
 import { useState, useEffect } from 'react';
@@ -55,7 +55,7 @@ const BottomMenu = ({ routes }) => {
 	return (
 			<IonTabBar slot="bottom" className="bottomTabs">
 				<IonTabButton tab="home" href="/" selected={selected === 'home'}>
-					<IonIcon icon={homeIcon} />
+					<IonIcon icon={selected === 'home' ? homeIconSelected : homeIcon} />
 					<IonLabel>Home</IonLabel>
 				</IonTabButton>
 				{ /*
@@ -66,12 +66,12 @@ const BottomMenu = ({ routes }) => {
 				*/ }
 
 				<IonTabButton tab="favorites" href="/favorites/" selected={selected === 'favorites'}>
-					<IonIcon icon={favoriteIcon} />
+					<IonIcon icon={selected === 'favorites' ? favoriteIconSelected : favoriteIcon} />
 					<IonLabel>Favorites</IonLabel>
 				</IonTabButton>
 
 				<IonTabButton tab="about" href="/wallet/" selected={selected === 'wallet'}>
-					<IonIcon icon={walletIcon} />
+					<IonIcon icon={selected === 'wallet' ? walletIconSelected : walletIcon} />
 					<IonLabel>
 						{ walletBalance !== false &&
 							<>{(walletBalance).toLocaleString()}</>
@@ -83,7 +83,7 @@ const BottomMenu = ({ routes }) => {
 				</IonTabButton>
 
 				<IonTabButton tab="search" href="/search/" selected={selected === 'search'}>
-					<IonIcon icon={searchIcon} />
+					<IonIcon icon={selected === 'search' ? searchIconSelected : searchIcon} />
 					<IonLabel>Search</IonLabel>
 				</IonTabButton>
 			</IonTabBar>

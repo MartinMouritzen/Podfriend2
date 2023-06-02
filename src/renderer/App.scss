@@ -3,6 +3,14 @@
  *        See https://github.com/webpack-contrib/sass-loader#imports
  */
 :root {
+	/*****
+	* This is so we can read the variables from javascript.
+	*****/
+	--safeAreaTop: env(safe-area-inset-top);
+	--safeAreaRight: env(safe-area-inset-right);
+	--safeAreaBottom: env(safe-area-inset-bottom);
+	--safeAreaLeft: env(safe-area-inset-left);
+
 	--ion-color-primary: #0176E5;
 	--ion-toolbar-background: #ffffff;
 	--primary-color: #0176e5;

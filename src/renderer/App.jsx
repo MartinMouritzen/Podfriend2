@@ -51,6 +51,7 @@ import AlbyOauthPage from 'pages/WalletPage/AlbyOauthPage';
 import ContactPage from 'pages/ContactPage/ContactPage';
 import LoadingScreen from 'components/UI/LoadingScreen';
 import UserProfilePage from 'pages/UserProfilePage/UserProfilePage';
+import ImportPage from 'pages/ImportPage/ImportPage';
 
 setupIonicReact({
 	mode: 'ios',
@@ -147,6 +148,7 @@ export default function App({ platform, audioController, desktop = false }) {
 		<Route path="/favorites/" render={(props) => <FavoritePage {...props} />} />,
 		<Route path="/oauth/alby" render={(props) => <AlbyOauthPage {...props} />} />,
 		<Route path="/playlist/" render={(props) => <Home {...props} />} />,
+		<Route path="/podcasts/import/" render={(props) => <ImportPage {...props} />} />,
 
 		<Route exact={true} path="/podcast/:podcastPath/" render={(props) => <PodcastPage {...props} />} />,
 		<Route exact={true} path="/podcast/:podcastPath/reviews/" render={(props) => <ReviewPage {...props} />} />,

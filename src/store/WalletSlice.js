@@ -113,11 +113,11 @@ export const createWalletSlice = (set,get) => ({
 		var shouldRefresh = false;
 
 		if (walletTokenLastRefreshDate && walletTokenExpiresIn) {
-			var secondsSinceLastUpdate = Math.floor((Math.abs(new Date() - walletTokenLastRefreshDate) / 1000));
+			var secondsSinceLastUpdate = Math.floor((Math.abs(new Date() - new Date(walletTokenLastRefreshDate)) / 1000));
 
 			// We want a buffer, so we don't make a call just at the edge of the expire time
 			if (secondsSinceLastUpdate > (walletTokenExpiresIn - 600)) {
-				walletTokenLastRefreshDate = true;
+				shouldRefresh = true;
 			}
 		}
 		else {
@@ -129,6 +129,7 @@ export const createWalletSlice = (set,get) => ({
 		return Promise.resolve();
 	},
 	refreshAlbyAuthToken: () => {
+		console.log('Refreshing Alby Token');
 		const tokenURL = 'https://api.podfriend.com/user/wallet/token/?refresh=true';
 		return fetch(tokenURL, {
 			method: "GET",
@@ -451,7 +452,7 @@ export const createWalletSlice = (set,get) => ({
 				}
 			})
 			.catch((exception) => {
-				console.log('Error retrieving history');
+				console.log('Error retrieving history in walletslice:retrieveWalletHistory');
 				console.log(exception);
 
 				return false;

@@ -41,7 +41,15 @@ class PodcastUtil {
 	static async loadTranscript(transcriptUrl,transcriptInfo) {
 		return this.__fetchTranscript(transcriptUrl,transcriptInfo.type)
 		.then((transcriptData) => {
-			var format = determineFormat(transcriptData);
+			try {
+				var format = determineFormat(transcriptData);
+			}
+			catch(exception) {
+				console.log('Could not determine format for transcriptator');
+				console.log(transcriptData);
+				console.log(transcriptUrl);
+				return false;
+			}
 			var segments = convertFile(transcriptData,format);
 			return segments;
 		});

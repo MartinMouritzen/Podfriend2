@@ -123,7 +123,7 @@ const DraggablePane = ({ onHide = false, onOpen = false, open = false, children,
 	})
 // <animated.div className={className} {...bind()} style={{ bottom: (open ? y : 0), touchAction: 'none', ...style }}>
 
-	let bottomValue = open ? 0 : window.innerWidth < 900 ? (51 + safeAreaBottom) : 0;
+	let bottomValue = open ? 0 : window.innerWidth < 1024 ? (51 + safeAreaBottom) : 0;
 
 	let scrollTop = elementRef?.current?.scrollTop;
 

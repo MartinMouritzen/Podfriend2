@@ -83,6 +83,7 @@
 
 		max-width: 600px;
 
+		margin-top: 3px;
 		margin-bottom: 0px;
 
 		overflow: hidden;
@@ -162,6 +163,7 @@
 	.date {
 		font-size: 12px;
 		text-transform: uppercase;
+		color: rgba(0,0,0,0.8);
 		.agoText {
 			margin-left: 5px;
 		}
@@ -174,9 +176,9 @@
 		overflow: hidden;
 		max-width: 600px;
 		word-wrap:break-word;
-		line-height: 20px;
+		line-height: 21px;
 
-		color: rgba(0,0,0,0.8);
+		color: rgba(0,0,0,0.7);
 	}
 
 	&.selected {
@@ -185,7 +187,7 @@
 			
 		}
 		h2 {
-			
+			font-weight: 500;
 		}
 		/*
 		--ion-item-background: var(--primary-color);

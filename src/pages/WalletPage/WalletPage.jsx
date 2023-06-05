@@ -118,7 +118,7 @@ const WalletPage = ({  }) => {
 	};
 
 	return (
-		<Page id="wallet" title="Wallet" className="greyPage" showBackButton={false}>
+		<Page id="wallet" title="Wallet" showBackButton={false}>
 			<div className="walletPageContainer">
 				<div>
 					<div className="creditCardContainer">
@@ -150,7 +150,7 @@ const WalletPage = ({  }) => {
 				</div>
 
 				<div className="mobileFriendlyContainer">
-					<IonList lines="full" inset={true} >
+					<IonList lines="full" inset={true} className="greyList">
 						<IonListHeader>
 							<IonLabel>Your podcast wallet</IonLabel>
 						</IonListHeader>

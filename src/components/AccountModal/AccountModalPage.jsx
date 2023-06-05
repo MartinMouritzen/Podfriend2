@@ -3,7 +3,8 @@ import { IonAvatar, IonContent, IonItem, IonLabel, IonList, IonIcon } from "@ion
 import {
 	lockClosed as lockIcon,
 	mailOutline as mailIcon,
-	newspaperOutline as guideIcon
+	newspaperOutline as guideIcon,
+	duplicateOutline as importIcon
 } from 'ionicons/icons';
 // import { homeOutline as homeIcon, closeSharp as closeIcon, searchOutline as searchIcon, mailOutline as mailIcon, listOutline as collectionsIcon, starOutline as favoriteIcon, walletOutline as walletIcon } from 'ionicons/icons'
 
@@ -38,6 +39,21 @@ const AccountPage = ({ dismiss }) => {
 						<p>{userData.email}</p>
 						</IonLabel>
 				</IonItem>
+			</IonList>
+
+			<IonList inset={true}>
+				<Link
+					to={{
+						pathname: '/podcasts/import/'
+					}}
+					style={{ textDecoration: 'none' }}
+					onClick={dismiss}
+				>
+					<IonItem >
+						<IonIcon icon={importIcon} slot="start" />
+						<IonLabel>Import podcasts</IonLabel>
+					</IonItem>
+				</Link>
 			</IonList>
 
 			<IonList inset={true}>

@@ -81,7 +81,7 @@ const WalletHistoryPage = ({  }) => {
 								return (
 									<HistoryEntry key={historyEntry.payment_hash} historyEntry={historyEntry} historyType={historyType} />
 								);
-							})};
+							})}
 						</IonList>
 			</div>
 		</Page>

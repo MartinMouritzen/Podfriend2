@@ -182,6 +182,11 @@ ion-content {
 		--background: var(--grey-page-background);
 	}
 }
+.greyList {
+	ion-item {
+		--background: #f2f2f6;
+	}
+}
 .heightWithoutPagePadding {
 	min-height: calc(100% - 90px);
 }

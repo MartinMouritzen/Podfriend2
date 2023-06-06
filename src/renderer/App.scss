@@ -11,6 +11,11 @@
 	--safeAreaBottom: env(safe-area-inset-bottom);
 	--safeAreaLeft: env(safe-area-inset-left);
 
+
+	/************************************
+	* Theme
+	************************************/
+
 	--ion-color-primary: #0176E5;
 	--ion-toolbar-background: #ffffff;
 	--primary-color: #0176e5;
@@ -31,8 +36,34 @@
 	--list-scroll-cover-size: 210px;
 
 	--grey-page-background: #eaebe9;
+	--grey-page-background: var(--grey--200);
 
 	--badge-color: #3554d1;
+
+	--primary--100: rgba(230, 243, 255, 1);
+	--primary--200: rgba(179, 218, 254, 1);
+	--primary--300: rgba(128, 193, 254, 1);
+	--primary--400: rgba(26, 143, 254, 1);
+	--primary--500-base: rgba(1, 118, 229, 1);
+	--primary--600: rgba(1, 92, 178, 1);
+	--primary--700: rgba(1, 65, 127, 1);
+	--primary--800: rgba(0, 39, 76, 1);
+	--primary--900: rgba(0, 13, 25, 1);
+	--pure--white: rgba(255, 255, 255, 1);
+	--pure--black: rgba(0, 0, 0, 1);
+	--text--dark-grey-900: rgba(32, 40, 51, 1);
+	--text--mid-grey-700: rgba(110, 122, 138, 1);
+	--text--light-grey-500: rgba(174, 190, 205, 1);
+	--grey--900: rgba(32, 40, 51, 1);
+	--grey--800: rgba(64, 75, 90, 1);
+	--grey--700: rgba(110, 122, 138, 1);
+	--grey--600: rgba(146, 159, 177, 1);
+	--grey--500: rgba(174, 190, 205, 1);
+	--grey--400: rgba(204, 212, 219, 1);
+	--grey--300: rgba(213, 221, 229, 1);
+	--grey--200: rgba(225, 231, 236, 1);
+	--grey--100: rgba(248, 249, 250, 1);
+	
 
 	/*--miniplayer-background-color: rgba(23,78,161,0.9); */
 
@@ -287,7 +318,19 @@ ion-split-pane {
 .header-background {
 	display: none;
 }
+.emptyStatePage {
+	padding-left: 10px;
+	padding-right: 10px;
+	.title-large {
+		font-size: 36px;
+		font-family: Roboto;
 
+		padding-bottom: 0px;
+
+		padding-inline: 0px;
+		position: static;
+	}
+}
 .bottomTabs {
 	/*
 	@media (any-hover: hover) {

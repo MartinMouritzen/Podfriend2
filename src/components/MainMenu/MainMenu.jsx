@@ -14,7 +14,11 @@ import PodfriendLogo from 'images/icons/podfriend_logo.svg';
 
 import useStore from 'store/Store';
 
+import { useLocation } from "react-router";
+
 const MainMenu = () => {
+	const location = useLocation();
+
 	const toggleMenu = () => {
  	    menuController.toggle('first');
 	};
@@ -34,6 +38,25 @@ const MainMenu = () => {
 
 		return false;
 	};
+
+	const [selected,setSelected] = useState('home');
+
+	useEffect(() => {
+		var selected = 'home';
+		if (location.pathname.includes('favorites')) {
+			selected = 'favorites';
+		}
+		else if (location.pathname.includes('wallet')) {
+			selected = 'wallet';
+		}
+		else if (location.pathname.includes('search')) {
+			selected = 'search';
+		}
+		else if (location.pathname.includes('contact')) {
+			selected = 'contact';
+		}
+		setSelected(selected);
+	},[location?.pathname]);
 
 	return (
 		<IonMenu menuId="first" contentId="main" side="start" className="mainMenu" swipe-gesture={false}>
@@ -58,7 +81,7 @@ const MainMenu = () => {
 					My content
 				</div>
 				<IonList>
-					<IonItem lines="none" button routerLink="/">
+					<IonItem lines="none" button routerLink="/" className={selected === 'home' ? 'active' : ''}>
 						<IonIcon icon={homeIcon} slot="start"></IonIcon>
 						<IonLabel>Home</IonLabel>
 					</IonItem>
@@ -70,12 +93,12 @@ const MainMenu = () => {
 					</IonItem>
 					*/ }
 
-					<IonItem lines="none" button routerLink="/favorites/">
+					<IonItem lines="none" button routerLink="/favorites/" className={selected === 'favorites' ? 'active' : ''}>
 						<IonIcon icon={favoriteIcon} slot="start"></IonIcon>
-						<IonLabel>Favorites</IonLabel>
+						<IonLabel>Following</IonLabel>
 					</IonItem>
 
-					<IonItem lines="none" button routerLink="/wallet/">
+					<IonItem lines="none" button routerLink="/wallet/" className={selected === 'wallet' ? 'active' : ''}>
 						<IonIcon icon={walletIcon} slot="start"></IonIcon>
 						<IonLabel>Wallet <span style={{ fontSize: 12 }}>
 							{ (walletBalance !== false && walletBalance !== 0) && 
@@ -102,7 +125,7 @@ const MainMenu = () => {
 					<IonItemDivider>
 						<hr />
 					</IonItemDivider>
-					<IonItem lines="none" button routerLink="/contact/">
+					<IonItem lines="none" button routerLink="/contact/" className={selected === 'contact' ? 'active' : ''}>
 						<IonIcon icon={mailIcon} slot="start"></IonIcon>
 						<IonLabel>Contact us</IonLabel>
 					</IonItem>

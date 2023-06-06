@@ -95,7 +95,7 @@ const Home = ({  }) => {
 					</div>
 				</div>
 			}
-			{ (loggedIn && followedPodcasts.length > 0) &&
+			{ (loggedIn && Object.keys(followedPodcasts).length > 0) &&
 				<div className='section'>
 					<div className='sectionInner'>
 						<div className='sectionSubTitle'>Latest</div>

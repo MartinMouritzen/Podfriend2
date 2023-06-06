@@ -75,7 +75,6 @@
 	}
 
 	h2 {
-		min-height: 26px;
 		display: flex;
 		align-items: center;
 
@@ -83,14 +82,18 @@
 
 		max-width: 600px;
 
-		margin-top: 3px;
-		margin-bottom: 0px;
+		margin-top: 6px;
+		margin-bottom: 6px;
 
 		overflow: hidden;
 		display: -webkit-box;
 		-webkit-line-clamp: 2;
 				line-clamp: 2; 
 		-webkit-box-orient: vertical;
+
+		color: var(--grey--900);
+
+		font-size: 18px;
 
 
 		.cover {
@@ -105,6 +108,7 @@
 
 	}
 	ion-label {
+		margin-top: 22px;
 		margin-left: 10px;
 	}
 	.playAndProgress {
@@ -114,17 +118,20 @@
 		align-items: center;
 
 		.playButton, .pauseButton {
-			background-color: var(--primary-color);
+			background-color: var(--primary--100);
 			display: flex;
 			justify-content: center;
 			align-items: center;
 
-			padding: 3px;
+			width: 36px;
+			height: 36px;
+
 			margin-right: 10px;
 			border-radius: 50%;
 
 			ion-icon {
-				fill: #FFFFFF;
+				fill: var(--primary-color);
+				font-size: 18px;
 			}
 			&.playButton {
 				ion-icon {
@@ -138,8 +145,9 @@
 			
 			align-items: center;
 		
-			font-size: 12px;
-			color: rgba(var(--ion-text-color-rgb, 0, 0, 0), 0.6);
+			font-size: 14px;
+			/*color: rgba(var(--ion-text-color-rgb, 0, 0, 0), 0.6);*/
+			color: var(--grey--700);
 
 			ion-icon {
 				font-size: 16px;
@@ -162,15 +170,15 @@
 
 	.date {
 		font-size: 12px;
-		text-transform: uppercase;
-		color: rgba(0,0,0,0.8);
+		/* text-transform: uppercase; */
+		color: var(--grey--700);
 		.agoText {
 			margin-left: 5px;
 		}
 	}
 	.description {
 		display: -webkit-box;
-		-webkit-line-clamp: 3;
+		-webkit-line-clamp: 2;
 		-webkit-box-orient: vertical; 
 		text-overflow: ellipsis;
 		overflow: hidden;
@@ -178,7 +186,7 @@
 		word-wrap:break-word;
 		line-height: 21px;
 
-		color: rgba(0,0,0,0.7);
+		color: var(--grey--700);
 	}
 
 	&.selected {
@@ -187,7 +195,7 @@
 			
 		}
 		h2 {
-			font-weight: 500;
+			/* font-weight: 500;*/
 		}
 		/*
 		--ion-item-background: var(--primary-color);
@@ -225,14 +233,14 @@
 		}
 
 		.episode {
-			--padding-top: 5px;
+			--padding-top: 3px;
 			--padding-bottom: 5px;
 			--padding-start: 10px;
 			--padding-end: 0px;
 			
 			.cover, .coverLoading {
-				width: 130px !important;
-				height: 130px !important;
+				width: 155px !important;
+				height: 155px !important;
 			}
 		}
 		&.selected {

@@ -10,6 +10,8 @@ import sortIcon from 'images/icons/sort.svg';
 
 import { IonSearchbar, IonToolbar, IonHeader, IonTitle, IonButtons, IonButton, IonIcon, useIonActionSheet	} from '@ionic/react';
 
+import EmptyIllustration from 'images/flow-illustrations/empty.svg';
+
 const FavoritePage = () => {
 	const [present] = useIonActionSheet();
 
@@ -98,7 +100,7 @@ const FavoritePage = () => {
 
 	const showFavoriteSortMenu = () => {
 		present({
-			header: 'Order favorites',
+			header: 'Order followed podcasts',
 			buttons: [
 				{
 					text: 'Latest listened on top',
@@ -146,27 +148,50 @@ const FavoritePage = () => {
 
 	return (
 		<Page title="Favorites" defaultHeader={false} showBackButton={false} onRefresh={onRefreshFavorites}>
-			<IonHeader collapse="condense" class="mainTitleHeader">
-				<IonToolbar>
-					<IonTitle size="large">Favorites</IonTitle>
-					<IonButtons slot="primary" style={{ paddingRight: '12px' }}>
-						<IonButton fill="solid" onClick={showFavoriteSortMenu}><IonIcon src={sortIcon} /></IonButton>
-					</IonButtons>
-				</IonToolbar>
-				<IonToolbar>
-					<IonSearchbar collapse={true} animated={true} show-clear-button="focus" inputmode="search" placeholder="Search favorites" onIonChange={onFilterChange}></IonSearchbar>
-				</IonToolbar>
-			</IonHeader>
-			<div style={{ paddingLeft: '7px', paddingRight: '7px' }}>
-				<div style={{ paddingLeft: '16px', paddingRight: '16px' }}>
-					<h2>
-						Favorite podcasts sorted by&nbsp;
-							{favoriteSortOrder === 'alphabetical_az' ? 'alphabetical order'
-							: favoriteSortOrder === 'latestListened' ? 'latest listened' : favoriteSortOrder}
-					</h2>
+			{ orderedFollowedPodcasts.length === 0 &&
+				<div className="emptyStatePage" style={{ textAlign: 'center', marginTop: 30 }}>
+					<div>
+						<img src={EmptyIllustration} />
+					</div>
+					<IonHeader collapse="condense" class="mainTitleHeader">
+						<IonToolbar>
+							<IonTitle size="large" style={{ textAlign: 'center'}}>
+								<div className="ion-text-wrap">
+									No followed podcasts yet
+								</div>
+							</IonTitle>
+						</IonToolbar>
+					</IonHeader>
+					<h3>
+						Your followed podcasts will appear here.
+					</h3>
 				</div>
-				<PodcastList backButtonText="Favorites" podcasts={orderedFollowedPodcasts} listType='grid' filterString={filterString} />
-			</div>
+			}
+			{ orderedFollowedPodcasts.length > 0 &&
+				<>
+					<IonHeader collapse="condense" class="mainTitleHeader">
+						<IonToolbar>
+							<IonTitle size="large">Followed podcasts</IonTitle>
+							<IonButtons slot="primary" style={{ paddingRight: '12px' }}>
+								<IonButton fill="solid" onClick={showFavoriteSortMenu}><IonIcon src={sortIcon} /></IonButton>
+							</IonButtons>
+						</IonToolbar>
+						<IonToolbar>
+							<IonSearchbar collapse={true} animated={true} show-clear-button="focus" inputmode="search" placeholder="Search favorites" onIonChange={onFilterChange}></IonSearchbar>
+						</IonToolbar>
+					</IonHeader>
+					<div style={{ paddingLeft: '7px', paddingRight: '7px' }}>
+						<div style={{ paddingLeft: '16px', paddingRight: '16px' }}>
+							<h2>
+								Followed podcasts sorted by&nbsp;
+									{favoriteSortOrder === 'alphabetical_az' ? 'alphabetical order'
+									: favoriteSortOrder === 'latestListened' ? 'latest listened' : favoriteSortOrder}
+							</h2>
+						</div>
+						<PodcastList backButtonText="Favorites" podcasts={orderedFollowedPodcasts} listType='grid' filterString={filterString} />
+					</div>
+				</>
+			}
 		</Page>
 	);
 };

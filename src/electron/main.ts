@@ -21,7 +21,9 @@ app.commandLine.appendSwitch('disable-features', 'HardwareMediaKeyHandling,Media
 class AppUpdater {
 	constructor() {
 		log.transports.file.level = 'info';
+		console.log('Checking for Updates');
 		autoUpdater.logger = log;
+		autoUpdater.setFeedURL('https://update.podfriend.com/');
 		autoUpdater.checkForUpdatesAndNotify();
 	}
 }

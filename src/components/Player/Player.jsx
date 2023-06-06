@@ -100,6 +100,8 @@ const Player = ({ audioController, navigateToPath, platform }) => {
 	const audioSkipBackward = useStore((state) => state.audioSkipBackward);
 	const audioSkipForward = useStore((state) => state.audioSkipForward);
 
+	const settingsAutoContinue = useStore((state) => state.settings.autoContinue);
+
 	const changeActiveEpisode = useStore((state) => state.changeActiveEpisode);
 
 	const processValueTimeSplit = useStore((state) => state.processValueTimeSplit);
@@ -157,7 +159,9 @@ const Player = ({ audioController, navigateToPath, platform }) => {
 		}
 	};
 	const onEnded = () => {
-		audioSkipForward();
+		if (settingsAutoContinue) {
+			audioSkipForward();
+		}
 		console.log('episode ended');
 	};
 	const onLoadedData = () => {

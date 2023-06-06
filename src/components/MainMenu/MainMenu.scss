@@ -3,7 +3,6 @@
 
 	-webkit-app-region: none;
 
-
 	.sidemenuHeader {
 		display: flex;
 
@@ -72,8 +71,15 @@
 		color: var(--primary-input-text-color);
 	}
 	ion-item {
-		height: 36px;
-		--min-height: 36px;
+		height: 40px;
+		--min-height: 40px;
+
+		&.hover {
+
+		}
+		&.active {
+			--background: var(--primary--600);
+		}
 	}
 	ion-label {
 		font-size: 16px !important;

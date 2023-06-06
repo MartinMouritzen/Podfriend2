@@ -1,4 +1,4 @@
-import { IonAvatar, IonContent, IonItem, IonLabel, IonList, IonIcon } from "@ionic/react";
+import { IonAvatar, IonContent, IonItem, IonLabel, IonList, IonIcon, IonCheckbox, IonToggle } from "@ionic/react";
 
 import {
 	lockClosed as lockIcon,
@@ -6,7 +6,6 @@ import {
 	newspaperOutline as guideIcon,
 	duplicateOutline as importIcon
 } from 'ionicons/icons';
-// import { homeOutline as homeIcon, closeSharp as closeIcon, searchOutline as searchIcon, mailOutline as mailIcon, listOutline as collectionsIcon, starOutline as favoriteIcon, walletOutline as walletIcon } from 'ionicons/icons'
 
 import { Link } from 'react-router-dom';
 
@@ -16,6 +15,15 @@ const AccountPage = ({ dismiss }) => {
 	const userData = useStore((state) => state.userData);
 	const userNotLoggedIn = useStore((state) => state.userNotLoggedIn);
 	const setSeenPodfriendOnboarding = useStore((state) => state.setSeenPodfriendOnboarding);
+
+	const settingsAutoContinue = useStore((state) => state.settings.autoContinue);
+	const setSetting = useStore((state) => state.setSetting);
+
+	const onAutoContinueSettingChange = (event) => {
+		// console.log('onAutoContinueChange');
+		// console.log(event.detail.checked);
+		setSetting('autoContinue',event.detail.checked);
+	};
 
 	const onAccountChangeClicked = () => {
 		alert('Account editing will be implemented soon');
@@ -41,6 +49,7 @@ const AccountPage = ({ dismiss }) => {
 				</IonItem>
 			</IonList>
 
+{ /*
 			<IonList inset={true}>
 				<Link
 					to={{
@@ -54,6 +63,15 @@ const AccountPage = ({ dismiss }) => {
 						<IonLabel>Import podcasts</IonLabel>
 					</IonItem>
 				</Link>
+			</IonList>
+				*/ }
+
+			<IonList inset={true}>
+				<IonItem>
+					<IonToggle aria-label="Auto play next episode" checked={settingsAutoContinue} onIonChange={onAutoContinueSettingChange} labelPlacement="start">
+						Auto play next episode
+					</IonToggle>
+				</IonItem>
 			</IonList>
 
 			<IonList inset={true}>

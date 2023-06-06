@@ -178,6 +178,7 @@ export const createPlayerSlice = (set,get) => ({
 				state.goToNextEpisode();
 			}
 			else {
+				// audioController.forward();
 				audioController.setCurrentTime(currentTime + audioForwardIncrement);
 				state.resetPlayingSegmentTime();
 				/*
@@ -348,7 +349,10 @@ export const createPlayerSlice = (set,get) => ({
 		});
 	},
 	audioIsReady: () => {
-		// let newDuration = get().audioController.getDuration();
+		const audioController = get().audioController;
+		const activePodcast = get().activePodcast;
+		const activeEpisode = get().activeEpisode;
+		let newDuration = audioController.getDuration();
 		// console.log('OnloadedMetaData. duration: ' + newDuration + ', episodeid: ' + this.props.activeEpisode.id);
 
 		// alert(this.props.audioController.audioElement.current.currentTime);
@@ -366,9 +370,12 @@ export const createPlayerSlice = (set,get) => ({
 		});
 		*/
 		// On IOS sometimes only this event is sent, not the onCanPlay - so we use this to signal that we can play too
-		set({
-			streamDataLoading: false
-		});
+		set(
+			produce((state) => {
+				state.streamDataLoading = false;
+				state.podcasts[activePodcast.path].episodes[activeEpisode.guid].duration = newDuration;
+			})
+		);
 	},
 	/**********************************************************************************
 	* Progress related

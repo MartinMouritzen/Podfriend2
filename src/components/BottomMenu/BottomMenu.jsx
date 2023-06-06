@@ -5,8 +5,8 @@ import {
 	homeOutline as homeIcon,
 	home as homeIconSelected,
 
-	starOutline as favoriteIcon,
-	star as favoriteIconSelected,
+	starOutline as followedIcon,
+	star as followedIconSelected,
 
 	mapOutline as discoverIcon,
 	map as discoverIconSelected,
@@ -53,7 +53,7 @@ const BottomMenu = ({ routes }) => {
 
 
 	return (
-			<IonTabBar slot="bottom" className="bottomTabs">
+			<IonTabBar slot="bottom" className="bottomTabs" translucent={true}>
 				<IonTabButton tab="home" href="/" selected={selected === 'home'}>
 					<IonIcon icon={selected === 'home' ? homeIconSelected : homeIcon} />
 					<IonLabel>Home</IonLabel>
@@ -66,8 +66,8 @@ const BottomMenu = ({ routes }) => {
 				*/ }
 
 				<IonTabButton tab="favorites" href="/favorites/" selected={selected === 'favorites'}>
-					<IonIcon icon={selected === 'favorites' ? favoriteIconSelected : favoriteIcon} />
-					<IonLabel>Favorites</IonLabel>
+					<IonIcon icon={selected === 'favorites' ? followedIconSelected : followedIcon} />
+					<IonLabel>Following</IonLabel>
 				</IonTabButton>
 
 				<IonTabButton tab="about" href="/wallet/" selected={selected === 'wallet'}>

@@ -117,7 +117,7 @@ const Page = ({ id = null, title = "Undefined", defaultHeader = true, defaultHre
 
 	return (
 		<IonPage id={id} className={className} ref={ionPageRef}>
-			<IonHeader translucent="false" className="mainHeader">
+			<IonHeader translucent={false} className="mainHeader">
 				<IonToolbar className="mainToolbar">
 					<IonButtons slot="start" className="ionButtons">
 						{ showBackButton &&
@@ -143,7 +143,7 @@ const Page = ({ id = null, title = "Undefined", defaultHeader = true, defaultHre
 					</IonButtons>
 				</IonToolbar>
 			</IonHeader>
-			<IonContent fullscreen={true} id="main" forceOverscroll={false} ref={contentNodeRef}>
+			<IonContent fullscreen={false} id="main" forceOverscroll={false} ref={contentNodeRef}>
 				{ defaultHeader &&
 					<IonHeader collapse="condense" className="mainTitleHeader">
 						<IonToolbar>

@@ -13,6 +13,7 @@ import { createWalletSlice } from './WalletSlice';
 import { createPlaylistSlice } from './PlaylistSlice';
 import { createReviewSlice } from './ReviewSlice';
 import { createServerSyncSlice } from './ServerSyncSlice';
+import { createSettingsSlice } from './SettingsSlice';
 
 // import { get, set } from "idb-keyval";
 
@@ -77,6 +78,7 @@ const useStore = create(persist((...a) => ({
 	...createWalletSlice(...a),
 	...createReviewSlice(...a),
 	...createServerSyncSlice(...a),
+	...createSettingsSlice(...a),
 	_hasHydrated: false
 }),{
 	name: 'podfriend-v1',

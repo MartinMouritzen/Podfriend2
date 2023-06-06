@@ -12,6 +12,8 @@ import { IonSearchbar, IonToolbar, IonHeader, IonTitle, IonButtons, IonButton, I
 
 import './SearchPage.scss';
 
+import EmptyIllustration from 'images/flow-illustrations/empty.svg';
+
 import {NavContext} from '@ionic/react';
 
 const SearchPage = ({ match }) => {
@@ -28,6 +30,7 @@ const SearchPage = ({ match }) => {
 	const searchBar = useRef(null);
 	const [searchString,setSearchString] = useState('');
 	const [results,setResults] = useState([]);
+	const [searching,setSearching] = useState(false);
 
 	useEffect(() => {
 		setSearchString(match.params.searchQuery);
@@ -37,14 +40,17 @@ const SearchPage = ({ match }) => {
 	useEffect(() => {
 		if (searchString && searchString.length && searchString.length > 2) {
 			setResults([]);
+			setSearching(true);
 			searchPodcasts(searchString,'podcast')
 			.then((results) => {
 				setResults(results);
 				console.log(results);
+				setSearching(false);
 			})
 			.catch((error) => {
 				console.log('Error happened while searching');
 				console.log(error);
+				setSearching(false);
 			});
 		}
 		else {
@@ -80,14 +86,35 @@ const SearchPage = ({ match }) => {
 				}
 				{ searchString && searchString.length && searchString.length > 2 &&
 					<div style={{ paddingLeft: '16px', paddingRight: '16px' }}>
-						<h2>Results for &quot;{searchString}&quot;</h2>
+						{ (searching || (results && results.length > 0)) &&
+							<h2>Results for &quot;{searchString}&quot;</h2>
+						}
 
-						{ results && results.length === 0 &&
+						{ searching &&
 							<div className="loading">
 								<IonSpinner name="dots"></IonSpinner>
 							</div>
 						}
-						{ results && results.length > 0 &&
+						{ (results && results.length === 0) &&
+							<div className="emptyStatePage" style={{ textAlign: 'center', marginTop: 30 }}>
+								<div>
+									<img src={EmptyIllustration} />
+								</div>
+								<IonHeader collapse="condense" class="mainTitleHeader">
+									<IonToolbar>
+										<IonTitle size="large" style={{ textAlign: 'center'}}>
+											<div className="ion-text-wrap">
+												No results found
+											</div>
+										</IonTitle>
+									</IonToolbar>
+								</IonHeader>
+								<h3>
+									Sorry, I couldn't find any results for &quot;{searchString}&quot;
+								</h3>
+							</div>
+						}
+						{ (results && results.length > 0) &&
 							<PodcastList backButtonText="Search" podcasts={results} listType='list' />
 						}
 					</div>

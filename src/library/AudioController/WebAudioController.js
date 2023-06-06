@@ -1,5 +1,7 @@
 import AudioController from './AudioController.js';
 
+import useStore from 'store/Store';
+
 class WebAudioController extends AudioController {
 	useBrowserAudioElement = true;
 	browserShortcutsEnabled = true;
@@ -19,11 +21,11 @@ class WebAudioController extends AudioController {
 		if (this.browserShortcutsEnabled && 'mediaSession' in navigator) {
 			navigator.mediaSession.playbackState = "none";
 
-			try { navigator.mediaSession.setActionHandler('play',() => { this.play(); }); } catch (exception) { console.log('media exception: ' + exception); }
-			try { navigator.mediaSession.setActionHandler('pause',() => { this.pause(); }); } catch (exception) { console.log('media exception: ' + exception); }
-			try { navigator.mediaSession.setActionHandler('stop',() => { this.pause(); }); } catch (exception) { console.log('media exception: ' + exception); }
-			try { navigator.mediaSession.setActionHandler('seekbackward',() => { this.rewind(); }); } catch (exception) { console.log('media exception: ' + exception); }
-			try { navigator.mediaSession.setActionHandler('seekforward',() => { this.forward(); }); } catch (exception) { console.log('media exception: ' + exception); }
+			try { navigator.mediaSession.setActionHandler('play',() => { useStore.getState().audioPlay(); }); } catch (exception) { console.log('media exception: ' + exception); }
+			try { navigator.mediaSession.setActionHandler('pause',() => { useStore.getState().audioPause(); }); } catch (exception) { console.log('media exception: ' + exception); }
+			try { navigator.mediaSession.setActionHandler('stop',() => { useStore.getState().audioPause(); }); } catch (exception) { console.log('media exception: ' + exception); }
+			try { navigator.mediaSession.setActionHandler('seekbackward',() => { useStore.getState().audioRewind(); }); } catch (exception) { console.log('media exception: ' + exception); }
+			try { navigator.mediaSession.setActionHandler('seekforward',() => { useStore.getState().audioForward(); }); } catch (exception) { console.log('media exception: ' + exception); }
 			try { navigator.mediaSession.setActionHandler('seekto',() => { this.setCurrentTime(); }); } catch (exception) { console.log('media exception: ' + exception); }
 			try { navigator.mediaSession.setActionHandler('previoustrack',() => { this.previousTrack(); }); } catch (exception) { console.log('media exception: ' + exception); }
 			try { navigator.mediaSession.setActionHandler('nexttrack',() => { this.nextTrack(); }); } catch (exception) { console.log('media exception: ' + exception); }
@@ -134,6 +136,12 @@ class WebAudioController extends AudioController {
 			console.log('Play exception');
 		}
 		return Promise.resolve(true);
+	}
+	rewind() {
+		
+	}
+	forward() {
+		
 	}
 	setVolume(newVolume) {
 		this.audioComponent.volume = newVolume;

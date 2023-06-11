@@ -24,11 +24,11 @@ class WebAudioController extends AudioController {
 			try { navigator.mediaSession.setActionHandler('play',() => { useStore.getState().audioPlay(); }); } catch (exception) { console.log('media exception: ' + exception); }
 			try { navigator.mediaSession.setActionHandler('pause',() => { useStore.getState().audioPause(); }); } catch (exception) { console.log('media exception: ' + exception); }
 			try { navigator.mediaSession.setActionHandler('stop',() => { useStore.getState().audioPause(); }); } catch (exception) { console.log('media exception: ' + exception); }
-			try { navigator.mediaSession.setActionHandler('seekbackward',() => { useStore.getState().audioRewind(); }); } catch (exception) { console.log('media exception: ' + exception); }
+			try { navigator.mediaSession.setActionHandler('seekbackward',() => { useStore.getState().audioBackward(); }); } catch (exception) { console.log('media exception: ' + exception); }
 			try { navigator.mediaSession.setActionHandler('seekforward',() => { useStore.getState().audioForward(); }); } catch (exception) { console.log('media exception: ' + exception); }
 			try { navigator.mediaSession.setActionHandler('seekto',() => { this.setCurrentTime(); }); } catch (exception) { console.log('media exception: ' + exception); }
-			try { navigator.mediaSession.setActionHandler('previoustrack',() => { this.previousTrack(); }); } catch (exception) { console.log('media exception: ' + exception); }
-			try { navigator.mediaSession.setActionHandler('nexttrack',() => { this.nextTrack(); }); } catch (exception) { console.log('media exception: ' + exception); }
+			try { navigator.mediaSession.setActionHandler('previoustrack',() => { useStore.getState().audioSkipBackward(); }); } catch (exception) { console.log('media exception: ' + exception); }
+			try { navigator.mediaSession.setActionHandler('nexttrack',() => { useStore.getState().audioSkipForward(); }); } catch (exception) { console.log('media exception: ' + exception); }
 		}
 	}
 	/**

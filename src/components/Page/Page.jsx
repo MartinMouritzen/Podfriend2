@@ -75,7 +75,7 @@ function useHookWithRefCallback(setScrollableContentRef = false) {
 	return [setRef]
 }
 
-const Page = ({ id = null, title = "Undefined", defaultHeader = true, defaultHref = '/', showBackButton = true, backButtonText = "back", className = "", children, setScrollableContentRef = false, onRefresh = false, setCurrentPage = false}) => {
+const Page = ({ id = null, title = "Undefined", defaultHeader = true, defaultHref = '/', showBackButton = true, backButtonText = "back", className = "", children, setScrollableContentRef = false, onRefresh = false, setCurrentPage = false }) => {
 	const { breakpoint, maxWidth, minWidth } = useBreakpoint(BREAKPOINTS, 'desktop');
 	const location = useLocation();
 
@@ -143,7 +143,7 @@ const Page = ({ id = null, title = "Undefined", defaultHeader = true, defaultHre
 					</IonButtons>
 				</IonToolbar>
 			</IonHeader>
-			<IonContent fullscreen={false} id="main" forceOverscroll={false} ref={contentNodeRef}>
+			<IonContent fullscreen={true} id="main" forceOverscroll={false} ref={contentNodeRef}>
 				{ defaultHeader &&
 					<IonHeader collapse="condense" className="mainTitleHeader">
 						<IonToolbar>

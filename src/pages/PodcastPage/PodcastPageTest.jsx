@@ -55,6 +55,7 @@ const PodcastPage = ({ match }) => {
 	const podcastPath = match.params.podcastPath;
 
 	const seasonType =  useStore((state) => state.podcasts[podcastPath] ? state.podcasts[podcastPath].seasonType : undefined);
+	const colors =  useStore((state) => state.podcasts[podcastPath] ? state.podcasts[podcastPath].colors : false);
 
 	const [podcastRSSData,setPodcastRSSData] = useState(false);
 
@@ -315,10 +316,36 @@ const PodcastPage = ({ match }) => {
 		}
 	};
 
+	if (colors) {
+	var color1 = colors.Vibrant;
+	var color2 = colors.LightVibrant;
+	var color3 = colors.DarkVibrant;
+	var color4 = colors.LightMuted;
+	var color5 = colors.DarkMuted;
+	}
+
+	// console.log(colors.LightVibrant);
+
+	/*
+radial-gradient(circle farthest-corner at top left, ${color1['hex']} 0%, rgba(255, 255, 255, 0) 50%),
+radial-gradient(circle farthest-side at top right, #FFFFFF 0%, rgba(${color2['rgb'][0]},${color1['rgb'][1]},${color1['rgb'][2]},0) 10%),
+radial-gradient(circle farthest-corner at bottom right, ${color3['hex']} 0%, ${color4['hex']} 33%),
+radial-gradient(circle farthest-corner at top right, ${color1['hex']} 0%, rgba(155, 221, 240, 0) 50%),
+radial-gradient(ellipse at bottom center, #fe2b00 0%, rgba(254, 43, 0, 0) 80%)
+*/
+				/*
+				backgroundImage: colors ? `
+					radial-gradient(circle farthest-corner at top left, ${color1['hex']} 0%, rgba(225, 243, 97, 0) 50%),
+					radial-gradient(circle farthest-side at top right, ${color2['hex']} 0%, rgba(${color2['rgb'][0]},${color2['rgb'][1]},${color2['rgb'][2]},0) 30%),
+					radial-gradient(circle farthest-corner at bottom right, ${color3['hex']} 0%, rgba(204, 104, 119, 0) 33%),
+					radial-gradient(circle farthest-corner at top right, ${color4['hex']} 0%, rgba(155, 221, 240, 0) 50%),
+					radial-gradient(ellipse at bottom center, ${color5['hex']} 0%, rgba(254, 43, 0, 0) 80%)
+				` : false
+			*/
 	return (
-		<Page defaultHeader={false} title={podcastData ? podcastData.name : 'Loading...'} className="podcastPage greyPage" setScrollableContentRef={setScrollableContentRef} onRefresh={doRefresh}>
+		<Page defaultHeader={false} title={podcastData ? podcastData.name : 'Loading...'} className="podcastPage" setScrollableContentRef={setScrollableContentRef} onRefresh={doRefresh}>
 			<div className="podcastPageContent">
-				<div className="podcastHeader">
+				<div className="podcastHeader" style={{ background: 'transparent', border: 0 }}>
 					<div className="coverHolder">
 						{ (podcastState === 'loading' || !podcastData) &&
 							<IonSkeletonText animated={true} style={{ width: '90vw', height: '90vw', maxWidth: '400px', maxHeight: '400px' }} className="cover"></IonSkeletonText>

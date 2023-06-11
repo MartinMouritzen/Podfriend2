@@ -34,6 +34,16 @@ export const createPodcastSlice = (set, get) => ({
 	***********************************************************************************/
 	continueListeningEpisodeListMaxSize: 50,
 	continueListeningEpisodeList: [],
+	deletePodcastFromContinueListeningList: (episodeGuid) => {
+		var continueListeningEpisodeList = get().continueListeningEpisodeList;
+		set(
+			produce((state) => {
+				const episodeIndex = state.continueListeningEpisodeList.findIndex((el) => { return el.episodeGuid == episodeGuid; });
+				state.continueListeningEpisodeList.splice(episodeIndex, 1);
+			})
+		)
+		
+	},
 	/**********************************************************************************
 	* Favorite settings
 	***********************************************************************************/
@@ -570,6 +580,44 @@ export const createPodcastSlice = (set, get) => ({
 			})
 		)
 	},
+	getPrimaryColorsForImage: (imageUrl) => {
+		return Vibrant.from(imageUrl).getPalette()
+		.then((palette) => {
+			var colors = {};
+			for(let color in palette) {
+				var yiq = palette[color].getYiq();
+				colors[color] = {
+					type: color,
+					yiq: yiq,
+					rgb: palette[color].getRgb(),
+					hex: palette[color].getHex(),
+					titleTextColor:  yiq < 200 ? '#FFFFFF' : '#000000',
+					bodyTextColor: yiq < 150 ? '#FFFFFF' : '#000000'
+				};
+			}
+			// console.log(colors);
+
+			/*
+			palette.yiq = palette['Vibrant'].getYiq()
+			palette.titleText = palette.yiq < 200 ? '#ffffff' : '#000000';
+			palette.bodyText = palette.yiq < 150 ? '#ffffff' : '#000000';
+			*/
+
+			return colors;
+		});
+	},
+	getPrimaryColorsForPodcast: (podcastPath,podcastData) => {
+		return get().getPrimaryColorsForImage('https://podcastcovers.podfriend.com/' + podcastPath + '/400x400/' + podcastData.artworkUrl600)
+		.then((colors) => {
+			console.log(colors);
+			set(
+				produce((state) => {
+					state.podcasts[podcastPath].colors = colors;
+				})
+			);
+			return colors;
+		});
+	},
 	getPodcastFromCache: (podcastPath) => {
 		return ClientStorage.getPodcast(podcastPath)
 		.then((podcastData) => {
@@ -578,6 +626,12 @@ export const createPodcastSlice = (set, get) => ({
 				if (!podcastState) {
 					get().__updatePodcastState(podcastPath,podcastData,podcastState);
 				}
+				// if (!podcastState.colors) {
+					// console.log('podcastState.colors refresh');
+					get().getPrimaryColorsForPodcast(podcastPath,podcastData);
+				// }
+				// console.log('podcastState.colors2');
+				// console.log(podcastState.colors);
 				return podcastData;
 			}
 			return false;
@@ -600,6 +654,13 @@ export const createPodcastSlice = (set, get) => ({
 
 			var podcastState = get().podcasts[podcastPath];
 			get().__updatePodcastState(podcastPath,podcastData,podcastState);
+			if (!podcastState) {
+				podcastState = get().podcasts[podcastPath];
+			}
+
+			if (!podcastState.colors) {
+				get().getPrimaryColorsForPodcast(podcastPath,podcastData);
+			}
 
 			return data;
 		})

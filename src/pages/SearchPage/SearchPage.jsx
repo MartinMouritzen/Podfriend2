@@ -95,7 +95,7 @@ const SearchPage = ({ match }) => {
 								<IonSpinner name="dots"></IonSpinner>
 							</div>
 						}
-						{ (results && results.length === 0) &&
+						{ (!searching && results && results.length === 0) &&
 							<div className="emptyStatePage" style={{ textAlign: 'center', marginTop: 30 }}>
 								<div>
 									<img src={EmptyIllustration} />

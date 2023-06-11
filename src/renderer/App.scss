@@ -35,9 +35,6 @@
 	--list-grid-cover-size: 140px;
 	--list-scroll-cover-size: 210px;
 
-	--grey-page-background: #eaebe9;
-	--grey-page-background: var(--grey--200);
-
 	--badge-color: #3554d1;
 
 	--primary--100: rgba(230, 243, 255, 1);
@@ -64,6 +61,7 @@
 	--grey--200: rgba(225, 231, 236, 1);
 	--grey--100: rgba(248, 249, 250, 1);
 	
+	--grey-page-background: var(--grey--200);
 
 	/*--miniplayer-background-color: rgba(23,78,161,0.9); */
 
@@ -268,6 +266,9 @@ ion-content {
 		}
 	}
 
+}
+ion-button {
+	--border-radius: 5px;
 }
 ion-button[shape=circle] {
     --border-radius: 50%;

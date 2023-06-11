@@ -66,11 +66,16 @@ export const createPlayerSlice = (set,get) => ({
 			};
 		}
 		else {
-			if (!podcastData.episodes) {
+			if (podcastData.episodes) {
+				episode = podcastData.episodes.find(e => e.guid === episodeGuid);
+			}
+
+			if (!podcastData.episodes || !episode) {
 				console.log('No episodes in podcastdata when trying to play episode. Trying to get it from server (' + podcastPath + ')');
 				podcastData = await get().retrievePodcastFromServer(podcastPath);
+
+				episode = podcastData.episodes.find(e => e.guid === episodeGuid);
 			}
-			episode = podcastData.episodes.find(e => e.guid === episodeGuid);
 		}
 		
 		if (episode) {

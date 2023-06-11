@@ -94,6 +94,7 @@ const Player = ({ audioController, navigateToPath, platform }) => {
 	const resetPlayingSegmentTime = useStore((state) => state.resetPlayingSegmentTime);
 	const stopPlayingSegmentTime = useStore((state) => state.stopPlayingSegmentTime);
 	
+	const colors =  useStore((state) => state.podcasts[state.activePodcastPath] ? state.podcasts[state.activePodcastPath]?.colors : false);
 	
 	const onBackward = useStore((state) => state.audioBackward);
 	const onForward = useStore((state) => state.audioForward);
@@ -460,7 +461,10 @@ const Player = ({ audioController, navigateToPath, platform }) => {
 		}
 	},[segmentVisible]);
 
-	var playerStyle = {};
+	var playerStyle = { };
+	if (colors && colors.Vibrant) {
+		// playerStyle.backgroundColor = `rgba(${colors.Vibrant['rgb'][0]},${colors.Vibrant['rgb'][1]},${colors.Vibrant['rgb'][2]},0.6)`;
+	}
 
 	const [actionSheetPresent] = useIonActionSheet();
 	const showMoreSheet = () => {

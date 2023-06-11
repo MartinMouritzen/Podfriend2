@@ -11,12 +11,14 @@
 		margin-right: 30px;
 		margin-bottom: 10px;
 
+		flex: 1;
+
 		cursor: pointer;
 
 		display: flex;
 		flex-direction: column;
 
-		justify-content: center;
+		justify-content: start;
 		align-items: center;
 
 		.photo {
@@ -24,14 +26,19 @@
 			height: 90px;
 			border-radius: 50%;
 			margin-bottom: 5px;
+
+			object-fit: cover;
 		}
 		.name {
 			font-size: 14px;
 			color: #000000;
+
+			text-align: center;
 		}
 		.role {
 			font-size: 14px;
 			color: rgba(0,0,0,0.8);
+			text-align: center;
 		}
 	}
 }

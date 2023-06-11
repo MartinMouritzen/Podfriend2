@@ -5,8 +5,8 @@ import {
 	homeOutline as homeIcon,
 	home as homeIconSelected,
 
-	starOutline as followedIcon,
-	star as followedIconSelected,
+	heartOutline as followedIcon,
+	heart as followedIconSelected,
 
 	mapOutline as discoverIcon,
 	map as discoverIconSelected,
@@ -73,11 +73,11 @@ const BottomMenu = ({ routes }) => {
 				<IonTabButton tab="about" href="/wallet/" selected={selected === 'wallet'}>
 					<IonIcon icon={selected === 'wallet' ? walletIconSelected : walletIcon} />
 					<IonLabel>
-						{ walletBalance !== false &&
+						{ (walletBalance !== false && walletBalance !== 0) &&
 							<>{(walletBalance).toLocaleString()}</>
 						}
-						{ walletBalance === false &&
-							Wallet
+						{ (walletBalance === false || walletBalance === 0) &&
+							<>Wallet</>
 						}
 					</IonLabel>
 				</IonTabButton>

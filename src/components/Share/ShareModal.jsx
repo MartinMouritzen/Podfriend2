@@ -15,12 +15,14 @@ const ShareModal = ({ isOpen, onDismiss, podcast, episode }) => {
 	const episodeState = useStore((state) => state.podcasts[podcast.path]?.episodes[episode.guid]);
 
 	const [shareMessage,setShareMessage] = useState('');
-	const [shareUrl,setShareUrl] = useState('https://www.podfriend.com/podcast/' + podcast.path + '/' + episode.id);
+	const [shareUrl,setShareUrl] = useState('https://www.podfriend.com/podcast/' + podcast.path + '/episode/' + encodeURIComponent(episode.guid));
 	const [includeTime,setIncludeTime] = useState(false);
 	const [timeStamp,setTimeStamp] = useState(TimeUtil.formatPrettyDurationText(Math.round(episodeState?.currentTime)));
 
+	console.log(episode);
+
 	useEffect(() => {
-		var newShareUrl = 'https://www.podfriend.com/podcast/' + podcast.path + '/' + episode.id;
+		var newShareUrl = 'https://www.podfriend.com/podcast/' + podcast.path + '/episode/' + encodeURIComponent(episode.guid);
 
 		if (includeTime) {
 			newShareUrl += '?t=' + TimeUtil.HmsToSeconds(timeStamp)

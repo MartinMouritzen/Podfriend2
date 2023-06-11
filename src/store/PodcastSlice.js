@@ -628,7 +628,7 @@ export const createPodcastSlice = (set, get) => ({
 				}
 				// if (!podcastState.colors) {
 					// console.log('podcastState.colors refresh');
-					get().getPrimaryColorsForPodcast(podcastPath,podcastData);
+					// get().getPrimaryColorsForPodcast(podcastPath,podcastData);
 				// }
 				// console.log('podcastState.colors2');
 				// console.log(podcastState.colors);
@@ -642,7 +642,7 @@ export const createPodcastSlice = (set, get) => ({
 		.then((data) => {
 			console.log(data);
 			if (data.error) {
-				console.log('Error fetching podcast in Redux::fetchPodcast');
+				console.log('Error fetching podcast in PodcastSlice::fetchPodcast');
 				console.log(data.error);
 				
 				return Promise.reject('Error fetching podcast: ' + podcastPath);
@@ -658,9 +658,9 @@ export const createPodcastSlice = (set, get) => ({
 				podcastState = get().podcasts[podcastPath];
 			}
 
-			if (!podcastState.colors) {
-				get().getPrimaryColorsForPodcast(podcastPath,podcastData);
-			}
+			// if (!podcastState.colors) {
+				// get().getPrimaryColorsForPodcast(podcastPath,podcastData);
+			// }
 
 			return data;
 		})

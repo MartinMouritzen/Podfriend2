@@ -35,7 +35,7 @@
     "mac": {
       "icon": "./assets/icons/podfriend.icns",
       "target": {
-        "target": "default",
+        "target": "dmg",
         "arch": [
           "arm64",
           "x64"

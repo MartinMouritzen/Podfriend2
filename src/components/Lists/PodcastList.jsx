@@ -2,9 +2,10 @@ import { IonSlides, IonSlide, IonLabel, IonRouterLink, IonSkeletonText } from '@
 import PodcastImage from 'components/PodcastImage/PodcastImage';
 
 import { Link } from 'react-router-dom';
-import CoverCarousel from './CoverCarousel';
+// import CoverCarousel from './CoverCarousel';
 
 const PodcastList = ({ podcasts, listType = 'scroll', filterString = '', backButtonText = false, displayLoadingCovers = 10 }) => {
+	/*
 	if (listType === 'scroll') {
 		return (
 			<CoverCarousel
@@ -14,6 +15,7 @@ const PodcastList = ({ podcasts, listType = 'scroll', filterString = '', backBut
 			/>
 		);
 	}
+	*/
 
 	return (
 		<div className={'podcastGrid ' + listType}>

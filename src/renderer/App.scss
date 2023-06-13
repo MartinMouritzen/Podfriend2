@@ -759,6 +759,8 @@ ion-menu {
 			padding-right: 5px;
 
 			.podcastItem, .coverLoading {
+				margin-left: 10px;
+				margin-right: 5px;
 				max-width: var(--list-scroll-cover-size);
 				min-width: var(--list-scroll-cover-size);
 			}
@@ -780,7 +782,7 @@ ion-menu {
 		height: 120px;
 	}
 	&.scroll, &.grid {
-		gap: 5px;
+		gap: 10px;
 		.podcastItem {
 			
 		}
@@ -970,7 +972,6 @@ ion-menu {
 	}
 	@media (any-hover: hover) {
 		.podcastItem {
-			width: 190px;
 			display: flex;
 			justify-content: start;
 			align-items: center;

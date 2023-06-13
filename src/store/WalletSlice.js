@@ -197,6 +197,10 @@ export const createWalletSlice = (set,get) => ({
 	},
 	streamValue: () => {
 		var activePodcast = get().activePodcast;
+
+		if (!activePodcast.value) {
+			return;
+		}
 		var podcastState = get().podcasts[activePodcast.path];
 
 		var streamAmount = podcastState.streamAmount ? podcastState.streamAmount : get().defaultStreamAmount;

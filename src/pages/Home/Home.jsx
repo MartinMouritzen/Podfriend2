@@ -115,7 +115,7 @@ const Home = ({  }) => {
 					<div className='sectionSubTitle'>Trending</div>
 					<div className='sectionTitle'>Podcasts</div>
 				</div>
-				<div className="sectionContents">
+				<div className="sectionContents noPadding">
 					<TrendingPodcasts backButtonText="Home" />
 				</div>
 			</div>

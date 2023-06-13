@@ -27,12 +27,15 @@ const CoverCarousel = ({ type, podcasts, backButtonText }) => {
 	return (
 		<Swiper
 			slidesPerView='auto'
+			cssMode={true}
 			slidesPerGroup={1}
 			slidesPerGroupAuto={true}
 			spaceBetween={10}
 			slidesOffsetBefore={10}
 			slidesOffsetAfter={10}
+			touchMoveStopPropagation={true}
 			touchStartForcePreventDefault={true}
+
 			/* navigation={('ontouchstart' in window ? false : true)} */
 			navigation={{
 				nextEl: '.swiper-button-next',

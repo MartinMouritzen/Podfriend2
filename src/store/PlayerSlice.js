@@ -118,6 +118,7 @@ export const createPlayerSlice = (set,get) => ({
 			shouldPlay: false
 		});
 		get().audioController.pause();
+		get().synchronizeEpisodeState();
 	},
 	audioPlay: () => {
 		set({

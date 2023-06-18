@@ -4,42 +4,13 @@ import { Link } from 'react-router-dom';
 
 import categories from 'constants/categories';
 
-// Import Swiper React components
-import { Swiper, SwiperSlide } from "swiper/react";
-
-// Import Swiper styles
-import "swiper/css";
-import "swiper/css/pagination";
-import "swiper/css/navigation";
-
-// import required modules
-import { Navigation, Pagination } from "swiper";
-
 const CategoryList = () => {
 	return (
-		<Swiper
-			slidesPerView='auto'
-			slidesPerGroup={1}
-			slidesPerGroupAuto={true}
-			spaceBetween={10}
-			slidesOffsetBefore={10}
-			slidesOffsetAfter={10}
-			/* navigation={('ontouchstart' in window ? false : true)} */
-			navigation={{
-				nextEl: '.swiper-button-next',
-				prevEl: '.swiper-button-prev',
-			}}
-			pagination={{
-				clickable: true,
-			}}
-			modules={[Navigation, Pagination]}
-
-			className="coverSwiper categoryList"
-		>
+		<div className={'podcastGrid scroll categoryList'}>
 			{ Object.entries(categories).map(([key,value]) => {
 				const category = categories[key];
 				return (
-					<SwiperSlide key={category.id}>
+					
 						<Link
 							to={{
 								pathname: '/categories/' + category.key + '/'
@@ -56,11 +27,11 @@ const CategoryList = () => {
 								</div>
 							</div>
 						</Link>
-					</SwiperSlide>
+					
 				);
 			} ) }
 		
-		</Swiper>
+		</div>
 	);
 };
 export default CategoryList;

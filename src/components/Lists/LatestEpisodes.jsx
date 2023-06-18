@@ -49,37 +49,19 @@ const LatestEpisodes = ({ backButtonText = false }) => {
 	};
 
 	return (
-		<Swiper
-			slidesPerView='auto'
-			slidesPerGroup={1}
-			slidesPerGroupAuto={true}
-			spaceBetween={10}
-			slidesOffsetBefore={10}
-			slidesOffsetAfter={10}
-			/* navigation={('ontouchstart' in window ? false : true)} */
-			navigation={{
-				nextEl: '.swiper-button-next',
-				prevEl: '.swiper-button-prev',
-			}}
-			
-			modules={[Navigation]}
-			className="coverSwiper"
-		>
+		<div className={'podcastGrid scroll'}>
 			{ (latestEpisodes === false || latestEpisodes.length === 0 && refreshingLatestEpisodes) && [...Array(7)].map((e, i) => {
 				return (
-					<SwiperSlide key={'loading' + i}>
-						<div className="podcastItem">
-							<IonSkeletonText animated={true} className="cover" style={{ minHeight: 208, marginTop: 0 }} ></IonSkeletonText>
-							<IonSkeletonText animated={true} style={{ height: 45 }}></IonSkeletonText>
-							<IonSkeletonText animated={true} style={{ height: 25 }}></IonSkeletonText>
-						</div>
-					</SwiperSlide>
+					<div className="podcastItem" key={'loading' + i}>
+						<IonSkeletonText animated={true} className="cover" style={{ minHeight: 208, marginTop: 0 }} ></IonSkeletonText>
+						<IonSkeletonText animated={true} style={{ height: 45 }}></IonSkeletonText>
+						<IonSkeletonText animated={true} style={{ height: 25 }}></IonSkeletonText>
+					</div>
 				);
 			}) }
 			{ latestEpisodes !== false && latestEpisodes.map((episode) => {
 				return (
-					<SwiperSlide key={episode.guid ? episode.guid : episode.url}>
-						<div onClick={() => { onPlay(episode.path,false,episode,episode.enclosureUrl) }} className="podcastItem">
+						<div onClick={() => { onPlay(episode.path,false,episode,episode.enclosureUrl) }} className="podcastItem" key={episode.guid ? episode.guid : episode.url}>
 							<PodcastImage
 								podcastPath={episode.path}
 								width={400}
@@ -107,12 +89,9 @@ const LatestEpisodes = ({ backButtonText = false }) => {
 								
 							</div>
 						</div>
-					</SwiperSlide>
 				);
 			})}
-			<div className="swiper-button-prev"></div>
-			<div className="swiper-button-next"></div>
-		</Swiper>
+		</div>
 	);
 };
 export default LatestEpisodes;

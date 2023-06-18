@@ -23,7 +23,7 @@ const MainMenu = () => {
  	    menuController.toggle('first');
 	};
 
-	const {navigate} = useContext(NavContext);
+	// const {navigate} = useContext(NavContext);
 
 	const router = useIonRouter();
 

@@ -22,7 +22,15 @@ const PodcastImage = React.memo(({ podcastId = false, podcastPath = false, src, 
 		return new Promise((resolve,reject) => {
 			const image = new Image(src);
 			image.onerror = () => {
-				setStatus(STATUS_ERROR);
+				if (src === originalSource) {
+					setStatus(STATUS_ERROR);
+				}
+				else {
+					setImageSource(originalSource);
+					setStatus(STATUS_PRELOAD);
+					loadImage(originalSource);
+				}
+
 			};
 			image.onload = () => {
 				setStatus(STATUS_LOADED);

@@ -53,7 +53,10 @@ const PodcastImageFallback = ({ podcastId, podcastPath, imageSource, imageErrorT
 				height: coverHeight,
 				contentVisibility: 'auto'
 			}}
-			className={className + ' fallBack'} originalsource={originalSource}>
+			className={className + ' fallBack'}
+			originalsource={originalSource}
+			imageSource={imageSource}
+		>
 				<div className="fallBack">
 					{imageErrorText}
 				</div>

@@ -379,6 +379,9 @@ export const createPlayerSlice = (set,get) => ({
 		set(
 			produce((state) => {
 				state.streamDataLoading = false;
+				if (!state.podcasts[activePodcast.path].episodes[activeEpisode.guid]) {
+					state.podcasts[activePodcast.path].episodes[activeEpisode.guid] = {};
+				}
 				state.podcasts[activePodcast.path].episodes[activeEpisode.guid].duration = newDuration;
 			})
 		);

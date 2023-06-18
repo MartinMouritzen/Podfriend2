@@ -12,16 +12,6 @@ import {
 
 import PodcastImage from 'components/PodcastImage/PodcastImage';
 
-// Import Swiper React components
-import { Swiper, SwiperSlide } from "swiper/react";
-
-// Import Swiper styles
-import "swiper/css";
-import "swiper/css/pagination";
-import "swiper/css/navigation";
-
-// import required modules
-import { Navigation, Pagination } from "swiper";
 
 const ContinueListening = ({ backButtonText = false }) => {
 	const continueListeningEpisodeList = useStore((state) => state.continueListeningEpisodeList);
@@ -36,35 +26,17 @@ const ContinueListening = ({ backButtonText = false }) => {
 	}
 
 	return (
-		<Swiper
-			slidesPerView='auto'
-			slidesPerGroup={1}
-			slidesPerGroupAuto={true}
-			spaceBetween={10}
-			slidesOffsetBefore={10}
-			slidesOffsetAfter={10}
-			/* navigation={('ontouchstart' in window ? false : true)} */
-			navigation={{
-				nextEl: '.swiper-button-next',
-				prevEl: '.swiper-button-prev',
-			}}
-			modules={[Navigation]}
-
-			className="coverSwiper"
-		>
+		<div className={'coverSwiper'}>
 			{ continueListeningEpisodeList !== false && continueListeningEpisodeList.map((continueListeningEpisode) => {
 				return (
-					<SwiperSlide key={continueListeningEpisode.episodeGuid}>
-						<ContinueListeningEpisode
-							podcastPath={continueListeningEpisode.path}
-							continueListeningEpisode={continueListeningEpisode}
-						/>
-					</SwiperSlide>
+					<ContinueListeningEpisode
+						key={continueListeningEpisode.episodeGuid}
+						podcastPath={continueListeningEpisode.path}
+						continueListeningEpisode={continueListeningEpisode}
+					/>
 				);
 			})}
-			<div className="swiper-button-prev"></div>
-			<div className="swiper-button-next"></div>
-		</Swiper>
+		</div>
 	);
 };
 const ContinueListeningEpisode = ({ podcastPath, continueListeningEpisode }) => {

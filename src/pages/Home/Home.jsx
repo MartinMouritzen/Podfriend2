@@ -85,7 +85,7 @@ const Home = ({  }) => {
 			}
 			{ /*<DeviceInfo /> */ }
 			{ continueListeningEpisodeList.length > 0 &&
-				<div className='section noPadding'>
+				<div className='section'>
 					<div className='sectionInner'>
 						<div className='sectionSubTitle'>Continue</div>
 						<div className='sectionTitle'>listening</div>
@@ -105,7 +105,7 @@ const Home = ({  }) => {
 							}
 						</div>
 					</div>
-					<div className="sectionContents noPadding">
+					<div className="sectionContents">
 						<LatestEpisodes backButtonText="Home" />
 					</div>
 				</div>
@@ -115,7 +115,7 @@ const Home = ({  }) => {
 					<div className='sectionSubTitle'>Trending</div>
 					<div className='sectionTitle'>Podcasts</div>
 				</div>
-				<div className="sectionContents noPadding">
+				<div className="sectionContents">
 					<TrendingPodcasts backButtonText="Home" />
 				</div>
 			</div>
@@ -124,7 +124,7 @@ const Home = ({  }) => {
 					<div className='sectionSubTitle'>Latest listened</div>
 					<div className='sectionTitle'>by others</div>
 				</div>
-				<div className="sectionContents noPadding">
+				<div className="sectionContents">
 					<OtherUsersListensToCarousel />
 				</div>
 			</div>

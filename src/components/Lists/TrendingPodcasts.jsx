@@ -16,9 +16,7 @@ const TrendingPodcasts = ({ backButtonText = false }) => {
 	},[]);
 
 	return (
-		<div>
-			<PodcastList backButtonText={backButtonText} podcasts={trendingPodcasts} />
-		</div>
+		<PodcastList backButtonText={backButtonText} podcasts={trendingPodcasts} />
 	);
 };
 export default TrendingPodcasts;

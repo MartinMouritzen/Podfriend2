@@ -12,12 +12,14 @@ const container = document.getElementById('root');
 const root = createRoot(container);
 
 const audioController = new WebAudioController();
-// const audioController = (Capacitor.isNative) ? new NativeMobileAudioController() : new WebAudioController();
+const audioController = (Capacitor.isNative) ? new NativeMobileAudioController() : new WebAudioController();
 audioController.startService();
 audioController.init();
 
 if (Capacitor.isNative) {
+	console.log('Is native');
 	document.addEventListener('deviceready', function () {
+		console.log('Setting Podfriend permissions to also run in the background');
 		this.backgroundMode.setDefaults({
 			title: 'Podfriend',
 			text: 'Podcast player',

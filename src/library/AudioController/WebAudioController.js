@@ -26,7 +26,7 @@ class WebAudioController extends AudioController {
 			try { navigator.mediaSession.setActionHandler('stop',() => { useStore.getState().audioPause(); }); } catch (exception) { console.log('media exception: ' + exception); }
 			try { navigator.mediaSession.setActionHandler('seekbackward',() => { useStore.getState().audioBackward(); }); } catch (exception) { console.log('media exception: ' + exception); }
 			try { navigator.mediaSession.setActionHandler('seekforward',() => { useStore.getState().audioForward(); }); } catch (exception) { console.log('media exception: ' + exception); }
-			try { navigator.mediaSession.setActionHandler('seekto',() => { this.setCurrentTime(); }); } catch (exception) { console.log('media exception: ' + exception); }
+			try { navigator.mediaSession.setActionHandler('seekto',(details) => { this.setCurrentTime(details.seekTime); }); } catch (exception) { console.log('media exception: ' + exception); }
 			try { navigator.mediaSession.setActionHandler('previoustrack',() => { useStore.getState().audioSkipBackward(); }); } catch (exception) { console.log('media exception: ' + exception); }
 			try { navigator.mediaSession.setActionHandler('nexttrack',() => { useStore.getState().audioSkipForward(); }); } catch (exception) { console.log('media exception: ' + exception); }
 		}
@@ -48,9 +48,6 @@ class WebAudioController extends AudioController {
 				sizes: '200x200',
 				type: 'image/png'
 			}];
-
-			// console.log('setting cover image');
-			// console.log(trackClone);
 
 			navigator.mediaSession.metadata = new MediaMetadata(trackClone);
 		}
@@ -85,12 +82,21 @@ class WebAudioController extends AudioController {
 	/**
 	*
 	*/
-	setCurrentTime(newTime) {
+	setCurrentTime(newTime,usePrecision = false) {
+		if (newTime < 0) {
+			newTime = 0;
+		}
+
 		if (this.audioElement) {
 			if (isNaN(newTime)) {
 				return Promise.resolve(true);
 			}
-			this.audioElement.currentTime = newTime;
+			if (!usePrecision && this.audioElement.fastSeek) {
+				this.audioElement.fastSeek(newTime);
+			}
+			else {
+				this.audioElement.currentTime = newTime;
+			}
 		}
 		return Promise.resolve(true);
 	}

@@ -1,8 +1,10 @@
-import AudioController from 'AudioController.js';
+import WebAudioController from 'WebAudioController.js';
 
 import { MusicControls } from '@ionic-native/music-controls';
 
-class WebAudioController extends AudioController {
+import useStore from 'store/Store';
+
+class HybridMobileAudioController extends WebAudioController {
 	useBrowserAudioElement = true;
 
 	/**
@@ -11,84 +13,36 @@ class WebAudioController extends AudioController {
 	constructor() {
 		super();
 		this.musicControls = MusicControls;
-		this.audioElement = false;
 		this.coverServerURL = 'https://podcastcovers.podfriend.com/';
 	}
-	startService() {
-		
-	}
-	init() {
-		if ('mediaSession' in navigator) {
-			navigator.mediaSession.playbackState = "none";
-
-			try { navigator.mediaSession.setActionHandler('play',() => { this.play(); }); } catch (exception) { console.log('media exception: ' + exception); }
-			try { navigator.mediaSession.setActionHandler('pause',() => { this.pause(); }); } catch (exception) { console.log('media exception: ' + exception); }
-			try { navigator.mediaSession.setActionHandler('stop',() => { this.pause(); }); } catch (exception) { console.log('media exception: ' + exception); }
-			try { navigator.mediaSession.setActionHandler('seekbackward',() => { this.rewind(); }); } catch (exception) { console.log('media exception: ' + exception); }
-			try { navigator.mediaSession.setActionHandler('seekforward',() => { this.forward(); }); } catch (exception) { console.log('media exception: ' + exception); }
-			try { navigator.mediaSession.setActionHandler('seekto',() => { this.setCurrentTime(); }); } catch (exception) { console.log('media exception: ' + exception); }
-			try { navigator.mediaSession.setActionHandler('previoustrack',() => { this.previousTrack(); }); } catch (exception) { console.log('media exception: ' + exception); }
-			try { navigator.mediaSession.setActionHandler('nexttrack',() => { this.nextTrack(); }); } catch (exception) { console.log('media exception: ' + exception); }
-		}
-	}
 	/**
 	*
-	*/
-	setAudioElement(audioElement) {
-		this.audioElement = audioElement;
-	}
-	/**
-	*
-	*/
-	setCoverImage(src) {
-		var trackClone = {...this.playingTrack};
-		trackClone.artwork = [{
-			src: src,
-			sizes: '200x200',
-			type: 'image/png'
-		}];
+	**/
+	__setInternalCurrentPosition(timeInSeconds) {
+		this.currentPosition = timeInSeconds;
 
-		// console.log('setting cover image');
-		// console.log(trackClone);
-
-		navigator.mediaSession.metadata = new MediaMetadata(trackClone);
-	}
-	/**
-	*
-	*/
-	restoreCoverImage() {
-		console.log('restoring cover image');
-		navigator.mediaSession.metadata = new MediaMetadata(this.playingTrack);
-	}
-	/**
-	*
-	*/
-	setPlaybackRate(playbackRate) {
-		if (this.audioElement && this.audioElement.current) {
-			if (!playbackRate || Number.isNaN(playbackRate)) {
-				playbackRate = 1;
-			}
-
-			this.audioElement.current.playbackRate = playbackRate;
+		if (this.musicControlsInitialized) {
+			this.musicControls.updateElapsed({
+				elapsed: this.currentPosition,
+				isPlaying: useStore.getState().shouldPlay
+			});
 		}
 	}
 	/**
 	*
 	*/
 	setCurrentTime(newTime) {
-		if (this.audioElement && this.audioElement.current) {
-			if (isNaN(newTime)) {
-				return Promise.resolve(true);
-			}
-			this.audioElement.current.currentTime = newTime;
-		}
+		super(newTime);
+
+		this.__setInternalCurrentPosition(newTime);
+
 		return Promise.resolve(true);
 	}
 	/**
 	*
 	*/
 	getCurrentTime() {
-		return this.audioElement.current.currentTime;
+		return this.audioElement.currentTime;
 	}
 	/**
 	*

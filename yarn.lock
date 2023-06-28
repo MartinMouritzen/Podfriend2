@@ -4365,10 +4365,20 @@ cordova-plugin-background-mode@^0.7.3:
   resolved "https://registry.yarnpkg.com/cordova-plugin-background-mode/-/cordova-plugin-background-mode-0.7.3.tgz#066f92c99f403b3ed3d6fb91f281a0a7ccbc84ba"
   integrity sha512-LsU1v7EgTUROaks+tcQ8TnMzVUcU/TwjDVwj2O/4e4aI2q2ldLGsiZorqKqfqvwh2HoIssmY73OwJk91hQi62w==
 
+cordova-plugin-device@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/cordova-plugin-device/-/cordova-plugin-device-2.1.0.tgz#ef2292c2f0a34d01b5aca6c39cf204e48a460fb2"
+  integrity sha512-FU0Lw1jZpuKOgG4v80LrfMAOIMCGfAVPumn7AwaX9S1iU/X3OPZUyoKUgP09q4bxL35IeNPkqNWVKYduAXZ1sg==
+
 cordova-plugin-inappbrowser@^5.0.0:
   version "5.0.0"
   resolved "https://registry.yarnpkg.com/cordova-plugin-inappbrowser/-/cordova-plugin-inappbrowser-5.0.0.tgz#2f1cf3ebfecf43bdd175a74743ee426832054951"
   integrity sha512-MqnpmUQ/iy6hxtIGDdlIhy8aNi1pNanLATpbnkk7uCqW9YQ4rH/dGK9zESbZ50pUi2A2D2QMjBXNV175TJK5OQ==
+
+cordova-plugin-music-controls2@^3.0.7:
+  version "3.0.7"
+  resolved "https://registry.yarnpkg.com/cordova-plugin-music-controls2/-/cordova-plugin-music-controls2-3.0.7.tgz#71378cd1e7a90f0af87b3c34535d5f958808fb67"
+  integrity sha512-XnbMwcVv1lZSdV78DQqxTJ22/290G+Ks0kn36NJrLT6GF6+5L11L3pf2Hey+e8LoqObPcXy4uTANc+ToADanlg==
 
 core-js-compat@^3.25.1:
   version "3.30.0"

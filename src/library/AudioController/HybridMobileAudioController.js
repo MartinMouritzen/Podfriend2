@@ -1,6 +1,6 @@
-import WebAudioController from 'WebAudioController.js';
+import WebAudioController from './WebAudioController.js';
 
-import { MusicControls } from '@ionic-native/music-controls';
+import { MusicControls } from '@awesome-cordova-plugins/music-controls';
 
 import useStore from 'store/Store';
 
@@ -15,6 +15,9 @@ class HybridMobileAudioController extends WebAudioController {
 		this._currentPositionTimerId = false;
 		this.musicControls = MusicControls;
 		this.coverServerURL = 'https://podcastcovers.podfriend.com/';
+	}
+	init() {
+		console.log('HybridMobileAudioController:init');
 	}
 	/**
 	 * Updates the currentPosition state
@@ -39,7 +42,7 @@ class HybridMobileAudioController extends WebAudioController {
 	*
 	*/
 	setCurrentTime(newTime) {
-		super(newTime);
+		ParentClass.prototype.setCurrentTime(newTime);
 
 		this.__setInternalCurrentPosition(newTime);
 
@@ -233,4 +236,4 @@ class HybridMobileAudioController extends WebAudioController {
 		
 	}
 }
-export default WebAudioController;
+export default HybridMobileAudioController;

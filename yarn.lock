@@ -24,6 +24,13 @@
     jsonpointer "^5.0.0"
     leven "^3.1.0"
 
+"@awesome-cordova-plugins/background-mode@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.yarnpkg.com/@awesome-cordova-plugins/background-mode/-/background-mode-6.3.0.tgz#ea6797f2a482544829fab39caf9d9be53f353356"
+  integrity sha512-jnyNFpM73Ba01nmoLKvzwyevB5nf8b5+aeyaFjIWinV3m1fXFV/bWqEu6QEXG1QENf5OhAk7jBMtRAMQMhP36Q==
+  dependencies:
+    "@types/cordova" latest
+
 "@awesome-cordova-plugins/core@^6.3.0":
   version "6.3.0"
   resolved "https://registry.yarnpkg.com/@awesome-cordova-plugins/core/-/core-6.3.0.tgz#05460eba56c06f9dce38f573f78bc74818fda321"
@@ -35,6 +42,13 @@
   version "6.3.0"
   resolved "https://registry.yarnpkg.com/@awesome-cordova-plugins/in-app-browser/-/in-app-browser-6.3.0.tgz#3071255be40157ac83f3cb2f14e3a5fe848856a8"
   integrity sha512-23x7Kzk2qFNLa8QWIoO84hKMMdqukpX4FJ87Glstj5XA6zSybINsp4o27teEynbUUbERiRfAI0ceqj//xm0THg==
+  dependencies:
+    "@types/cordova" latest
+
+"@awesome-cordova-plugins/music-controls@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.yarnpkg.com/@awesome-cordova-plugins/music-controls/-/music-controls-6.3.0.tgz#e2615a8e85add2abd96651bb8de6e443fcdba7e0"
+  integrity sha512-gvnVDWyX6M5CM9PGyrNv6hngF0x+I9gCCoGIew68EUncB6unWPlM5MOhDJpfdiFbIIcuhyPVpXH1c76tD0BpVQ==
   dependencies:
     "@types/cordova" latest
 
@@ -1370,13 +1384,6 @@
   version "1.2.1"
   resolved "https://registry.npmjs.org/@humanwhocodes/object-schema/-/object-schema-1.2.1.tgz"
   integrity sha512-ZnQMnLV4e7hDlUvw8H+U8ASL02SS2Gn6+9Ac3wGGLIe7+je2AeAOxPY+izIPJDfFDb7eDjev0Us8MO1iFRN8hA==
-
-"@ionic-native/background-mode@^5.36.0":
-  version "5.36.0"
-  resolved "https://registry.yarnpkg.com/@ionic-native/background-mode/-/background-mode-5.36.0.tgz#9d67c13c4b5bffe408fc78d45782e2ef888cf24c"
-  integrity sha512-ODKQW5F0EgKkiw6LDlbZugcCjfqwVN2198S7JLzAaN7WW6HT74gRiSox1x4a92jrFQCaGWfehXAb688I8RUCng==
-  dependencies:
-    "@types/cordova" latest
 
 "@ionic/cli-framework-output@^2.2.5":
   version "2.2.5"

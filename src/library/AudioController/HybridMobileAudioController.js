@@ -12,18 +12,25 @@ class HybridMobileAudioController extends WebAudioController {
 	*/
 	constructor() {
 		super();
+		this._currentPositionTimerId = false;
 		this.musicControls = MusicControls;
 		this.coverServerURL = 'https://podcastcovers.podfriend.com/';
+	}
+	/**
+	 * Updates the currentPosition state
+	 * @private
+	 */
+	__refreshCurrentPosition() {
+		var currentPosition = this.getCurrentTime();
+		this.__setInternalCurrentPosition(currentPosition)
 	}
 	/**
 	*
 	**/
 	__setInternalCurrentPosition(timeInSeconds) {
-		this.currentPosition = timeInSeconds;
-
 		if (this.musicControlsInitialized) {
 			this.musicControls.updateElapsed({
-				elapsed: this.currentPosition,
+				elapsed: timeInSeconds,
 				isPlaying: useStore.getState().shouldPlay
 			});
 		}
@@ -48,36 +55,45 @@ class HybridMobileAudioController extends WebAudioController {
 	*
 	*/
 	getDuration() {
-		return this.audioElement.current.duration;
+		return this.audioElement.duration;
 	}
 	pause() {
 		if ('mediaSession' in navigator) {
 			navigator.mediaSession.playbackState = "paused";
 		}
 		this.musicControls.updateIsPlaying(false);
-		this.audioElement.current.pause();
+		this.musicControls.updateElapsed({
+			elapsed: this.getCurrentTime(),
+			isPlaying: false
+		});
+		this.audioElement.pause();
 		return Promise.resolve(true);
 	}
 	load() {
-		this.audioElement.current.load();
+		this.audioElement.load();
 		return Promise.resolve(true);
 	}
 	play() {
-		var returnValue = this.audioElement.current.play()
+		var returnValue = this.audioElement.play();
+
+		this.__refreshCurrentPosition();
+
+		clearInterval(this._currentPositionTimerId);
+		this._currentPositionTimerId = setInterval(this.__refreshCurrentPosition.bind(this), 1000);
+
+		if (this.musicControlsInitialized) {
+			this.musicControls.updateIsPlaying(true);
+		}
+
 		if (returnValue.then) {
 			if ('mediaSession' in navigator) {
 				navigator.mediaSession.playbackState = "playing";
 			}
-			this.musicControls.updateIsPlaying(true);
 			return returnValue.then;
 		}
+
+
 		return Promise.resolve(true);
-	}
-	setVolume(newVolume) {
-		this.audioComponent.current.volume = newVolume;
-	}
-	getVolume() {
-		return this.audioComponent.current.volume;
 	}
 	/**
 	* 
@@ -126,15 +142,15 @@ class HybridMobileAudioController extends WebAudioController {
 					break;
 				case 'music-controls-pause':
 					console.log('music-controls-pause');
-					this.player.pause();
+					useStore.getState().audioPause();
 					break;
 				case 'music-controls-play':
 					console.log('music-controls-play');
-					this.player.play();
+					useStore.getState().audioPlay();
 					break;
 				case 'music-controls-destroy':
 					console.log('music-controls-destroy - the user probably swiped it away!');
-					this.player.pause();
+					useStore.getState().audioPause();
 					break;
 		
 				// External controls (iOS only)
@@ -154,11 +170,11 @@ class HybridMobileAudioController extends WebAudioController {
 					break;
 				case 'music-controls-skip-forward':
 					console.log('music-controls-skip-forward');
-					this.player.onForward();
+					useStore.getState().audioForward();
 					break;
 				case 'music-controls-skip-backward':
 					console.log('music-controls-skip-backward');
-					this.player.onBackward();
+					useStore.getState().audioBackward();
 					break;
 				// Headset events (Android only)
 				// All media button events are listed below

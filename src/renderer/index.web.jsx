@@ -11,7 +11,6 @@ import NativeAudioController from "library/AudioController/WebAudioController";
 const container = document.getElementById('root');
 const root = createRoot(container);
 
-const audioController = new WebAudioController();
 const audioController = (Capacitor.isNative) ? new NativeMobileAudioController() : new WebAudioController();
 audioController.startService();
 audioController.init();

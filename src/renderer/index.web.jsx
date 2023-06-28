@@ -1,5 +1,6 @@
 
 import { Capacitor } from '@capacitor/core'
+import { BackgroundMode } from '@ionic-native/background-mode';
 
 import { createRoot } from 'react-dom/client';
 import App from './App';
@@ -14,5 +15,19 @@ const audioController = new WebAudioController();
 // const audioController = (Capacitor.isNative) ? new NativeMobileAudioController() : new WebAudioController();
 audioController.startService();
 audioController.init();
+
+if (Capacitor.isNative) {
+	document.addEventListener('deviceready', function () {
+		this.backgroundMode.setDefaults({
+			title: 'Podfriend',
+			text: 'Podcast player',
+			resume: true,
+			hidden: false,
+			silent: false
+		});
+
+		this.backgroundMode.enable();
+	});
+}
 
 root.render(<App platform="web" audioController={audioController} />);

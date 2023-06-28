@@ -22,7 +22,7 @@ const BoostModal = ({ onDismiss }) => {
 	const [boostAmount,setBoostAmount] = useState(defaultBoostAmount);
 	const [name,setName] = useState(userData.username ? userData.username : '');
 	const [message,setMessage] = useState('');
-	const [currentEmoji,setCurrentEmoji] = useState(false);
+	const [currentEmoji,setCurrentEmoji] = useState('🦆');
 
 	const onNameChange = (event) => {
 		setName(event.detail.value);
@@ -32,7 +32,7 @@ const BoostModal = ({ onDismiss }) => {
 			setCurrentEmoji('🦆');
 		}
 		else {
-			setCurrentEmoji(false);
+			// setCurrentEmoji(false);
 		}
 		setBoostAmount(event.detail.value);
 	};
@@ -106,10 +106,10 @@ const BoostModal = ({ onDismiss }) => {
 						}
 						{ !isBoosting &&
 							<>
-								{ currentEmoji === false &&
+								{ stringHasOnlyGivenCharType(boostAmount,'2') === false &&
 									<IonIcon icon={boostIcon} slot="start" />
 								}
-								{ currentEmoji !== false &&
+								{ stringHasOnlyGivenCharType(boostAmount,'2') !== false &&
 									<IonLabel slot="start" style={{ marginRight: 10 }}>{currentEmoji}</IonLabel>
 								}
 								Boost {Number(boostAmount).toLocaleString()}

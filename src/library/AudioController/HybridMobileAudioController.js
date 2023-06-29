@@ -105,8 +105,8 @@ class HybridMobileAudioController extends WebAudioController {
 		var coverUrl = this.coverServerURL + podcast.path + '/' + '600x600/' + encodeURI(episode.image ? episode.image : podcast.image);
 
 		this.musicControls.create({
-			track: 'pf' + episode.title,
-			artist: 'pf' + podcast.author,
+			track: episode.title,
+			artist: podcast.author,
 			album: podcast.name,
 			cover: coverUrl,
 			isPlaying: useStore.getState().shouldPlay,

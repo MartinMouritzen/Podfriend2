@@ -91,12 +91,14 @@ class WebAudioController extends AudioController {
 			if (isNaN(newTime)) {
 				return Promise.resolve(true);
 			}
+			/*
 			if (!usePrecision && this.audioElement.fastSeek) {
 				this.audioElement.fastSeek(newTime);
 			}
 			else {
+				*/
 				this.audioElement.currentTime = newTime;
-			}
+			// }
 		}
 		return Promise.resolve(true);
 	}

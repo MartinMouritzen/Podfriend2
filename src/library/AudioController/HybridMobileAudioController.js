@@ -105,18 +105,18 @@ class HybridMobileAudioController extends WebAudioController {
 		var coverUrl = this.coverServerURL + podcast.path + '/' + '600x600/' + encodeURI(episode.image ? episode.image : podcast.image);
 
 		this.musicControls.create({
-			track: episode.title,
-			artist: podcast.author,
+			track: 'pf' + episode.title,
+			artist: 'pf' + podcast.author,
 			album: podcast.name,
 			cover: coverUrl,
-			isPlaying: this.player.props.isPlaying,
+			isPlaying: useStore.getState().shouldPlay,
 			dismissable: true,
 			hasPrev: true,
 			hasNext: true,
 			hasClose: true,
 			// iOS only, optional
-			duration: this.player.state.duration,
-			elapsed: this.player.state.progress,
+			duration: episode.duration,
+			elapsed: episode.currentTime,
 			hasSkipForward: true, // true value overrides hasNext.
 			hasSkipBackward: true, // true value overrides hasPrev.
 			skipForwardInterval : 15,
@@ -137,11 +137,11 @@ class HybridMobileAudioController extends WebAudioController {
 			switch(message) {
 				case 'music-controls-next':
 					console.log('music-controls-next');
-					this.player.onNextEpisode();
+					useStore.getState().audioSkipForward();
 					break;
 				case 'music-controls-previous':
 					console.log('music-controls-previous');
-					this.player.onPrevEpisode();
+					useStore.getState().audioSkipBackward();
 					break;
 				case 'music-controls-pause':
 					console.log('music-controls-pause');
@@ -164,7 +164,8 @@ class HybridMobileAudioController extends WebAudioController {
 					console.log('music-controls-seek-to');
 					const seekToInSeconds = JSON.parse(action).position;
 
-					this.player.setCurrentTime(seekToInSeconds * 1000);
+					this.setCurrentTime(details.seekTime);
+					// this.player.setCurrentTime(seekToInSeconds * 1000);
 
 					this.musicControls.updateElapsed({
 						elapsed: seekToInSeconds,
@@ -226,11 +227,6 @@ class HybridMobileAudioController extends WebAudioController {
 		this.__createMediaControls(podcast,episode);
 
 		return Promise.resolve(true);
-		/*
-		return new Promise(() => {
-			return true;
-		});
-		*/
 	}
 	destroy() {
 		

@@ -7,12 +7,13 @@ import App from './App';
 
 import WebAudioController from "library/AudioController/WebAudioController.js";
 // import NativeMobileAudioController from "library/AudioController/NativeMobileAudioController";
-import HybridMobileAudioController from "library/AudioController/HybridMobileAudioController.js";
+// import HybridMobileAudioController from "library/AudioController/HybridMobileAudioController.js";
 
 const container = document.getElementById('root');
 const root = createRoot(container);
 
-let audioController = Capacitor.isNative ? new HybridMobileAudioController() : new WebAudioController();
+// let audioController = Capacitor.isNative ? new HybridMobileAudioController() : new WebAudioController();
+let audioController = new WebAudioController();
 audioController.startService();
 audioController.init();
 

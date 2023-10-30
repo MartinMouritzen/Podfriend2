@@ -23,7 +23,7 @@ class PodcastUtil {
 			return result.text();
 		})
 		.then((result) => {
-			if (type === 'application/srt' || type === 'text/srt') {
+			if (type === 'application/srt' || type === 'text/srt' || type === 'application/x-subrip') {
 				return result;
 			}
 			else {
